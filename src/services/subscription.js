@@ -1,7 +1,8 @@
 /**
  * Subscription service – works with your backend API (Paygate + DB).
- * In demo mode (no API URL), uses localStorage for testing.
+ * In demo mode (no API URL), uses storage for testing (dev only; production blocks local persistence).
  */
+import { storageGet } from '../lib/storage';
 
 const API_BASE = typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUBSCRIPTION_API_URL
   ? import.meta.env.VITE_SUBSCRIPTION_API_URL.replace(/\/$/, '')
@@ -15,7 +16,7 @@ export async function getSubscriptionStatus(userId) {
   if (!userId) return { plan: 'free' };
   if (!API_BASE) {
     try {
-      const raw = localStorage.getItem(DEMO_SUB_KEY);
+      const raw = storageGet(DEMO_SUB_KEY);
       const data = raw ? JSON.parse(raw) : null;
       return { plan: data?.plan === 'pro' ? 'pro' : 'free' };
     } catch {
