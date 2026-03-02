@@ -2583,8 +2583,8 @@ export default function App() {
               </div>
             )}
 
-            {/* At Risk module */}
-            {(appUser.role === ROLES.STUDENT || (appUser.role === ROLES.PARENT && selectedChildEmail)) && riskScore != null && (
+            {/* At Risk module - only show when there are assignments to base risk on */}
+            {(appUser.role === ROLES.STUDENT || (appUser.role === ROLES.PARENT && selectedChildEmail)) && riskScore != null && assignments.length > 0 && (
               <div className={`bg-white p-5 rounded-xl border border-slate-100 border-l-4 cursor-pointer hover:shadow-md transition-all ${riskScore >= 80 ? 'border-l-emerald-500' : riskScore >= 60 ? 'border-l-amber-500' : riskScore >= 40 ? 'border-l-orange-500' : 'border-l-rose-500'}`} onClick={() => setActiveTab(TABS.ANALYTICS)}>
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                   <div className="flex-1 min-w-0">
@@ -3038,8 +3038,8 @@ export default function App() {
 
             {/* Row 2: Risk score + insights side by side */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Risk overview */}
-              {riskScore != null && (
+              {/* Risk overview - only show when there are assignments to base risk on */}
+              {riskScore != null && assignments.length > 0 && (
                 <div className={`bg-white p-5 rounded-xl border border-slate-100 border-l-4 ${riskScore >= 80 ? 'border-l-emerald-500' : riskScore >= 60 ? 'border-l-amber-500' : riskScore >= 40 ? 'border-l-orange-500' : 'border-l-rose-500'}`}>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">{copy.riskTitle}</p>
                   <div className="flex items-center gap-4">
@@ -3403,7 +3403,7 @@ export default function App() {
                           <p className="text-[10px] text-slate-400 mt-0.5">{a.type || 'Alert'} • {a.date || 'Today'}</p>
                           <div className="flex gap-2 mt-2">
                             <button onClick={() => { markAlertRead(a.id, profileData.email); setAlerts(getUnreadAlertsForUser(profileData.email, linkedStudents, appUser?.role)); showToast(copy.toastDismissed); }} className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold hover:bg-slate-200 transition-colors">{copy.toastDismissed}</button>
-                            {riskScore != null && riskScore < 60 && !getActiveRecoveryForStudent(viewingStudentKey) && (
+                            {riskScore != null && riskScore < 60 && assignments.length > 0 && !getActiveRecoveryForStudent(viewingStudentKey) && (
                               <button onClick={() => confirm('Start a 7-day recovery plan?', () => { createRecoveryTarget(viewingStudentKey, 95, 7); showToast(copy.toastRecoveryCreated); })} className="px-2.5 py-1 bg-violet-500 text-white rounded text-[10px] font-bold hover:bg-violet-600 transition-colors">{copy.startRecovery}</button>
                             )}
                           </div>
