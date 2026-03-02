@@ -1346,6 +1346,13 @@ export default function App() {
   }, [appUser?.role, schoolsRefresh]);
 
   const firebaseUserId = auth?.currentUser?.uid;
+
+  // One-time migration: remove the 3 original mock assignments (ids 1,2,3 with known titles)
+  const MOCK_ASSIGNMENT_IDS = new Set([1, 2, 3]);
+  const MOCK_ASSIGNMENT_TITLES = new Set(['Finish Physics Lab', 'Read Chapter 4', 'History Presentation']);
+  const removeMockAssignments = (list) =>
+    (list || []).filter(a => !(MOCK_ASSIGNMENT_IDS.has(a.id) && MOCK_ASSIGNMENT_TITLES.has(a.title)));
+
   useEffect(() => {
     if (!firebaseUserId || !appUser || appUser.role === ROLES.PARENT) return;
     let cancelled = false;
@@ -1357,7 +1364,13 @@ export default function App() {
       ]);
       if (cancelled) return;
       if (profile && typeof profile === 'object') setProfileData(prev => ({ ...prev, ...profile }));
-      if (assignments !== null && Array.isArray(assignments)) setAssignments(assignments);
+      if (assignments !== null && Array.isArray(assignments)) {
+        const cleaned = removeMockAssignments(assignments);
+        setAssignments(cleaned);
+        if (cleaned.length !== assignments.length) {
+          platformData.saveAssignments(firebaseUserId, cleaned).catch(() => {});
+        }
+      }
       if (Array.isArray(completions)) setCompletionHistoryFromFirestore(completions);
     })();
     return () => { cancelled = true; };
@@ -1614,7 +1627,9 @@ export default function App() {
         const userKey = (parsed?.email ?? email) || newAppUser.name;
       const storedAssignments = getStoredAssignments(userKey);
       if (storedAssignments && Array.isArray(storedAssignments) && storedAssignments.length > 0) {
-        setAssignments(storedAssignments);
+        const cleaned = removeMockAssignments(storedAssignments);
+        if (cleaned.length !== storedAssignments.length) saveStoredAssignments(userKey, cleaned);
+        setAssignments(cleaned);
       }
       if (newAppUser.role === ROLES.PARENT) {
         platformData.getLinkedStudentsForParent(userKey).then((students) => {
