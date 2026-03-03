@@ -4,7 +4,7 @@
   "description": "Track homework, monitor risk, and stay on top of school.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#7c3aed",
   "theme_color": "#7c3aed",
   "icons": [
     {
