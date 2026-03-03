@@ -75,6 +75,8 @@ import { parseAssignmentsCSV, parseSchoolsCSV } from './lib/csvImport';
 import { fetchAllCoursework } from './lib/googleClassroom';
 import { getGoogleClassroomToken } from './lib/oauthIntegration';
 import MobileSplash from './components/MobileSplash';
+import Chat from './components/Chat';
+import Chat from './components/Chat';
 
 // --- Global Styles & Wallpapers ---
 const noScrollbarStyles = `
@@ -190,7 +192,7 @@ const findUserByCredentials = (email, password) => {
 
 // --- Configuration ---
 const ROLES = { STUDENT: 'Student', PARENT: 'Parent', TEACHER: 'Teacher', ADMIN: 'Admin' };
-const TABS = { OVERVIEW: 'Overview', HOMEWORK: 'Homework', ANALYTICS: 'Analytics', SCHOOL: 'School', PAYMENTS: 'Payments', SETTINGS: 'Settings' };
+const TABS = { OVERVIEW: 'Overview', HOMEWORK: 'Homework', ANALYTICS: 'Analytics', CHAT: 'Chat', SCHOOL: 'School', PAYMENTS: 'Payments', SETTINGS: 'Settings' };
 
 const ROLE_COPY = {
   [ROLES.STUDENT]: {
@@ -1306,6 +1308,7 @@ export default function App() {
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [dashboardSearch, setDashboardSearch] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
+  const [chatUnreadCount, setChatUnreadCount] = useState(0);
   const [toasts, setToasts] = useState([]);
   const [undoStack, setUndoStack] = useState([]);
   const [selectedHwIds, setSelectedHwIds] = useState(new Set());
@@ -1748,6 +1751,17 @@ export default function App() {
   useEffect(() => { if (subjects.length > 0 && !subjects.includes(newAssignment.subject)) setNewAssignment(prev => ({ ...prev, subject: subjects[0] })); }, [subjects]);
   useEffect(() => { try { storageSet('hw_viewmode', viewMode); } catch {} }, [viewMode]);
 
+  useEffect(() => {
+    if (!profileData.email) return;
+    let unsub;
+    import('./lib/chatService').then(({ getChatsForUser, getUnreadCount }) => {
+      unsub = getChatsForUser(profileData.email, (chats) => {
+        setChatUnreadCount(getUnreadCount(chats, profileData.email));
+      });
+    }).catch(() => {});
+    return () => { if (unsub) unsub(); };
+  }, [profileData.email]);
+
   const handleCreateAssignFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -2032,6 +2046,7 @@ export default function App() {
       { key: TABS.OVERVIEW, icon: Home, label: copy.navHome },
       { key: TABS.ANALYTICS, icon: BarChart2, label: copy.navStats },
       { key: TABS.SCHOOL, icon: Building2, label: 'School' },
+      { key: TABS.CHAT, icon: MessageSquare, label: 'Chat', badge: chatUnreadCount, badgeColor: 'bg-violet-500' },
       { key: TABS.PAYMENTS, icon: CreditCard, label: copy.navPayments },
       { key: TABS.SETTINGS, icon: Settings, label: copy.navSettings },
     ];
@@ -2216,6 +2231,11 @@ export default function App() {
               </div>
             )}
             {activeTab === TABS.SCHOOL && <SchoolDashboard schools={adminSchools} search={dashboardSearch} key={schoolsRefresh} onRefresh={() => setSchoolsRefresh(Date.now())} confirm={confirm} />}
+            {activeTab === TABS.CHAT && (
+              <div className="animate-in fade-in h-[calc(100dvh-128px)] md:h-[calc(100dvh-72px)]">
+                <Chat userEmail={profileData.email} userName={profileData.name || appUser.name} userRole={appUser.role} isPremium={subscriptionPlan === 'pro'} linkedStudents={linkedStudents} confirm={confirm} />
+              </div>
+            )}
             {activeTab === TABS.PAYMENTS && (
               <div className="space-y-6 text-slate-800 animate-in fade-in max-w-4xl">
                 <div className="flex items-center justify-between flex-wrap gap-3">
@@ -2460,6 +2480,7 @@ export default function App() {
     { key: TABS.HOMEWORK, icon: BookOpen, label: copy.navHomework, badge: stats.overdue, badgeColor: 'bg-rose-500', action: () => { setActiveTab(TABS.HOMEWORK); setViewMode('list'); } },
     { key: TABS.ANALYTICS, icon: BarChart2, label: copy.navStats },
     { key: 'calendar', icon: Calendar, label: 'Calendar', action: () => { setActiveTab(TABS.HOMEWORK); setViewMode('calendar'); } },
+    { key: TABS.CHAT, icon: MessageSquare, label: 'Chat', badge: chatUnreadCount, badgeColor: 'bg-violet-500' },
     { key: 'alerts', icon: Bell, label: copy.alertsTitle, badge: alerts.length, badgeColor: 'bg-amber-500', action: () => setIsNotifPanelOpen(true) },
     ...(appUser?.role === ROLES.ADMIN ? [{ key: TABS.SCHOOL, icon: Building2, label: 'School' }] : []),
     { key: TABS.PAYMENTS, icon: CreditCard, label: copy.navPayments },
@@ -2538,6 +2559,7 @@ export default function App() {
                 { label: 'Edit profile', keywords: 'edit profile picture name grade school avatar photo', icon: User, action: () => setIsProfileSettingsOpen(true) },
                 { label: 'Log out', keywords: 'log out sign out logout signout', icon: LogOut, action: () => signOut(auth) },
                 { label: 'Notifications', keywords: 'notifications alerts bell reminders', icon: Bell, action: () => setIsNotifPanelOpen(true) },
+                { label: 'Chat', keywords: 'chat message messaging conversation talk communicate whatsapp', icon: MessageSquare, action: () => setActiveTab(TABS.CHAT) },
                 { label: 'Overdue tasks', keywords: 'overdue late missing behind', icon: AlertTriangle, action: () => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.OVERDUE); setViewMode('list'); } },
                 { label: 'Completed tasks', keywords: 'completed done finished submitted', icon: CheckCircle2, action: () => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.COMPLETED); setViewMode('list'); } },
                 { label: 'Due tasks', keywords: 'due pending upcoming todo to do', icon: Clock, action: () => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.DUE); setViewMode('list'); } },
@@ -3309,6 +3331,19 @@ export default function App() {
           </div>
         )}
 
+        {activeTab === TABS.CHAT && (
+          <div className="animate-in fade-in h-[calc(100dvh-128px)] md:h-[calc(100dvh-72px)]">
+            <Chat
+              userEmail={profileData.email}
+              userName={profileData.name || appUser.name}
+              userRole={appUser.role}
+              isPremium={subscriptionPlan === 'pro'}
+              linkedStudents={linkedStudents}
+              confirm={confirm}
+            />
+          </div>
+        )}
+
         {activeTab === TABS.SCHOOL && appUser?.role === ROLES.ADMIN && (
           <SchoolDashboard schools={adminSchools} search={dashboardSearch} key={schoolsRefresh} onRefresh={() => setSchoolsRefresh(Date.now())} confirm={confirm} />
         )}
@@ -3469,6 +3504,7 @@ export default function App() {
           <FloatingNavItem icon={Home} label={copy.navHome} isActive={activeTab === TABS.OVERVIEW} onClick={() => setActiveTab(TABS.OVERVIEW)} />
           <FloatingNavItem icon={BookOpen} label={copy.navHomework} isActive={activeTab === TABS.HOMEWORK && viewMode !== 'calendar'} onClick={() => { setActiveTab(TABS.HOMEWORK); setViewMode('list'); }} badgeCount={stats.overdue} badgeColor="bg-rose-500" />
           <FloatingNavItem icon={BarChart2} label={copy.navStats} isActive={activeTab === TABS.ANALYTICS} onClick={() => setActiveTab(TABS.ANALYTICS)} />
+          <FloatingNavItem icon={MessageSquare} label="Chat" isActive={activeTab === TABS.CHAT} onClick={() => setActiveTab(TABS.CHAT)} badgeCount={chatUnreadCount} badgeColor="bg-violet-500" />
           {appUser?.role === ROLES.ADMIN && <FloatingNavItem icon={Building2} label="School" isActive={activeTab === TABS.SCHOOL} onClick={() => setActiveTab(TABS.SCHOOL)} />}
           <FloatingNavItem icon={CreditCard} label={copy.navPayments} isActive={activeTab === TABS.PAYMENTS} onClick={() => setActiveTab(TABS.PAYMENTS)} />
           <FloatingNavItem icon={Settings} label={copy.navSettings} isActive={activeTab === TABS.SETTINGS} onClick={() => setActiveTab(TABS.SETTINGS)} />
