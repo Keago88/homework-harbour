@@ -152,58 +152,6 @@ const splashStyles = `
     animation: splashFadeUp .9s cubic-bezier(.22,1,.36,1) .75s both;
   }
 
-  .splash-loader-wrap {
-    position: relative;
-    z-index: 10;
-    margin-top: 52px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    animation: splashFadeUp .9s cubic-bezier(.22,1,.36,1) .95s both;
-  }
-
-  .splash-bar-track {
-    width: 140px;
-    height: 3px;
-    border-radius: 99px;
-    background: rgba(124,58,237,.1);
-    overflow: hidden;
-  }
-
-  .splash-bar-fill {
-    height: 100%;
-    border-radius: 99px;
-    background: linear-gradient(90deg, #7c3aed, #d946ef);
-    animation: splashLoadFill 2.4s cubic-bezier(.4,0,.2,1) 1.1s both;
-    transform-origin: left;
-  }
-
-  @keyframes splashLoadFill {
-    0%   { width: 0%; }
-    60%  { width: 75%; }
-    100% { width: 100%; }
-  }
-
-  .splash-loader-dots {
-    display: flex;
-    gap: 6px;
-  }
-  .splash-loader-dots span {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: #8b5cf6;
-    animation: splashDotPop .9s ease-in-out infinite;
-  }
-  .splash-loader-dots span:nth-child(1) { animation-delay: 0s; }
-  .splash-loader-dots span:nth-child(2) { animation-delay: .18s; }
-  .splash-loader-dots span:nth-child(3) { animation-delay: .36s; }
-
-  @keyframes splashDotPop {
-    0%, 100% { transform: scale(1);   opacity: .3; }
-    50%       { transform: scale(1.5); opacity: 1;  background: #d946ef; }
-  }
 
   .splash-version {
     position: absolute;
@@ -328,13 +276,6 @@ export default function MobileSplash({ onDone }) {
         </div>
 
         <p className="splash-tagline">Cast off. Stay on course.</p>
-
-        <div className="splash-loader-wrap">
-          <div className="splash-bar-track"><div className="splash-bar-fill" /></div>
-          <div className="splash-loader-dots">
-            <span /><span /><span />
-          </div>
-        </div>
 
         <p className="splash-version">v1.0.0</p>
       </div>
