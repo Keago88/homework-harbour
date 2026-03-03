@@ -2528,38 +2528,64 @@ export default function App() {
             )}
             {searchOpen && dashboardSearch.trim() && (() => {
               const term = dashboardSearch.toLowerCase().trim();
-              const results = assignments.filter(a =>
+              const pageItems = sidebarNavItems.filter(n => n.label.toLowerCase().includes(term));
+              const hwResults = assignments.filter(a =>
                 a.title.toLowerCase().includes(term) || a.subject.toLowerCase().includes(term)
-              ).slice(0, 8);
+              ).slice(0, 6);
+              const hasResults = pageItems.length > 0 || hwResults.length > 0;
               return (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
-                  {results.length === 0 ? (
-                    <div className="px-4 py-3 text-xs text-slate-400 font-medium">No assignments found</div>
-                  ) : (
-                    results.map(a => {
-                      const isDone = a.status === 'Completed' || a.status === 'Submitted';
-                      const isOverdue = a.dueDate < getDate(0) && !isDone;
-                      return (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 max-h-80 overflow-y-auto">
+                  {!hasResults && (
+                    <div className="px-4 py-3 text-xs text-slate-400 font-medium">No results found</div>
+                  )}
+                  {pageItems.length > 0 && (
+                    <>
+                      <div className="px-4 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider">Pages</div>
+                      {pageItems.map(n => (
                         <button
-                          key={a.id}
+                          key={n.key}
                           onMouseDown={() => {
                             setSearchOpen(false);
                             setDashboardSearch('');
-                            setSelectedAssignment(a);
-                            setIsUploadModalOpen(true);
+                            if (n.action) n.action(); else setActiveTab(n.key);
                           }}
-                          className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-slate-50 transition-colors text-left border-b border-slate-50 last:border-0"
+                          className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-slate-50 transition-colors text-left"
                         >
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-slate-700 truncate">{a.title}</p>
-                            <p className="text-[10px] text-slate-400">{a.subject} • Due {new Date(a.dueDate + 'T12:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
-                          </div>
-                          <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold ${isDone ? 'bg-emerald-100 text-emerald-700' : isOverdue ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-700'}`}>
-                            {isDone ? copy.statusDone : isOverdue ? copy.statusLate : copy.statusOpen}
-                          </span>
+                          <n.icon size={16} className="text-violet-500 shrink-0" />
+                          <span className="text-xs font-bold text-slate-700">{n.label}</span>
                         </button>
-                      );
-                    })
+                      ))}
+                    </>
+                  )}
+                  {hwResults.length > 0 && (
+                    <>
+                      <div className="px-4 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider border-t border-slate-50">Assignments</div>
+                      {hwResults.map(a => {
+                        const isDone = a.status === 'Completed' || a.status === 'Submitted';
+                        const isOverdue = a.dueDate < getDate(0) && !isDone;
+                        return (
+                          <button
+                            key={a.id}
+                            onMouseDown={() => {
+                              setSearchOpen(false);
+                              setDashboardSearch('');
+                              setSelectedAssignment(a);
+                              setIsUploadModalOpen(true);
+                            }}
+                            className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-slate-50 transition-colors text-left"
+                          >
+                            <BookOpen size={16} className="text-violet-400 shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-slate-700 truncate">{a.title}</p>
+                              <p className="text-[10px] text-slate-400">{a.subject} • Due {new Date(a.dueDate + 'T12:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
+                            </div>
+                            <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold ${isDone ? 'bg-emerald-100 text-emerald-700' : isOverdue ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-700'}`}>
+                              {isDone ? copy.statusDone : isOverdue ? copy.statusLate : copy.statusOpen}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </>
                   )}
                 </div>
               );
