@@ -74,8 +74,6 @@ import { createRecoveryTarget, getActiveRecoveryForStudent, getInterventionsForS
 import { parseAssignmentsCSV, parseSchoolsCSV } from './lib/csvImport';
 import { fetchAllCoursework } from './lib/googleClassroom';
 import { getGoogleClassroomToken } from './lib/oauthIntegration';
-import MobileSplash from './components/MobileSplash';
-
 // --- Global Styles & Wallpapers ---
 const noScrollbarStyles = `
   .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -1249,10 +1247,7 @@ const FloatingNavItem = ({ icon: Icon, label, isActive, onClick, badgeCount, bad
 );
 
 // --- Main Application ---
-const isMobileDevice = () => typeof window !== 'undefined' && window.innerWidth < 768;
-
 export default function App() {
-  const [showSplash, setShowSplash] = useState(() => isMobileDevice());
   const [user, setUser] = useState(null);
   const [appUser, setAppUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -2005,8 +2000,6 @@ export default function App() {
     if (m === 0) return `Due in ${h} ${h === 1 ? 'hour' : 'hours'}`;
     return `Due in ${h}h ${m}m`;
   };
-
-  if (showSplash) return <MobileSplash onDone={() => setShowSplash(false)} />;
 
   if (authLoading) return (
     <div className="h-[100dvh] wallpaper-auth flex flex-col items-center justify-center relative overflow-hidden">
