@@ -1305,6 +1305,7 @@ export default function App() {
   const [isAdminCsvImportOpen, setIsAdminCsvImportOpen] = useState(false);
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [dashboardSearch, setDashboardSearch] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [undoStack, setUndoStack] = useState([]);
   const [selectedHwIds, setSelectedHwIds] = useState(new Set());
@@ -2514,15 +2515,55 @@ export default function App() {
             <input
               type="text"
               value={dashboardSearch}
-              onChange={e => { setDashboardSearch(e.target.value); if (e.target.value) { setActiveTab(TABS.HOMEWORK); setViewMode('list'); } }}
+              onChange={e => { setDashboardSearch(e.target.value); setSearchOpen(!!e.target.value); }}
+              onFocus={() => { if (dashboardSearch) setSearchOpen(true); }}
+              onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
               placeholder={copy.searchPlaceholder}
               className="w-full pl-8 pr-8 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400 text-slate-700"
             />
             {dashboardSearch && (
-              <button onClick={() => setDashboardSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <button onClick={() => { setDashboardSearch(''); setSearchOpen(false); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                 <X size={13} />
               </button>
             )}
+            {searchOpen && dashboardSearch.trim() && (() => {
+              const term = dashboardSearch.toLowerCase().trim();
+              const results = assignments.filter(a =>
+                a.title.toLowerCase().includes(term) || a.subject.toLowerCase().includes(term)
+              ).slice(0, 8);
+              return (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                  {results.length === 0 ? (
+                    <div className="px-4 py-3 text-xs text-slate-400 font-medium">No assignments found</div>
+                  ) : (
+                    results.map(a => {
+                      const isDone = a.status === 'Completed' || a.status === 'Submitted';
+                      const isOverdue = a.dueDate < getDate(0) && !isDone;
+                      return (
+                        <button
+                          key={a.id}
+                          onMouseDown={() => {
+                            setSearchOpen(false);
+                            setDashboardSearch('');
+                            setSelectedAssignment(a);
+                            setIsUploadModalOpen(true);
+                          }}
+                          className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-slate-50 transition-colors text-left border-b border-slate-50 last:border-0"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-bold text-slate-700 truncate">{a.title}</p>
+                            <p className="text-[10px] text-slate-400">{a.subject} • Due {new Date(a.dueDate + 'T12:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
+                          </div>
+                          <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold ${isDone ? 'bg-emerald-100 text-emerald-700' : isOverdue ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-700'}`}>
+                            {isDone ? copy.statusDone : isOverdue ? copy.statusLate : copy.statusOpen}
+                          </span>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              );
+            })()}
           </div>
           <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 rounded-lg text-[10px] font-black text-violet-600 uppercase tracking-wider shrink-0"><Calendar size={12} /> {currentTerm}</span>
           {appUser.role === ROLES.STUDENT && (
@@ -2762,13 +2803,10 @@ export default function App() {
 
         {activeTab === TABS.HOMEWORK && (() => {
           const today = getDate(0);
-          const searchTerm = dashboardSearch.toLowerCase().trim();
           const filteredHw = assignments.filter(a => {
             const isDone = a.status === 'Completed' || a.status === 'Submitted';
             const subjectOk = filterSubject === 'All' || a.subject === filterSubject;
             if (!subjectOk) return false;
-            // When searching, show all statuses that match — ignore the active tab filter
-            if (searchTerm) return a.title.toLowerCase().includes(searchTerm) || a.subject.toLowerCase().includes(searchTerm);
             if (hwFilter === HW_FILTERS.OVERDUE) return a.dueDate < today && !isDone;
             if (hwFilter === HW_FILTERS.DUE) return a.dueDate >= today && !isDone;
             return isDone;
