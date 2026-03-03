@@ -1091,25 +1091,21 @@ const SchoolDashboard = ({ schools, search = '', onRefresh, confirm }) => {
 
   const handleCreate = () => {
     if (!newSchoolName.trim()) return;
-    platformData.createSchool(newSchoolName.trim(), 'admin@school.com', schools);
-    setNewSchoolName('');
-    onRefresh?.();
+    if (!confirm) { platformData.createSchool(newSchoolName.trim(), 'admin@school.com', schools); setNewSchoolName(''); onRefresh?.(); return; }
+    confirm(`Create school "${newSchoolName.trim()}"?`, () => { platformData.createSchool(newSchoolName.trim(), 'admin@school.com', schools); setNewSchoolName(''); onRefresh?.(); });
   };
 
   const handleAddTeacher = () => {
     if (!addTeacherFor || !teacherForm.email?.trim()) return;
-    platformData.addTeacherToSchool(addTeacherFor.id, teacherForm.email.trim(), (teacherForm.name || teacherForm.email).trim(), schools);
-    setAddTeacherFor(null);
-    setTeacherForm({ email: '', name: '' });
-    onRefresh?.();
+    const name = (teacherForm.name || teacherForm.email).trim();
+    if (!confirm) { platformData.addTeacherToSchool(addTeacherFor.id, teacherForm.email.trim(), name, schools); setAddTeacherFor(null); setTeacherForm({ email: '', name: '' }); onRefresh?.(); return; }
+    confirm(`Add ${name} as a teacher to ${addTeacherFor.name}?`, () => { platformData.addTeacherToSchool(addTeacherFor.id, teacherForm.email.trim(), name, schools); setAddTeacherFor(null); setTeacherForm({ email: '', name: '' }); onRefresh?.(); });
   };
 
   const handleAddClass = () => {
     if (!addClassFor || !classForm.name?.trim()) return;
-    platformData.addClassToSchool(addClassFor.id, classForm.name.trim(), classForm.teacherEmail?.trim() || null, schools);
-    setAddClassFor(null);
-    setClassForm({ name: '', teacherEmail: '' });
-    onRefresh?.();
+    if (!confirm) { platformData.addClassToSchool(addClassFor.id, classForm.name.trim(), classForm.teacherEmail?.trim() || null, schools); setAddClassFor(null); setClassForm({ name: '', teacherEmail: '' }); onRefresh?.(); return; }
+    confirm(`Add class "${classForm.name.trim()}" to ${addClassFor.name}?`, () => { platformData.addClassToSchool(addClassFor.id, classForm.name.trim(), classForm.teacherEmail?.trim() || null, schools); setAddClassFor(null); setClassForm({ name: '', teacherEmail: '' }); onRefresh?.(); });
   };
 
   return (
@@ -1206,11 +1202,11 @@ const SchoolDashboard = ({ schools, search = '', onRefresh, confirm }) => {
   );
 };
 
-const ParentLinkInput = ({ onLink }) => {
+const ParentLinkInput = ({ onLink, confirm }) => {
   const [code, setCode] = useState('');
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
-  const handle = async () => {
+  const doLink = async () => {
     setErr('');
     setLoading(true);
     try {
@@ -1218,6 +1214,14 @@ const ParentLinkInput = ({ onLink }) => {
       if (!r.ok) setErr(r.error || 'Invalid code');
     } finally {
       setLoading(false);
+    }
+  };
+  const handle = () => {
+    if (!code.trim()) return;
+    if (confirm) {
+      confirm(`Link your account using code "${code.trim()}"?`, doLink);
+    } else {
+      doLink();
     }
   };
   return (
@@ -1658,12 +1662,14 @@ export default function App() {
     setIsProfileSettingsOpen(false);
   };
 
-  const handleSignOut = async () => {
-    if (auth) {
-      try { await signOut(auth); } catch {}
-    }
-    setAppUser(null);
-    setActiveTab(TABS.OVERVIEW);
+  const handleSignOut = () => {
+    confirm('Are you sure you want to log out?', async () => {
+      if (auth) {
+        try { await signOut(auth); } catch {}
+      }
+      setAppUser(null);
+      setActiveTab(TABS.OVERVIEW);
+    }, 'danger');
   };
 
   const addToHistory = (title, type = 'info') => {
@@ -2647,7 +2653,7 @@ export default function App() {
                     ))}
                   </div>
                 ) : (
-                  <ParentLinkInput onLink={async (code) => { const r = await platformData.linkParentToStudent(code, profileData.email); if (r.ok) { const students = await platformData.getLinkedStudentsForParent(profileData.email); setLinkedStudents(students); setSelectedChildEmail(r.studentEmail); } return r; }} />
+                  <ParentLinkInput confirm={confirm} onLink={async (code) => { const r = await platformData.linkParentToStudent(code, profileData.email); if (r.ok) { const students = await platformData.getLinkedStudentsForParent(profileData.email); setLinkedStudents(students); setSelectedChildEmail(r.studentEmail); } return r; }} />
                 )}
               </div>
             )}
@@ -3323,7 +3329,7 @@ export default function App() {
                   {subjects.map(sub => (
                     <span key={sub} className="inline-flex items-center gap-1.5 px-3 py-2 bg-violet-50 text-violet-700 rounded-xl text-sm font-bold">
                       {sub}
-                      <button type="button" onClick={() => { if (subjects.length <= 1) { showToast('Keep at least one subject'); return; } setSubjects(prev => prev.filter(s => s !== sub)); }} className="p-0.5 rounded hover:bg-violet-200 text-violet-600 transition-colors" title="Remove subject"><X size={14} /></button>
+                      <button type="button" onClick={() => { if (subjects.length <= 1) { showToast('Keep at least one subject'); return; } confirm(`Remove "${sub}" from your subjects?`, () => setSubjects(prev => prev.filter(s => s !== sub)), 'danger'); }} className="p-0.5 rounded hover:bg-violet-200 text-violet-600 transition-colors" title="Remove subject"><X size={14} /></button>
                     </span>
                   ))}
                 </div>
@@ -3331,7 +3337,7 @@ export default function App() {
                   <input type="text" value={newSubjectInput} onChange={(e) => setNewSubjectInput(e.target.value)} placeholder="New subject name" className="flex-1 bg-slate-50 p-3 rounded-xl font-medium text-slate-700 border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none placeholder:text-slate-400" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), newSubjectInput.trim() && !subjects.includes(newSubjectInput.trim()) && (setSubjects(prev => [...prev, newSubjectInput.trim()]), setNewSubjectInput('')))}
                   />
                   <button type="button" onClick={() => { const v = newSubjectInput.trim(); if (v && !subjects.includes(v)) { setSubjects(prev => [...prev, v]); setNewSubjectInput(''); showToast(`Added ${v}`); } }} className="px-4 py-3 bg-violet-500 text-white font-bold rounded-xl text-sm hover:bg-violet-600 transition-colors">Add</button>
-                  <button type="button" onClick={() => { setSubjects([...DEFAULT_SUBJECTS]); showToast('Reset to default subjects'); }} className="px-4 py-3 text-slate-500 font-bold rounded-xl text-sm hover:bg-slate-100 transition-colors">Reset</button>
+                  <button type="button" onClick={() => confirm('Reset subjects to defaults? Your custom subjects will be removed.', () => { setSubjects([...DEFAULT_SUBJECTS]); showToast('Reset to default subjects'); }, 'danger')} className="px-4 py-3 text-slate-500 font-bold rounded-xl text-sm hover:bg-slate-100 transition-colors">Reset</button>
                 </div>
               </div>
             )}
@@ -3344,7 +3350,7 @@ export default function App() {
             )}
             {!isReadOnly && (
               <div className="space-y-2">
-                <button type="button" onClick={handleGoogleClassroomImport} disabled={isGoogleClassroomImporting} className={`w-full text-left bg-white p-5 rounded-xl border border-slate-100 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all disabled:opacity-75 disabled:cursor-wait ${integrationMessage ? 'ring-2 ring-violet-300' : ''}`}>
+                <button type="button" onClick={() => confirm('Sync Google Classroom? This will add your assignments from Google Classroom to your list.', handleGoogleClassroomImport)} disabled={isGoogleClassroomImporting} className={`w-full text-left bg-white p-5 rounded-xl border border-slate-100 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all disabled:opacity-75 disabled:cursor-wait ${integrationMessage ? 'ring-2 ring-violet-300' : ''}`}>
                   <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0"><BookOpen size={28} /></div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-slate-700 text-lg">Integrations</h3>
@@ -3402,7 +3408,7 @@ export default function App() {
                           <p className="text-sm font-medium text-slate-700">{a.message}</p>
                           <p className="text-[10px] text-slate-400 mt-0.5">{a.type || 'Alert'} • {a.date || 'Today'}</p>
                           <div className="flex gap-2 mt-2">
-                            <button onClick={() => { markAlertRead(a.id, profileData.email); setAlerts(getUnreadAlertsForUser(profileData.email, linkedStudents, appUser?.role)); showToast(copy.toastDismissed); }} className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold hover:bg-slate-200 transition-colors">{copy.toastDismissed}</button>
+                            <button onClick={() => confirm('Dismiss this alert?', () => { markAlertRead(a.id, profileData.email); setAlerts(getUnreadAlertsForUser(profileData.email, linkedStudents, appUser?.role)); showToast(copy.toastDismissed); })} className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold hover:bg-slate-200 transition-colors">{copy.toastDismissed}</button>
                             {riskScore != null && riskScore < 60 && assignments.length > 0 && !getActiveRecoveryForStudent(viewingStudentKey) && (
                               <button onClick={() => confirm('Start a 7-day recovery plan?', () => { createRecoveryTarget(viewingStudentKey, 95, 7); showToast(copy.toastRecoveryCreated); })} className="px-2.5 py-1 bg-violet-500 text-white rounded text-[10px] font-bold hover:bg-violet-600 transition-colors">{copy.startRecovery}</button>
                             )}
@@ -3577,7 +3583,7 @@ export default function App() {
                     {!isReadOnly && (
                       <div className="flex gap-1.5 shrink-0">
                         <button onClick={() => { if (!selectedAssignment.submittedPreview) return; const a = document.createElement('a'); a.href = selectedAssignment.submittedPreview; a.download = selectedAssignment.submittedFile || 'document'; a.click(); }} className="px-3 py-1.5 bg-violet-500 text-white font-bold rounded-lg text-xs hover:bg-violet-600 transition-colors">Download</button>
-                        <button onClick={() => { const u = { ...selectedAssignment, submittedFile: null, submittedFileType: null, submittedPreview: null, status: 'Pending' }; setSelectedAssignment(u); setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? u : a)); }} className="px-3 py-1.5 text-slate-500 font-bold rounded-lg text-xs hover:bg-slate-100 transition-colors">Replace</button>
+                        <button onClick={() => confirm('Replace the uploaded document? The current file will be removed and the assignment will revert to Pending.', () => { const u = { ...selectedAssignment, submittedFile: null, submittedFileType: null, submittedPreview: null, status: 'Pending' }; setSelectedAssignment(u); setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? u : a)); }, 'danger')} className="px-3 py-1.5 text-slate-500 font-bold rounded-lg text-xs hover:bg-slate-100 transition-colors">Replace</button>
                       </div>
                     )}
                   </div>
