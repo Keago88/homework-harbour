@@ -74,6 +74,7 @@ import { createRecoveryTarget, getActiveRecoveryForStudent, getInterventionsForS
 import { parseAssignmentsCSV, parseSchoolsCSV } from './lib/csvImport';
 import { fetchAllCoursework } from './lib/googleClassroom';
 import { getGoogleClassroomToken } from './lib/oauthIntegration';
+import MobileSplash from './components/MobileSplash';
 
 // --- Global Styles & Wallpapers ---
 const noScrollbarStyles = `
@@ -1248,7 +1249,10 @@ const FloatingNavItem = ({ icon: Icon, label, isActive, onClick, badgeCount, bad
 );
 
 // --- Main Application ---
+const isMobileDevice = () => typeof window !== 'undefined' && window.innerWidth < 768;
+
 export default function App() {
+  const [showSplash, setShowSplash] = useState(() => isMobileDevice());
   const [user, setUser] = useState(null);
   const [appUser, setAppUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -1490,20 +1494,24 @@ export default function App() {
       setIsSubscriptionOpen(false);
       return;
     }
-    setCheckoutLoading(true);
-    try {
-      const result = await initiateProCheckout(subscriptionUserId, profileData.email);
-      if (result.capture_url) {
-        window.location.href = result.capture_url;
-        return;
+    const doCheckout = async () => {
+      setCheckoutLoading(true);
+      try {
+        const result = await initiateProCheckout(subscriptionUserId, profileData.email);
+        if (result.capture_url) {
+          window.location.href = result.capture_url;
+          return;
+        }
+        if (!result.ok) {
+          addToHistory(result.error || 'Checkout failed', 'error');
+          showToast(result.error || 'Checkout failed', 'info');
+        }
+      } finally {
+        setCheckoutLoading(false);
       }
-      if (!result.ok) {
-        addToHistory(result.error || 'Checkout failed', 'error');
-        showToast(result.error || 'Checkout failed', 'info');
-      }
-    } finally {
-      setCheckoutLoading(false);
-    }
+    };
+    const price = SUBSCRIPTION_PLANS.find(p => p.id === 'pro')?.price ?? 199;
+    confirm(`Proceed to checkout? You will be charged R${price}/month for Pro.`, doCheckout);
   };
 
   const handleCancelSubscription = async () => {
@@ -1703,7 +1711,6 @@ export default function App() {
   useEffect(() => {
     const handler = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.isContentEditable) return;
-      if (e.key === '/' && !e.metaKey && !e.ctrlKey) { e.preventDefault(); document.querySelector('[data-search-input]')?.focus(); }
       if ((e.key === 'n' || e.key === 'N') && !e.metaKey && !e.ctrlKey && !isReadOnly) { e.preventDefault(); setIsCreateAssignmentModalOpen(true); }
       if (e.key === 'z' && (e.metaKey || e.ctrlKey) && !e.shiftKey) {
         setUndoStack(prev => {
@@ -1999,6 +2006,8 @@ export default function App() {
     return `Due in ${h}h ${m}m`;
   };
 
+  if (showSplash) return <MobileSplash onDone={() => setShowSplash(false)} />;
+
   if (authLoading) return (
     <div className="h-[100dvh] wallpaper-auth flex flex-col items-center justify-center relative overflow-hidden">
       <div className="w-full max-w-md px-8 space-y-4">
@@ -2059,10 +2068,7 @@ export default function App() {
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Header bar - matches main app */}
           <header className="h-14 bg-white border-b border-slate-100 flex items-center gap-3 px-4 md:px-6 shrink-0 z-20">
-            <div className="relative flex-1 max-w-sm">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input type="text" placeholder="Search schools..." value={dashboardSearch} onChange={(e) => setDashboardSearch(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-2 text-xs font-medium outline-none focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all" />
-            </div>
+            <div className="flex-1" />
             <span className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 rounded-lg text-[10px] font-black text-violet-600 uppercase tracking-wider shrink-0"><Building2 size={12} /> Admin</span>
             <div className="relative">
               <button onClick={() => setIsQuickAddOpen(!isQuickAddOpen)} className="w-8 h-8 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-lg text-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-transform shrink-0">
@@ -2264,11 +2270,6 @@ export default function App() {
                     {profileImage ? <img src={profileImage} alt="Profile" className="w-full h-full object-cover" /> : appUser.role[0]}
                   </div>
                   <div><h3 className="font-bold text-slate-800 text-lg">{copy.profileTitle}</h3><p className="text-xs text-slate-500 font-medium">{copy.profileDesc}</p></div>
-                  <div className="ml-auto text-violet-300"><ChevronRight size={24} /></div>
-                </div>
-                <div onClick={() => setIsSubscriptionOpen(true)} className="bg-white p-5 rounded-xl border border-slate-100 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-white shadow-md"><Sparkles size={28} /></div>
-                  <div><h3 className="font-bold text-slate-800 text-lg">{copy.premium || 'Premium'}</h3><p className="text-xs text-slate-500 font-medium">{copy.premiumDesc || 'Get more features'}</p></div>
                   <div className="ml-auto text-violet-300"><ChevronRight size={24} /></div>
                 </div>
                 <button onClick={handleSignOut} className="w-full bg-white p-4 rounded-xl border border-slate-100 text-rose-500 font-bold flex items-center gap-3 hover:bg-rose-50 transition-colors"><LogOut size={16} /> {copy.logOut || 'Log out'}</button>
@@ -2508,10 +2509,7 @@ export default function App() {
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
         <header className="h-14 bg-white border-b border-slate-100 flex items-center gap-3 px-4 md:px-6 shrink-0 z-20">
-          <div className="relative flex-1 max-w-sm">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input data-search-input type="text" placeholder={`${copy.searchPlaceholder} ( / )`} value={dashboardSearch} onChange={(e) => setDashboardSearch(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-2 text-xs font-medium outline-none focus:ring-2 focus:ring-violet-400 focus:border-violet-400 transition-all" />
-          </div>
+          <div className="flex-1" />
           <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 rounded-lg text-[10px] font-black text-violet-600 uppercase tracking-wider shrink-0"><Calendar size={12} /> {currentTerm}</span>
           {appUser.role === ROLES.STUDENT && (
             <div className="flex items-center gap-1 bg-gradient-to-r from-violet-500 to-fuchsia-500 px-2.5 py-1.5 rounded-lg text-white shadow-sm shrink-0">
@@ -3269,26 +3267,6 @@ export default function App() {
               </div>
             )}
 
-            {/* Plan comparison (simplified when already Pro) */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-100">
-              <h3 className="font-bold text-slate-800 mb-4">Plans</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {SUBSCRIPTION_PLANS.map(plan => (
-                  <div key={plan.id} className={`p-5 rounded-xl border-2 transition-all ${subscriptionPlan === plan.id ? 'border-violet-500 bg-violet-50/30' : 'border-slate-100'}`}>
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-bold text-slate-800">{plan.name}</h4>
-                      {subscriptionPlan === plan.id && <span className="px-2 py-0.5 bg-violet-100 text-violet-700 text-[10px] font-bold rounded">Current</span>}
-                    </div>
-                    <p className="text-2xl font-black text-slate-800 mb-2">R{plan.price}<span className="text-sm font-medium text-slate-400">/mo</span></p>
-                    <p className="text-xs text-slate-500 mb-4">{plan.tagline}</p>
-                    {plan.id === 'pro' && subscriptionPlan !== 'pro' && (
-                      <button onClick={() => handleConfirmPlan('pro')} className="w-full py-2.5 bg-violet-500 text-white font-bold rounded-xl text-sm hover:bg-violet-600 transition-colors">Upgrade</button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Trust signals */}
             <div className="flex flex-wrap items-center justify-center gap-6 text-[11px] text-slate-400 font-medium py-4">
               <span className="flex items-center gap-1"><Lock size={12} /> Secure payment</span>
@@ -3363,11 +3341,6 @@ export default function App() {
                 )}
               </div>
             )}
-            <div onClick={() => subscriptionPlan === 'pro' ? setActiveTab(TABS.PAYMENTS) : setIsSubscriptionOpen(true)} className="bg-white p-5 rounded-xl border border-slate-100 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-white shadow-md"><Sparkles size={28} /></div>
-              <div><h3 className="font-bold text-slate-800 text-lg">{copy.premium || 'Premium'}</h3><p className="text-xs text-slate-500 font-medium">{subscriptionPlan === 'pro' ? 'Manage or cancel your subscription' : (copy.premiumDesc || 'Get more features')}</p></div>
-              <div className="ml-auto text-violet-300"><ChevronRight size={24} /></div>
-            </div>
             <button onClick={handleSignOut} className="w-full bg-white p-4 rounded-xl border border-slate-100 text-rose-500 font-bold flex items-center gap-3 hover:bg-rose-50 transition-colors"><LogOut size={16} /> {copy.logOut || 'Log out'}</button>
           </div>
         )}
