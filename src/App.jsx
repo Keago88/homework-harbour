@@ -1269,7 +1269,7 @@ export default function App() {
   const [profileImage, setProfileImage] = useState(null);
   const [profileData, setProfileData] = useState({ name: '', grade: '', school: '', favoriteSubject: '', email: '', gamificationLevel: 'simple' });
   const [selectedPlan, setSelectedPlan] = useState('pro');
-  const [subscriptionPlan, setSubscriptionPlan] = useState('free');
+  const [subscriptionPlan, setSubscriptionPlan] = useState('pro');
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
 
