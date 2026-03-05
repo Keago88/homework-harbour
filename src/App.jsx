@@ -1262,6 +1262,7 @@ export default function App() {
 
   const [assignments, setAssignments] = useState(INITIAL_ASSIGNMENTS);
   const [firestoreSyncReady, setFirestoreSyncReady] = useState(false);
+  const loadReturnedAssignmentsRef = useRef(null);
   const [recentHistory, setRecentHistory] = useState([]);
   const [hwFilter, setHwFilter] = useState(() => { try { const v = storageGet('hw_filter'); return v && Object.values(HW_FILTERS).includes(v) ? v : HW_FILTERS.DUE; } catch { return HW_FILTERS.DUE; } });
 
@@ -1368,6 +1369,7 @@ export default function App() {
   useEffect(() => {
     if (!firebaseUserId || !appUser || appUser.role === ROLES.PARENT) return;
     setFirestoreSyncReady(false);
+    loadReturnedAssignmentsRef.current = null;
     let cancelled = false;
     (async () => {
       try {
@@ -1379,15 +1381,19 @@ export default function App() {
         if (cancelled) return;
         if (profile && typeof profile === 'object') setProfileData(prev => ({ ...prev, ...profile }));
         if (fsAssignments !== null && Array.isArray(fsAssignments)) {
+          loadReturnedAssignmentsRef.current = fsAssignments;
           const cleaned = removeMockAssignments(fsAssignments);
           setAssignments(cleaned);
           if (cleaned.length !== fsAssignments.length) {
             platformData.saveAssignments(firebaseUserId, cleaned).catch(() => {});
           }
+        } else {
+          loadReturnedAssignmentsRef.current = null;
         }
         if (Array.isArray(completions)) setCompletionHistoryFromFirestore(completions);
       } catch (e) {
         console.warn('Firestore load failed:', e?.message);
+        loadReturnedAssignmentsRef.current = null;
       }
       if (!cancelled) setFirestoreSyncReady(true);
     })();
@@ -1417,7 +1423,11 @@ export default function App() {
     } else if (currentUserKey && appUser?.role !== ROLES.PARENT) {
       saveStoredAssignments(currentUserKey, assignments);
       if (firebaseUserId && firestoreSyncReady) {
-        platformData.saveAssignments(firebaseUserId, assignments).catch(() => {});
+        const loadResult = loadReturnedAssignmentsRef.current;
+        const skipSave = assignments.length === 0 && loadResult === null;
+        if (!skipSave) {
+          platformData.saveAssignments(firebaseUserId, assignments).catch(() => {});
+        }
       }
     }
   }, [assignments, currentUserKey, appUser?.role, selectedChildEmail, firebaseUserId, firestoreSyncReady]);
