@@ -27,7 +27,9 @@ git push -u origin main
 
 ### 3. Add environment variables (Vercel → Project → Settings → Environment Variables)
 
-**Firebase (required for auth):**
+**Important:** Set these for **Production** (and Preview if you use preview deployments). If Firebase vars are missing in Production, data will not persist after refresh.
+
+**Firebase (required for auth + data persistence):**
 
 | Name | Value |
 |------|-------|
@@ -37,6 +39,12 @@ git push -u origin main
 | `VITE_FIREBASE_STORAGE_BUCKET` | `your-project.appspot.com` |
 | `VITE_FIREBASE_MESSAGING_SENDER_ID` | From Firebase config |
 | `VITE_FIREBASE_APP_ID` | From Firebase config |
+
+**Google Sign-In (optional but recommended):**
+
+| Name | Value |
+|------|-------|
+| `VITE_GOOGLE_CLIENT_ID` | From Google Cloud Console → OAuth 2.0 Client ID |
 
 **Subscription API (optional):**
 
@@ -61,3 +69,9 @@ firebase deploy --only firestore:rules
 ### 6. Redeploy
 
 After adding env vars, trigger a new deployment in Vercel (Deployments → ⋮ → Redeploy).
+
+### Troubleshooting: Data not persisting after refresh
+
+1. **Check environment variables** – In Vercel → Project → Settings → Environment Variables, ensure all `VITE_FIREBASE_*` vars are set for **Production** (not just Preview or Development).
+2. **Redeploy** – Env vars are baked in at build time. After adding or changing them, trigger a new deployment.
+3. **Firebase Console** – Add your Vercel domain (e.g. `homework-companion-wwwx.vercel.app`) to Authentication → Authorized domains.

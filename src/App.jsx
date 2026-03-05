@@ -1261,6 +1261,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(TABS.OVERVIEW);
 
   const [assignments, setAssignments] = useState(INITIAL_ASSIGNMENTS);
+  const [firestoreSyncReady, setFirestoreSyncReady] = useState(false);
   const [recentHistory, setRecentHistory] = useState([]);
   const [hwFilter, setHwFilter] = useState(() => { try { const v = storageGet('hw_filter'); return v && Object.values(HW_FILTERS).includes(v) ? v : HW_FILTERS.DUE; } catch { return HW_FILTERS.DUE; } });
 
@@ -1366,23 +1367,29 @@ export default function App() {
 
   useEffect(() => {
     if (!firebaseUserId || !appUser || appUser.role === ROLES.PARENT) return;
+    setFirestoreSyncReady(false);
     let cancelled = false;
     (async () => {
-      const [profile, assignments, completions] = await Promise.all([
-        platformData.getProfile(firebaseUserId),
-        platformData.getAssignments(firebaseUserId),
-        platformData.getCompletionHistoryFromFirestore(firebaseUserId),
-      ]);
-      if (cancelled) return;
-      if (profile && typeof profile === 'object') setProfileData(prev => ({ ...prev, ...profile }));
-      if (assignments !== null && Array.isArray(assignments)) {
-        const cleaned = removeMockAssignments(assignments);
-        setAssignments(cleaned);
-        if (cleaned.length !== assignments.length) {
-          platformData.saveAssignments(firebaseUserId, cleaned).catch(() => {});
+      try {
+        const [profile, fsAssignments, completions] = await Promise.all([
+          platformData.getProfile(firebaseUserId),
+          platformData.getAssignments(firebaseUserId),
+          platformData.getCompletionHistoryFromFirestore(firebaseUserId),
+        ]);
+        if (cancelled) return;
+        if (profile && typeof profile === 'object') setProfileData(prev => ({ ...prev, ...profile }));
+        if (fsAssignments !== null && Array.isArray(fsAssignments)) {
+          const cleaned = removeMockAssignments(fsAssignments);
+          setAssignments(cleaned);
+          if (cleaned.length !== fsAssignments.length) {
+            platformData.saveAssignments(firebaseUserId, cleaned).catch(() => {});
+          }
         }
+        if (Array.isArray(completions)) setCompletionHistoryFromFirestore(completions);
+      } catch (e) {
+        console.warn('Firestore load failed:', e?.message);
       }
-      if (Array.isArray(completions)) setCompletionHistoryFromFirestore(completions);
+      if (!cancelled) setFirestoreSyncReady(true);
     })();
     return () => { cancelled = true; };
   }, [firebaseUserId, appUser?.role]);
@@ -1409,9 +1416,11 @@ export default function App() {
       saveStoredAssignments(selectedChildEmail, assignments);
     } else if (currentUserKey && appUser?.role !== ROLES.PARENT) {
       saveStoredAssignments(currentUserKey, assignments);
-      if (firebaseUserId) platformData.saveAssignments(firebaseUserId, assignments).catch(() => {});
+      if (firebaseUserId && firestoreSyncReady) {
+        platformData.saveAssignments(firebaseUserId, assignments).catch(() => {});
+      }
     }
-  }, [assignments, currentUserKey, appUser?.role, selectedChildEmail, firebaseUserId]);
+  }, [assignments, currentUserKey, appUser?.role, selectedChildEmail, firebaseUserId, firestoreSyncReady]);
 
   useEffect(() => {
     if (appUser?.role === ROLES.PARENT) {
