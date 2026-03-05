@@ -1,10 +1,11 @@
 /**
  * Firebase initialization. Exports app, auth, db when configured.
- * Firestore uses persistent cache for offline/mobile sync across devices.
+ * Uses memory cache to avoid IndexedDB errors (private browsing, quota, etc).
+ * Cloud sync works when online; no offline persistence.
  */
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 
 let app = null;
 let auth = null;
@@ -24,9 +25,7 @@ try {
   if (firebaseConfig?.apiKey) {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
-    db = initializeFirestore(app, {
-      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
-    });
+    db = getFirestore(app);
   }
 } catch (e) {
   console.warn('Firebase unavailable, running in demo mode');
