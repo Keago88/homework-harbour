@@ -1404,17 +1404,22 @@ export default function App() {
       ]);
       return { profile, fsAssignments, completions };
     };
+    const isOfflineError = (e) => e?.message?.toLowerCase().includes('offline') || e?.code === 'unavailable';
     try {
       let result;
-      try {
-        result = await doFetch();
-      } catch (e) {
-        if (db && (e?.message?.toLowerCase().includes('offline') || e?.code === 'unavailable')) {
-          const { enableNetwork } = await import('firebase/firestore');
-          await enableNetwork(db);
+      let lastErr;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          if (attempt > 0 && db) {
+            const { enableNetwork } = await import('firebase/firestore');
+            await enableNetwork(db);
+            await new Promise(r => setTimeout(r, 500 * attempt));
+          }
           result = await doFetch();
-        } else {
-          throw e;
+          break;
+        } catch (e) {
+          lastErr = e;
+          if (!isOfflineError(e) || attempt === 2) throw e;
         }
       }
       const { profile, fsAssignments, completions } = result;
@@ -1432,12 +1437,15 @@ export default function App() {
     } catch (e) {
       const msg = e?.message || e?.code || 'Sync failed';
       console.warn('Refresh failed:', e);
-      const friendly = msg.toLowerCase().includes('offline')
-        ? "You're offline. Connect to the internet and try again."
-        : msg.includes('permission')
-          ? 'Sync failed: Check Firestore rules in Firebase Console'
-          : msg;
-      showToast(friendly, 'error', 6000);
+      let friendly = msg;
+      if (msg.toLowerCase().includes('offline') || msg.includes('unavailable')) {
+        friendly = navigator.onLine
+          ? "Can't reach server. Check WiFi, try mobile data, or disable VPN."
+          : "No internet. Connect to WiFi or mobile data and try again.";
+      } else if (msg.includes('permission')) {
+        friendly = 'Sync failed: Check Firestore rules in Firebase Console';
+      }
+      showToast(friendly, 'error', 8000);
     } finally {
       setIsSyncing(false);
     }
@@ -1475,7 +1483,7 @@ export default function App() {
         if (!skipSave) {
           platformData.saveAssignments(firebaseUserId, assignments).catch((e) => {
             console.warn('Save to cloud failed:', e);
-            showToast('Could not save to cloud', 'info');
+            showToast('Could not save to cloud. Check your internet connection.', 'error', 6000);
           });
         }
       }
