@@ -1357,6 +1357,7 @@ export default function App() {
   }, [appUser?.role, schoolsRefresh]);
 
   const firebaseUserId = auth?.currentUser?.uid;
+  const firestoreLoadedRef = useRef(false);
 
   // One-time migration: remove the 3 original mock assignments (ids 1,2,3 with known titles)
   const MOCK_ASSIGNMENT_IDS = new Set([1, 2, 3]);
@@ -1366,6 +1367,7 @@ export default function App() {
 
   useEffect(() => {
     if (!firebaseUserId || !appUser || appUser.role === ROLES.PARENT) return;
+    firestoreLoadedRef.current = false;
     let cancelled = false;
     (async () => {
       const [profile, assignments, completions] = await Promise.all([
@@ -1383,6 +1385,7 @@ export default function App() {
         }
       }
       if (Array.isArray(completions)) setCompletionHistoryFromFirestore(completions);
+      firestoreLoadedRef.current = true;
     })();
     return () => { cancelled = true; };
   }, [firebaseUserId, appUser?.role]);
@@ -1409,7 +1412,9 @@ export default function App() {
       saveStoredAssignments(selectedChildEmail, assignments);
     } else if (currentUserKey && appUser?.role !== ROLES.PARENT) {
       saveStoredAssignments(currentUserKey, assignments);
-      if (firebaseUserId) platformData.saveAssignments(firebaseUserId, assignments).catch(() => {});
+      if (firebaseUserId && firestoreLoadedRef.current) {
+        platformData.saveAssignments(firebaseUserId, assignments).catch(() => {});
+      }
     }
   }, [assignments, currentUserKey, appUser?.role, selectedChildEmail, firebaseUserId]);
 
