@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hw-companion-v2';
+const CACHE_NAME = 'hw-companion-v3';
 const PRECACHE = ['/', '/index.html'];
 
 self.addEventListener('install', (e) => {
@@ -14,7 +14,11 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  const url = e.request.url;
   if (e.request.method !== 'GET') return;
+  if (url.includes('firestore.googleapis.com') || url.includes('firebase.googleapis.com') || url.includes('googleapis.com') || url.includes('identitytoolkit')) {
+    return;
+  }
   e.respondWith(
     fetch(e.request).then(r => {
       const clone = r.clone();
