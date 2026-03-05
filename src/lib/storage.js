@@ -1,11 +1,15 @@
 /**
- * Storage abstraction. In production (built for deploy), localStorage is disabled
- * so users cannot persist data to their machine. All data must go through Firebase/Firestore.
+ * Storage abstraction. In production, localStorage is disabled when Firestore is configured
+ * so data goes through Firebase. When Firestore is NOT configured (missing env vars),
+ * we fall back to localStorage so user data persists until Firebase is set up.
  */
+import { db } from './firebase';
+
 const isProduction = import.meta.env.PROD;
+const firestoreAvailable = !!db;
 
 export const storageGet = (key) => {
-  if (isProduction) return null;
+  if (isProduction && firestoreAvailable) return null;
   try {
     return localStorage.getItem(key);
   } catch {
@@ -14,7 +18,7 @@ export const storageGet = (key) => {
 };
 
 export const storageSet = (key, value) => {
-  if (isProduction) return;
+  if (isProduction && firestoreAvailable) return;
   try {
     localStorage.setItem(key, value);
   } catch {}
