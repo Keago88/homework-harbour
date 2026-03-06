@@ -1440,7 +1440,7 @@ export default function App() {
       let friendly = msg;
       if (msg.toLowerCase().includes('offline') || msg.includes('unavailable')) {
         friendly = navigator.onLine
-          ? "Can't reach server. Check WiFi, try mobile data, or disable VPN."
+          ? "Can't reach server. Try mobile data or different WiFi."
           : "No internet. Connect to WiFi or mobile data and try again.";
       } else if (msg.includes('permission')) {
         friendly = 'Sync failed: Check Firestore rules in Firebase Console';
@@ -1486,7 +1486,7 @@ export default function App() {
             const msg = e?.message || code || '';
             console.warn('[HWC] Save to cloud failed:', { code, message: e?.message, full: e });
             const friendly = (msg.toLowerCase().includes('offline') || msg.includes('unavailable'))
-              ? (navigator.onLine ? "Couldn't save: Can't reach server. Try mobile data or disable VPN." : "Couldn't save: No internet. Connect and try again.")
+              ? (navigator.onLine ? "Couldn't save: Can't reach server. Try mobile data or different WiFi." : "Couldn't save: No internet. Connect and try again.")
               : (code === 'permission-denied' ? "Could not save: Permission denied. Check Firestore rules." : "Could not save to cloud. Check your connection.");
             showToast(friendly, 'error', 8000);
           });
