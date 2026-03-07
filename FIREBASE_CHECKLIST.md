@@ -11,9 +11,10 @@ Use this checklist to verify your Firebase configuration when cloud save fails.
 
 ### Authentication
 - [ ] **Sign-in method enabled** – Authentication → Sign-in method → Enable **Google** (and Email/Password if used).
-- [ ] **Authorized domains** – Authentication → Settings → Authorized domains must include:
-  - `homework-companion-wwwx.vercel.app`
+- [ ] **Authorized domains** – Authentication → Settings → Authorized domains must include your exact Vercel URL, e.g.:
+  - `your-project-wwwx.vercel.app` (or whatever your live URL is)
   - `localhost` (for local dev)
+  - **If missing, Firestore will fail with "unavailable" even when WiFi/mobile work.**
 
 ### Project Settings
 - [ ] **Web app registered** – Project Settings → Your apps → Web app. Copy config values for env vars.
@@ -54,7 +55,7 @@ Project → Settings → Environment Variables. **All must be set for Production
 | "Could not save to cloud" | Firestore write failed – check rules, env vars, network |
 | "client is offline" | Firestore can't reach servers – try different network, disable VPN |
 | "permission-denied" | Firestore rules block the write – ensure `request.auth.uid == userId` |
-| "unavailable" | Network/CORS – try mobile data, check firewall |
+| "unavailable" | Often **domain not in Firebase Auth** – add your Vercel URL to Authorized domains. Or network blocks Firebase. |
 | Data disappears on refresh | Save overwrote before load – fixed with `firestoreSyncReady` guard |
 | No cloud button | Firebase not configured – `db` is null; check env vars |
 

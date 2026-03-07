@@ -1280,6 +1280,7 @@ export default function App() {
   const [cancelLoading, setCancelLoading] = useState(false);
   const [cloudDiagnostic, setCloudDiagnostic] = useState(null);
   const [cloudDiagnosticLoading, setCloudDiagnosticLoading] = useState(false);
+  const [lastCloudSaveError, setLastCloudSaveError] = useState(null);
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filterSubject, setFilterSubject] = useState(() => { try { return storageGet('hw_subject') || 'All'; } catch { return 'All'; } });
@@ -1425,6 +1426,7 @@ export default function App() {
         }
       }
       const { profile, fsAssignments, completions } = result;
+      setLastCloudSaveError(null);
       if (profile && typeof profile === 'object') setProfileData(prev => ({ ...prev, ...profile }));
       if (fsAssignments !== null && Array.isArray(fsAssignments)) {
         loadReturnedAssignmentsRef.current = fsAssignments;
@@ -1437,12 +1439,13 @@ export default function App() {
       }
       if (Array.isArray(completions)) setCompletionHistoryFromFirestore(completions);
     } catch (e) {
+      setLastCloudSaveError({ code: e?.code, message: e?.message || e?.code || 'Sync failed' });
       const msg = e?.message || e?.code || 'Sync failed';
       console.warn('Refresh failed:', e);
       let friendly = msg;
       if (msg.toLowerCase().includes('offline') || msg.includes('unavailable')) {
         friendly = navigator.onLine
-          ? "Can't reach server. Your network may block cloud services — try mobile data or a personal hotspot."
+          ? "Can't reach server. Add your Vercel domain to Firebase Auth → Authorized domains, and check env vars."
           : "No internet. Connect to WiFi or mobile data and try again.";
       } else if (msg.includes('permission')) {
         friendly = 'Sync failed: Check Firestore rules in Firebase Console';
@@ -1507,15 +1510,18 @@ export default function App() {
         const loadResult = loadReturnedAssignmentsRef.current;
         const skipSave = assignments.length === 0 && loadResult === null;
         if (!skipSave) {
-          platformData.saveAssignments(firebaseUserId, assignments).catch((e) => {
-            const code = e?.code || '';
-            const msg = e?.message || code || '';
-            console.warn('[HWC] Save to cloud failed:', { code, message: e?.message, full: e });
-            const friendly = (msg.toLowerCase().includes('offline') || msg.includes('unavailable'))
-              ? (navigator.onLine ? "Couldn't save: Can't reach server. Your network may block cloud services — try mobile data or a personal hotspot." : "Couldn't save: No internet. Connect and try again.")
-              : (code === 'permission-denied' ? "Could not save: Permission denied. Check Firestore rules." : "Could not save to cloud. Check your connection.");
-            showToast(friendly, 'error', 8000);
-          });
+          platformData.saveAssignments(firebaseUserId, assignments)
+            .then(() => setLastCloudSaveError(null))
+            .catch((e) => {
+              const code = e?.code || '';
+              const msg = e?.message || code || '';
+              setLastCloudSaveError({ code, message: msg });
+              console.warn('[HWC] Save to cloud failed:', { code, message: e?.message, full: e });
+              const friendly = (msg.toLowerCase().includes('offline') || msg.includes('unavailable'))
+                ? (navigator.onLine ? "Couldn't save: Can't reach server. Add your Vercel domain to Firebase Auth → Authorized domains." : "Couldn't save: No internet. Connect and try again.")
+                : (code === 'permission-denied' ? "Could not save: Permission denied. Check Firestore rules." : "Could not save to cloud. Check your connection.");
+              showToast(friendly, 'error', 8000);
+            });
         }
       }
     }
@@ -2204,9 +2210,9 @@ export default function App() {
           <header className="h-14 bg-white border-b border-slate-100 flex items-center gap-3 px-4 md:px-6 shrink-0 z-20">
             <div className="flex-1" />
           {db && firebaseUserId ? (
-            <button type="button" onClick={refreshFromCloud} disabled={isSyncing} title="Tap to refresh from cloud" className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 rounded-lg text-[10px] font-bold text-emerald-700 shrink-0 border border-emerald-200 hover:bg-emerald-100 active:bg-emerald-200 transition-colors disabled:opacity-70 disabled:cursor-wait min-w-[72px] justify-center">
+            <button type="button" onClick={lastCloudSaveError ? () => setActiveTab(TABS.SETTINGS) : refreshFromCloud} disabled={isSyncing} title={lastCloudSaveError ? 'Sync failed — tap to test connection' : 'Tap to refresh from cloud'} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold shrink-0 border min-w-[72px] justify-center transition-colors disabled:opacity-70 disabled:cursor-wait ${lastCloudSaveError ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 active:bg-emerald-200'}`}>
               {isSyncing ? <RefreshCw size={14} className="animate-spin shrink-0" /> : <Cloud size={14} className="shrink-0" />}
-              <span>{isSyncing ? 'Syncing…' : 'Synced'}</span>
+              <span>{isSyncing ? 'Syncing…' : lastCloudSaveError ? 'Sync failed' : 'Synced'}</span>
             </button>
           ) : (
               <span title="Local only — add Firebase env vars to enable cloud sync" className="flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-50 rounded-lg text-[10px] font-bold text-amber-700 shrink-0 border border-amber-200">
@@ -2796,9 +2802,9 @@ export default function App() {
           </div>
           <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 rounded-lg text-[10px] font-black text-violet-600 uppercase tracking-wider shrink-0"><Calendar size={12} /> {currentTerm}</span>
           {db && firebaseUserId ? (
-            <button type="button" onClick={refreshFromCloud} disabled={isSyncing} title="Tap to refresh from cloud" className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 rounded-lg text-[10px] font-bold text-emerald-700 shrink-0 border border-emerald-200 hover:bg-emerald-100 active:bg-emerald-200 transition-colors disabled:opacity-70 disabled:cursor-wait min-w-[72px] justify-center">
+            <button type="button" onClick={lastCloudSaveError ? () => setActiveTab(TABS.SETTINGS) : refreshFromCloud} disabled={isSyncing} title={lastCloudSaveError ? 'Sync failed — tap to test connection' : 'Tap to refresh from cloud'} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[10px] font-bold shrink-0 border min-w-[72px] justify-center transition-colors disabled:opacity-70 disabled:cursor-wait ${lastCloudSaveError ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 active:bg-emerald-200'}`}>
               {isSyncing ? <RefreshCw size={14} className="animate-spin shrink-0" /> : <Cloud size={14} className="shrink-0" />}
-              <span>{isSyncing ? 'Syncing…' : 'Synced'}</span>
+              <span>{isSyncing ? 'Syncing…' : lastCloudSaveError ? 'Sync failed' : 'Synced'}</span>
             </button>
           ) : (
             <span title="Local only — data is saved on this device only. Add Firebase env vars in Vercel to enable cloud sync across devices." className="flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-50 rounded-lg text-[10px] font-bold text-amber-700 shrink-0 border border-amber-200">
