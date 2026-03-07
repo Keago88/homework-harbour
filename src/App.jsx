@@ -1382,7 +1382,7 @@ export default function App() {
       if (didSetReady) return;
       didSetReady = true;
       if (data?.profile && typeof data.profile === 'object') setProfileData(prev => ({ ...prev, ...data.profile }));
-      if (data?.assignments !== null && Array.isArray(data.assignments)) {
+      if (data?.assignments !== null && Array.isArray(data.assignments) && data.assignments.length > 0) {
         loadReturnedAssignmentsRef.current = data.assignments;
         const cleaned = removeMockAssignments(data.assignments);
         applyingRemoteUpdateRef.current = true;
@@ -1396,26 +1396,18 @@ export default function App() {
       if (Array.isArray(data?.completions)) setCompletionHistoryFromFirestore(data.completions);
       setFirestoreSyncReady(true);
     };
-    const unsub = platformData.subscribeToUserData(firebaseUserId, (data) => setReady(data), () => {
+    const tryRestLoad = () => {
       platformData.getUserData(firebaseUserId).then((raw) => {
-        if (!raw) return setReady({ assignments: null, profile: null, completions: [] });
+        const assignments = raw?.assignments && Array.isArray(raw.assignments) ? raw.assignments : null;
         setReady({
-          assignments: raw.assignments && Array.isArray(raw.assignments) ? raw.assignments : null,
-          profile: raw.profile || null,
-          completions: raw.completionHistory?.completions ?? []
+          assignments,
+          profile: raw?.profile || null,
+          completions: raw?.completionHistory?.completions ?? []
         });
-      }).catch(() => {});
-    });
-    const t = setTimeout(() => {
-      platformData.getUserData(firebaseUserId).then((raw) => {
-        if (!raw) return setReady({ assignments: null, profile: null, completions: [] });
-        setReady({
-          assignments: raw.assignments && Array.isArray(raw.assignments) ? raw.assignments : null,
-          profile: raw.profile || null,
-          completions: raw.completionHistory?.completions ?? []
-        });
-      }).catch(() => {});
-    }, 2000);
+      }).catch(() => setReady({ assignments: null, profile: null, completions: [] }));
+    };
+    const unsub = platformData.subscribeToUserData(firebaseUserId, (data) => setReady(data), tryRestLoad);
+    const t = setTimeout(tryRestLoad, 1500);
     return () => { unsub(); clearTimeout(t); };
   }, [firebaseUserId, appUser?.role]);
 
