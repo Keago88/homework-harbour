@@ -283,9 +283,10 @@ export const getAssignments = async (userId) => {
 
 /**
  * Subscribe to user_data in real time. Changes from any device will trigger the callback.
+ * onError is called when the SDK fails (e.g. offline); use it to fall back to REST.
  * Returns an unsubscribe function.
  */
-export const subscribeToUserData = (userId, callback) => {
+export const subscribeToUserData = (userId, callback, onError) => {
   if (!userId || !useFirestore() || userId.includes('@')) return () => {};
   try {
     const docRef = doc(db, USER_DATA_COLLECTION, userId);
@@ -297,9 +298,11 @@ export const subscribeToUserData = (userId, callback) => {
       callback({ assignments, profile, completions });
     }, (err) => {
       console.warn('Firestore sync error:', err?.message);
+      onError?.(err);
     });
   } catch (e) {
     console.warn('subscribeToUserData failed:', e?.message);
+    onError?.(e);
     return () => {};
   }
 };
