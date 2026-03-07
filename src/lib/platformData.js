@@ -4,7 +4,8 @@
  */
 import { db } from './firebase';
 import { storageGet, storageSet } from './storage';
-import { collection, doc, getDoc, setDoc, getDocs, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc, getDocs, query, where, onSnapshot, enableNetwork } from 'firebase/firestore';
+import { getUserDataRest, saveUserDataRest } from './firestoreRest';
 
 const KEYS = {
   SCHOOLS: 'hwc_schools',
@@ -260,9 +261,18 @@ const PLATFORM_COLLECTION = 'platform';
 
 export const getUserData = async (userId) => {
   if (!userId || !useFirestore() || userId.includes('@')) return null;
-  const docRef = doc(db, USER_DATA_COLLECTION, userId);
-  const snap = await getDoc(docRef);
-  return snap.exists() ? snap.data() : null;
+  try {
+    const docRef = doc(db, USER_DATA_COLLECTION, userId);
+    const snap = await getDoc(docRef);
+    return snap.exists() ? snap.data() : null;
+  } catch (e) {
+    if ((e?.code === 'unavailable' || e?.message?.includes('offline')) && typeof fetch === 'function') {
+      try {
+        return await getUserDataRest(userId);
+      } catch {}
+    }
+    throw e;
+  }
 };
 
 export const getAssignments = async (userId) => {
@@ -294,12 +304,38 @@ export const subscribeToUserData = (userId, callback) => {
   }
 };
 
+const isOfflineError = (e) => e?.message?.toLowerCase().includes('offline') || e?.code === 'unavailable';
+
 export const saveAssignments = async (userId, assignments) => {
   if (!userId || !Array.isArray(assignments) || !useFirestore() || userId.includes('@')) return;
   const docRef = doc(db, USER_DATA_COLLECTION, userId);
-  const snap = await getDoc(docRef);
-  const existing = snap.exists() ? snap.data() : {};
-  await setDoc(docRef, { ...existing, assignments });
+  const doSave = async () => {
+    const snap = await getDoc(docRef);
+    const existing = snap.exists() ? snap.data() : {};
+    await setDoc(docRef, { ...existing, assignments });
+  };
+  let lastErr;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      if (attempt > 0 && db) {
+        await enableNetwork(db);
+        await new Promise(r => setTimeout(r, 500 * attempt));
+      }
+      await doSave();
+      return;
+    } catch (e) {
+      lastErr = e;
+      if (!isOfflineError(e)) throw e;
+    }
+  }
+  if (typeof fetch === 'function') {
+    try {
+      const existing = await getUserDataRest(userId);
+      await saveUserDataRest(userId, { ...(existing || {}), assignments });
+      return;
+    } catch {}
+  }
+  throw lastErr;
 };
 
 export const getProfile = async (userId) => {

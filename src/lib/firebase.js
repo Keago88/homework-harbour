@@ -29,8 +29,7 @@ try {
     }
     try {
       db = initializeFirestore(app, {
-        experimentalForceLongPolling: true,
-        experimentalAutoDetectLongPolling: false
+        experimentalAutoDetectLongPolling: true
       });
     } catch {
       db = getFirestore(app);
