@@ -2195,7 +2195,6 @@ export default function App() {
       { key: TABS.SCHOOL, icon: Building2, label: 'School' },
       { key: TABS.CHAT, icon: MessageSquare, label: 'Chat', badge: chatUnreadCount, badgeColor: 'bg-violet-500' },
       { key: TABS.PAYMENTS, icon: CreditCard, label: copy.navPayments },
-      { key: TABS.SETTINGS, icon: Settings, label: copy.navSettings },
     ];
     return (
       <>
@@ -2218,7 +2217,7 @@ export default function App() {
             ))}
           </nav>
           <div className="p-3 border-t border-slate-100">
-            <button onClick={() => setIsProfileSettingsOpen(true)} className="flex items-center gap-3 w-full rounded-xl p-2 hover:bg-slate-50 transition-colors">
+            <button onClick={() => setActiveTab(TABS.SETTINGS)} className={`flex items-center gap-3 w-full rounded-xl p-2 transition-colors ${activeTab === TABS.SETTINGS ? 'bg-violet-50' : 'hover:bg-slate-50'}`}>
               <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden shrink-0 border border-violet-200">
                 {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={14} />}
               </div>
@@ -2257,7 +2256,7 @@ export default function App() {
                 </>
               )}
             </div>
-            <button onClick={() => setIsProfileSettingsOpen(true)} className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden border border-slate-200 transition-transform hover:scale-105 shrink-0 md:hidden">
+            <button onClick={() => setActiveTab(TABS.SETTINGS)} className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden border border-slate-200 transition-transform hover:scale-105 shrink-0 md:hidden">
               {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={14} />}
             </button>
           </header>
@@ -2658,7 +2657,6 @@ export default function App() {
     { key: 'alerts', icon: Bell, label: copy.alertsTitle, badge: alerts.length, badgeColor: 'bg-amber-500', action: () => setIsNotifPanelOpen(true) },
     ...(appUser?.role === ROLES.ADMIN ? [{ key: TABS.SCHOOL, icon: Building2, label: 'School' }] : []),
     { key: TABS.PAYMENTS, icon: CreditCard, label: copy.navPayments },
-    { key: TABS.SETTINGS, icon: Settings, label: copy.navSettings },
   ];
 
   return (
@@ -2692,7 +2690,7 @@ export default function App() {
           })}
         </nav>
         <div className={`p-3 border-t border-slate-100 ${sidebarCollapsed ? 'flex justify-center' : ''}`}>
-          <button onClick={() => setIsProfileSettingsOpen(true)} className={`flex items-center gap-3 w-full rounded-xl p-2 hover:bg-slate-50 transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}>
+          <button onClick={() => setActiveTab(TABS.SETTINGS)} className={`flex items-center gap-3 w-full rounded-xl p-2 transition-colors ${sidebarCollapsed ? 'justify-center' : ''} ${activeTab === TABS.SETTINGS ? 'bg-violet-50' : 'hover:bg-slate-50'}`}>
             <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden shrink-0 border border-violet-200">
               {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={14} />}
             </div>
@@ -2861,7 +2859,7 @@ export default function App() {
             <Bell size={16} />
             {alerts.length > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-rose-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center border-2 border-white">{alerts.length}</span>}
           </button>
-          <button onClick={() => setIsProfileSettingsOpen(true)} className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden border border-slate-200 transition-transform hover:scale-105 shrink-0 md:hidden">
+          <button onClick={() => setActiveTab(TABS.SETTINGS)} className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden border border-slate-200 transition-transform hover:scale-105 shrink-0 md:hidden">
             {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={14} />}
           </button>
         </header>
