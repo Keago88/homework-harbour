@@ -1304,11 +1304,9 @@ export default function App() {
   useEffect(() => {
     if (isTimerRunning && selectedAssignment) {
       timerIntervalRef.current = setInterval(() => {
-        setAssignments(prev => prev.map(a => 
-          a.id === selectedAssignment.id 
-            ? { ...a, timeSpent: (a.timeSpent || 0) + 1 } 
-            : a
-        ));
+        const tick = (a) => ({ ...a, timeSpent: (a.timeSpent || 0) + 1 });
+        setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? tick(a) : a));
+        setSelectedAssignment(prev => (prev && prev.id === selectedAssignment.id) ? tick(prev) : prev);
       }, 1000);
     } else {
       clearInterval(timerIntervalRef.current);
@@ -3806,6 +3804,7 @@ export default function App() {
                             const newChecklist = [...(selectedAssignment.checklist || [])];
                             newChecklist[idx].completed = !newChecklist[idx].completed;
                             setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, checklist: newChecklist } : a));
+                            setSelectedAssignment(prev => ({ ...prev, checklist: newChecklist }));
                           }}
                           className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${item.completed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 bg-white'}`}
                         >
@@ -3816,6 +3815,7 @@ export default function App() {
                           onClick={() => {
                             const newChecklist = (selectedAssignment.checklist || []).filter((_, i) => i !== idx);
                             setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, checklist: newChecklist } : a));
+                            setSelectedAssignment(prev => ({ ...prev, checklist: newChecklist }));
                           }}
                           className="opacity-0 group-hover/task:opacity-100 p-1 text-slate-400 hover:text-rose-500 transition-all"
                         >
@@ -3828,18 +3828,47 @@ export default function App() {
                     )}
                   </div>
                   <div className="mt-4 flex gap-2">
-                    <input 
-                      type="text" 
-                      placeholder="Add step..."
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
-                          const newChecklist = [...(selectedAssignment.checklist || []), { text: e.currentTarget.value.trim(), completed: false }];
-                          setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, checklist: newChecklist } : a));
-                          e.currentTarget.value = '';
-                        }
+                    <div className="flex-1 relative">
+                      <input 
+                        type="text" 
+                        id="new-subtask-input"
+                        placeholder="Add step..."
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                            const val = e.currentTarget.value.trim();
+                            const newChecklist = [...(selectedAssignment.checklist || []), { text: val, completed: false }];
+                            setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, checklist: newChecklist } : a));
+                            setSelectedAssignment(prev => ({ ...prev, checklist: newChecklist }));
+                            e.currentTarget.value = '';
+                          }
+                        }}
+                        className="w-full bg-white border border-slate-200 rounded-lg pl-3 pr-10 py-1.5 text-xs font-medium focus:ring-2 focus:ring-violet-300 outline-none"
+                      />
+                      <button 
+                        onClick={() => {
+                          const input = document.getElementById('new-subtask-input');
+                          const val = input.value.trim();
+                          if (val) {
+                            const newChecklist = [...(selectedAssignment.checklist || []), { text: val, completed: false }];
+                            setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, checklist: newChecklist } : a));
+                            setSelectedAssignment(prev => ({ ...prev, checklist: newChecklist }));
+                            input.value = '';
+                          }
+                        }}
+                        className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-violet-500 hover:bg-violet-50 rounded-md transition-colors"
+                      >
+                        <Plus size={14} strokeWidth={3} />
+                      </button>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        const input = document.getElementById('new-subtask-input');
+                        input.value = '';
                       }}
-                      className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium focus:ring-2 focus:ring-violet-300 outline-none"
-                    />
+                      className="px-2 py-1.5 text-[10px] font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase"
+                    >
+                      Clear
+                    </button>
                   </div>
                 </div>
               </div>
