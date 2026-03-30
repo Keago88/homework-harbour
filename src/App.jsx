@@ -76,7 +76,6 @@ import { fetchAllCoursework } from './lib/googleClassroom';
 import { getGoogleClassroomToken } from './lib/oauthIntegration';
 import MobileSplash from './components/MobileSplash';
 import Chat from './components/Chat';
-import Chat from './components/Chat';
 
 // --- Global Styles & Wallpapers ---
 const noScrollbarStyles = `
