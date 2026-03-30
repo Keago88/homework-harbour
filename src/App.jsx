@@ -1298,6 +1298,32 @@ export default function App() {
   const [selectedChildEmail, setSelectedChildEmail] = useState(null);
   const [riskScore, setRiskScore] = useState(null);
   const [forecast, setForecast] = useState(null);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const timerIntervalRef = useRef(null);
+
+  useEffect(() => {
+    if (isTimerRunning && selectedAssignment) {
+      timerIntervalRef.current = setInterval(() => {
+        setAssignments(prev => prev.map(a => 
+          a.id === selectedAssignment.id 
+            ? { ...a, timeSpent: (a.timeSpent || 0) + 1 } 
+            : a
+        ));
+      }, 1000);
+    } else {
+      clearInterval(timerIntervalRef.current);
+    }
+    return () => clearInterval(timerIntervalRef.current);
+  }, [isTimerRunning, selectedAssignment?.id]);
+
+  const formatDuration = (s) => {
+    if (!s) return '00:00';
+    const h = Math.floor(s / 3600);
+    const m = Math.floor((s % 3600) / 60);
+    const rs = s % 60;
+    if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${rs.toString().padStart(2, '0')}`;
+    return `${m.toString().padStart(2, '0')}:${rs.toString().padStart(2, '0')}`;
+  };
   const [alerts, setAlerts] = useState([]);
   const [schoolsRefresh, setSchoolsRefresh] = useState(0);
   const [adminSchools, setAdminSchools] = useState([]);
@@ -2399,8 +2425,18 @@ export default function App() {
                 <input type="email" value={profileData.email} onChange={(e) => setProfileData(p => ({ ...p, email: e.target.value }))} placeholder="your@email.com" className="w-full bg-slate-50 p-4 rounded-2xl font-medium border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none" />
               </div>
             </div>
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <button onClick={() => { setIsProfileSettingsOpen(false); setIsSubscriptionOpen(true); }} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors group/btn">
+                <div className="flex items-center gap-3 text-slate-700 font-bold text-sm"><CreditCard size={18} className="text-violet-500" /> {copy.premium}</div>
+                <ChevronRight size={16} className="text-slate-300 group-hover/btn:translate-x-1 transition-transform" />
+              </button>
+              <button onClick={() => { setIsProfileSettingsOpen(false); setActiveTab(TABS.SETTINGS); }} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors group/btn">
+                <div className="flex items-center gap-3 text-slate-700 font-bold text-sm"><Settings size={18} className="text-slate-500" /> {copy.navSettings}</div>
+                <ChevronRight size={16} className="text-slate-300 group-hover/btn:translate-x-1 transition-transform" />
+              </button>
+            </div>
           </div>
-          <div className="p-6 border-t border-slate-100 flex gap-3">
+          <div className="p-6 border-t border-slate-100 flex gap-3 shadow-[-4px_0_12px_rgba(0,0,0,0.02)]">
             <button onClick={() => setIsProfileSettingsOpen(false)} className="flex-1 py-4 bg-slate-100 text-slate-700 font-bold rounded-2xl">Cancel</button>
             <button onClick={saveProfile} className="flex-1 py-4 bg-slate-800 text-white font-bold rounded-2xl">Save</button>
           </div>
@@ -2480,10 +2516,7 @@ export default function App() {
     { key: TABS.ANALYTICS, icon: BarChart2, label: copy.navStats },
     { key: 'calendar', icon: Calendar, label: 'Calendar', action: () => { setActiveTab(TABS.HOMEWORK); setViewMode('calendar'); } },
     { key: TABS.CHAT, icon: MessageSquare, label: 'Chat', badge: chatUnreadCount, badgeColor: 'bg-violet-500' },
-    { key: 'alerts', icon: Bell, label: copy.alertsTitle, badge: alerts.length, badgeColor: 'bg-amber-500', action: () => setIsNotifPanelOpen(true) },
     ...(appUser?.role === ROLES.ADMIN ? [{ key: TABS.SCHOOL, icon: Building2, label: 'School' }] : []),
-    { key: TABS.PAYMENTS, icon: CreditCard, label: copy.navPayments },
-    { key: TABS.SETTINGS, icon: Settings, label: copy.navSettings },
   ];
 
   return (
@@ -2546,7 +2579,27 @@ export default function App() {
                 <X size={13} />
               </button>
             )}
-            {searchOpen && dashboardSearch.trim() && (() => {
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button onClick={() => setIsNotifPanelOpen(true)} className="relative p-2 text-slate-400 hover:bg-slate-50 hover:text-violet-500 rounded-lg transition-all">
+              <Bell size={20} />
+              {alerts.length > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white text-[9px] font-black flex items-center justify-center rounded-full border-2 border-white">
+                  {alerts.length}
+                </span>
+              )}
+            </button>
+            <div className="w-px h-6 bg-slate-100 mx-1 hidden sm:block" />
+            <button onClick={() => setIsProfileSettingsOpen(true)} className="flex items-center gap-2 p-1 hover:bg-slate-50 rounded-lg transition-all group">
+              <div className="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center text-violet-500 overflow-hidden border border-violet-200 group-hover:border-violet-300">
+                {profileImage ? <img src={profileImage} className="w-full h-full object-cover" alt="" /> : <User size={14} />}
+              </div>
+              <ChevronRight size={14} className="text-slate-300 group-hover:text-slate-500" />
+            </button>
+          </div>
+
+          {searchOpen && dashboardSearch.trim() && (() => {
               const term = dashboardSearch.toLowerCase().trim();
               const close = () => { setSearchOpen(false); setDashboardSearch(''); };
 
@@ -2647,7 +2700,6 @@ export default function App() {
                 </div>
               );
             })()}
-          </div>
           <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 rounded-lg text-[10px] font-black text-violet-600 uppercase tracking-wider shrink-0"><Calendar size={12} /> {currentTerm}</span>
           {appUser.role === ROLES.STUDENT && (
             <div className="flex items-center gap-1 bg-gradient-to-r from-violet-500 to-fuchsia-500 px-2.5 py-1.5 rounded-lg text-white shadow-sm shrink-0">
@@ -2671,13 +2723,6 @@ export default function App() {
               )}
             </div>
           )}
-          <button onClick={() => setIsNotifPanelOpen(!isNotifPanelOpen)} className="relative w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors shrink-0">
-            <Bell size={16} />
-            {alerts.length > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-rose-500 rounded-full text-[9px] font-bold text-white flex items-center justify-center border-2 border-white">{alerts.length}</span>}
-          </button>
-          <button onClick={() => setIsProfileSettingsOpen(true)} className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden border border-slate-200 transition-transform hover:scale-105 shrink-0 md:hidden">
-            {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={14} />}
-          </button>
         </header>
 
         {/* Scrollable content */}
@@ -3720,16 +3765,84 @@ export default function App() {
                 )}
               </div>
 
-              {/* Grade (if assigned) */}
-              {selectedAssignment.grade != null && (
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">{copy.gradeLabel}</p>
-                  <div className="inline-flex items-center gap-2 bg-violet-50 border border-violet-100 px-4 py-2 rounded-xl">
-                    <span className="text-xl font-black text-violet-600">{selectedAssignment.grade}</span>
-                    <span className="text-xs font-medium text-slate-500">/ 100</span>
+              {/* Assignment Timer & Checklist */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Timer Card */}
+                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-between">
+                  <div className="flex items-center justify-between mb-2 text-slate-400">
+                    <span className="text-[10px] font-black uppercase tracking-wider">Session Timer</span>
+                    <Clock size={14} />
+                  </div>
+                  <div className="text-center py-2">
+                    <span className="text-3xl font-black text-slate-800 tabular-nums">{formatDuration(selectedAssignment.timeSpent || 0)}</span>
+                  </div>
+                  <div className="flex gap-2 mt-4">
+                    <button 
+                      onClick={() => setIsTimerRunning(!isTimerRunning)} 
+                      className={`flex-1 py-2 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${isTimerRunning ? 'bg-rose-100 text-rose-600 hover:bg-rose-200' : 'bg-violet-600 text-white hover:bg-violet-700'}`}
+                    >
+                      {isTimerRunning ? <><Clock size={12} strokeWidth={3} /> Pause</> : <><Plus size={12} strokeWidth={3} /> Start</>}
+                    </button>
+                    <button 
+                      onClick={() => { setIsTimerRunning(false); setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, timeSpent: 0 } : a)); }}
+                      className="px-3 py-2 bg-slate-200 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-300 transition-colors"
+                    >
+                      Reset
+                    </button>
                   </div>
                 </div>
-              )}
+
+                {/* Quick Checklist */}
+                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+                  <div className="flex items-center justify-between mb-3 text-slate-400">
+                    <span className="text-[10px] font-black uppercase tracking-wider">Sub-tasks</span>
+                    <CheckCircle2 size={14} />
+                  </div>
+                  <div className="space-y-2 max-h-[120px] overflow-y-auto no-scrollbar pr-1">
+                    {(selectedAssignment.checklist || []).map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 group/task">
+                        <button 
+                          onClick={() => {
+                            const newChecklist = [...(selectedAssignment.checklist || [])];
+                            newChecklist[idx].completed = !newChecklist[idx].completed;
+                            setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, checklist: newChecklist } : a));
+                          }}
+                          className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${item.completed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 bg-white'}`}
+                        >
+                          {item.completed && <Check size={10} strokeWidth={4} />}
+                        </button>
+                        <span className={`text-xs font-medium truncate flex-1 ${item.completed ? 'text-slate-400 line-through' : 'text-slate-700'}`}>{item.text}</span>
+                        <button 
+                          onClick={() => {
+                            const newChecklist = (selectedAssignment.checklist || []).filter((_, i) => i !== idx);
+                            setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, checklist: newChecklist } : a));
+                          }}
+                          className="opacity-0 group-hover/task:opacity-100 p-1 text-slate-400 hover:text-rose-500 transition-all"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    ))}
+                    {!selectedAssignment.checklist?.length && (
+                      <p className="text-[10px] text-slate-400 font-medium italic">No sub-tasks yet.</p>
+                    )}
+                  </div>
+                  <div className="mt-4 flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="Add step..."
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                          const newChecklist = [...(selectedAssignment.checklist || []), { text: e.currentTarget.value.trim(), completed: false }];
+                          setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, checklist: newChecklist } : a));
+                          e.currentTarget.value = '';
+                        }
+                      }}
+                      className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium focus:ring-2 focus:ring-violet-300 outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
 
               {/* Teacher comments */}
               <div>
