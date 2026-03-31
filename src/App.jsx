@@ -3782,7 +3782,11 @@ export default function App() {
                       {isTimerRunning ? <><Clock size={12} strokeWidth={3} /> Pause</> : <><Plus size={12} strokeWidth={3} /> Start</>}
                     </button>
                     <button 
-                      onClick={() => { setIsTimerRunning(false); setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, timeSpent: 0 } : a)); }}
+                      onClick={() => { 
+                        setIsTimerRunning(false); 
+                        setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, timeSpent: 0 } : a)); 
+                        setSelectedAssignment(prev => prev ? { ...prev, timeSpent: 0 } : prev);
+                      }}
                       className="px-3 py-2 bg-slate-200 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-300 transition-colors"
                     >
                       Reset
