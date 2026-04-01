@@ -2,7 +2,7 @@
  * Platform data layer: schools, classes, roster, parent-child links, grades.
  * Uses localStorage for demo (dev only); Firestore when configured. Production blocks localStorage.
  */
-import { db } from './firebase';
+import { db, auth } from './firebase';
 import { storageGet, storageSet } from './storage';
 import { collection, doc, getDoc, setDoc, getDocs, query, where } from 'firebase/firestore';
 
@@ -139,7 +139,7 @@ const PARENT_LINKS_COLLECTION = 'parent_links';
 
 const toDocId = (email) => btoa(encodeURIComponent((email || '').toLowerCase())).replace(/[/+=]/g, '_');
 
-const useFirestore = () => !!db;
+const useFirestore = () => !!db && !!auth?.currentUser;
 
 const generatePairingCodeLocal = (studentEmail) => {
   const code = `${(studentEmail || '').slice(0, 4).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;

@@ -2,7 +2,7 @@
  * Chat service using Firestore for real-time messaging.
  * Collections: chats/{chatId}, chats/{chatId}/messages/{msgId}
  */
-import { db } from './firebase';
+import { db, auth } from './firebase';
 import {
   collection, doc, addDoc, setDoc, getDoc, getDocs, deleteDoc,
   query, where, orderBy, onSnapshot, serverTimestamp, limit,
@@ -12,7 +12,7 @@ import {
 const CHATS = 'chats';
 const MESSAGES = 'messages';
 
-const useFirestore = () => !!db;
+const useFirestore = () => !!db && !!auth?.currentUser;
 
 // --- Chat CRUD ---
 
