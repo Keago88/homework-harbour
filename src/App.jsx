@@ -1265,6 +1265,7 @@ export default function App() {
   const [hwFilter, setHwFilter] = useState(() => { try { const v = storageGet('hw_filter'); return v && Object.values(HW_FILTERS).includes(v) ? v : HW_FILTERS.DUE; } catch { return HW_FILTERS.DUE; } });
 
   const [isProfileSettingsOpen, setIsProfileSettingsOpen] = useState(false);
+  const [profileModalTab, setProfileModalTab] = useState('profile');
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [profileData, setProfileData] = useState({ name: '', grade: '', school: '', favoriteSubject: '', email: '', gamificationLevel: 'simple' });
@@ -2549,24 +2550,13 @@ export default function App() {
             );
           })}
         </nav>
-        <div className={`p-3 border-t border-slate-100 space-y-1.5`}>
-          <button onClick={() => setIsProfileSettingsOpen(true)} className={`flex items-center gap-3 w-full rounded-xl p-2 hover:bg-slate-50 transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}>
+        <div className={`p-3 border-t border-slate-100 ${sidebarCollapsed ? 'flex justify-center' : ''}`}>
+          <button onClick={() => { setProfileModalTab('profile'); setIsProfileSettingsOpen(true); }} className={`flex items-center gap-3 w-full rounded-xl p-2 hover:bg-slate-50 transition-colors ${sidebarCollapsed ? 'justify-center border border-transparent active:scale-95' : ''}`}>
             <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden shrink-0 border border-violet-200">
               {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={14} />}
             </div>
             {!sidebarCollapsed && <div className="min-w-0"><p className="text-xs font-bold text-slate-700 truncate">{appUser.name}</p><p className="text-[10px] text-slate-400 capitalize">{appUser.role}</p></div>}
           </button>
-          
-          <div className={`flex ${sidebarCollapsed ? 'flex-col items-center' : 'items-center gap-1.5'}`}>
-            <button key="premium-btn" onClick={() => setActiveTab(TABS.PAYMENTS)} className={`flex items-center justify-center rounded-xl transition-all duration-200 ${sidebarCollapsed ? 'w-10 h-10 hover:bg-violet-50 text-violet-500' : 'flex-1 gap-2 py-2 px-3 text-[11px] font-black uppercase tracking-wider bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-sm hover:scale-[1.02] active:scale-95'}`}>
-              <Sparkles size={sidebarCollapsed ? 18 : 14} />
-              {!sidebarCollapsed && <span>{copy.premium || 'Premium'}</span>}
-            </button>
-            <button key="settings-btn" onClick={() => setActiveTab(TABS.SETTINGS)} className={`flex items-center justify-center rounded-xl transition-all duration-200 ${sidebarCollapsed ? 'w-10 h-10 hover:bg-slate-50 text-slate-400' : 'flex-1 gap-2 py-2 px-3 text-[11px] font-black uppercase tracking-wider border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 active:scale-95'}`}>
-              <Settings size={sidebarCollapsed ? 18 : 14} />
-              {!sidebarCollapsed && <span>{copy.navSettings || 'Settings'}</span>}
-            </button>
-          </div>
         </div>
       </aside>
 
@@ -3956,83 +3946,212 @@ export default function App() {
 
       {isProfileSettingsOpen && (
         <div className="fixed inset-0 z-[400] bg-white flex flex-col animate-in slide-in-from-right duration-300">
-          <div className="p-4 border-b border-slate-100 flex items-center gap-4 bg-white pt-safe"><button onClick={() => setIsProfileSettingsOpen(false)} className="p-2 hover:bg-slate-50 rounded-full"><ArrowLeft size={24} className="text-slate-800" /></button><h2 className="text-xl font-bold text-slate-800">{copy.profileTitle}</h2></div>
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            <div className="flex flex-col items-center">
-              <div className="relative group cursor-pointer" onClick={() => profileImageInputRef.current?.click()}>
-                <div className="w-32 h-32 rounded-full bg-violet-100 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">{profileImage ? <img src={profileImage} className="w-full h-full object-cover" alt="Profile" /> : <User size={56} className="text-violet-300" />}</div>
-                <div className="absolute bottom-0 right-0 bg-slate-800 text-white p-2.5 rounded-full shadow-md"><Camera size={18} /></div>
-              </div>
+          {/* Dashboard Header & Tabs */}
+          <div className="bg-white border-b border-slate-100 pt-safe">
+            <div className="p-4 flex items-center gap-4">
+              <button onClick={() => setIsProfileSettingsOpen(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors"><ArrowLeft size={24} className="text-slate-800" /></button>
+              <h2 className="text-xl font-black text-slate-800">Account Dashboard</h2>
             </div>
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs font-bold text-slate-400 mb-2 block uppercase">Name</label>
-                <input type="text" value={profileData.name} onChange={(e) => setProfileData(p => ({ ...p, name: e.target.value }))} placeholder={copy.namePlaceholder} className="w-full bg-slate-50 p-4 rounded-2xl font-bold border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none placeholder:text-slate-400" />
-              </div>
-              <div>
-                <label className="text-xs font-bold text-slate-400 mb-2 block uppercase">Role</label>
-                <input type="text" value={appUser?.role ?? ''} readOnly disabled className="w-full bg-slate-100 p-4 rounded-2xl font-bold border border-slate-200 text-slate-600 cursor-not-allowed" />
-              </div>
-              {appUser?.role === ROLES.STUDENT && (
-                <div>
-                  <label className="text-xs font-bold text-slate-400 mb-2 block uppercase">Grade</label>
-                  <select value={profileData.grade} onChange={(e) => setProfileData(p => ({ ...p, grade: e.target.value }))} className="w-full bg-slate-50 p-4 rounded-2xl font-bold border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none appearance-none cursor-pointer" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23475569' d='M6 8L1 3h10z'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center' }}>
-                    <option value="">Select grade</option>
-                    {[1,2,3,4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={String(g)}>Grade {g}</option>)}
-                  </select>
-                </div>
-              )}
-              <div>
-                <label className="text-xs font-bold text-slate-400 mb-2 block uppercase">School</label>
-                <input type="text" value={profileData.school} onChange={(e) => setProfileData(p => ({ ...p, school: e.target.value }))} placeholder={copy.schoolPlaceholder} className="w-full bg-slate-50 p-4 rounded-2xl font-medium border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none placeholder:text-slate-400" />
-              </div>
-              <div>
-                <label className="text-xs font-bold text-slate-400 mb-2 block uppercase">Email</label>
-                <input type="email" value={profileData.email} onChange={(e) => setProfileData(p => ({ ...p, email: e.target.value }))} placeholder="your@email.com" className="w-full bg-slate-50 p-4 rounded-2xl font-medium border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none" />
-              </div>
-              <div>
-                <label className="text-xs font-bold text-slate-400 mb-2 block uppercase">Gamification</label>
-                <select value={profileData.gamificationLevel} onChange={(e) => setProfileData(p => ({ ...p, gamificationLevel: e.target.value }))} disabled={appUser?.role !== ROLES.TEACHER} className={`w-full p-4 rounded-2xl font-medium border border-slate-100 outline-none ${appUser?.role === ROLES.TEACHER ? 'bg-slate-50 focus:ring-2 focus:ring-violet-300' : 'bg-slate-100 text-slate-600 cursor-not-allowed'}`}>
-                  <option value="off">Off</option>
-                  <option value="simple">Simple (badges)</option>
-                  <option value="full">Full (badges + leaderboard)</option>
-                </select>
-                {appUser?.role !== ROLES.TEACHER && <p className="text-[10px] text-slate-400 mt-1">Only teachers can change this</p>}
-              </div>
-              {appUser?.role === ROLES.STUDENT && (
-                <div>
-                  <label className="text-xs font-bold text-slate-400 mb-2 block uppercase">Favorite subject</label>
-                  <div className="flex flex-wrap gap-2">
-                    {subjects.map(sub => (
-                      <button key={sub} type="button" onClick={() => setProfileData(p => ({ ...p, favoriteSubject: p.favoriteSubject === sub ? '' : sub }))} className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-colors border ${profileData.favoriteSubject === sub ? 'bg-violet-500 text-white border-violet-500' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>{sub}</button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Account Quick Links */}
-              <div className="pt-4 border-t border-slate-50">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Account & Billing</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => { setActiveTab(TABS.PAYMENTS); setIsProfileSettingsOpen(false); }} className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 border border-violet-100 text-left group hover:border-violet-300 transition-all">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-white shadow-lg shadow-violet-200 group-hover:scale-110 transition-transform">
-                      <Sparkles size={20} />
-                    </div>
-                    <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-violet-600 transition-colors">Premium</span>
+            <div className="px-4 pb-4">
+              <div className="flex bg-slate-100 p-1 rounded-2xl gap-1">
+                {[
+                  { id: 'profile', label: 'Profile', icon: User },
+                  { id: 'premium', label: 'Premium', icon: Sparkles },
+                  { id: 'settings', label: 'Settings', icon: Settings }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setProfileModalTab(tab.id)}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${profileModalTab === tab.id ? 'bg-white text-violet-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                  >
+                    <tab.icon size={14} />
+                    <span className="hidden sm:inline">{tab.label}</span>
                   </button>
-                  <button onClick={() => { setActiveTab(TABS.SETTINGS); setIsProfileSettingsOpen(false); }} className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 border border-slate-100 text-left group hover:border-slate-300 transition-all">
-                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-500 border border-slate-200 group-hover:scale-110 transition-transform">
-                      <Settings size={20} />
-                    </div>
-                    <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-slate-700 transition-colors">Settings</span>
-                  </button>
-                </div>
+                ))}
               </div>
             </div>
           </div>
-          <div className="p-6 border-t border-slate-100 flex gap-3">
-            <button onClick={() => setIsProfileSettingsOpen(false)} className="flex-1 py-4 bg-slate-100 text-slate-700 font-bold rounded-2xl">Cancel</button>
-            <button onClick={saveProfile} className="flex-1 py-4 bg-slate-800 text-white font-bold rounded-2xl">Save</button>
+
+          <div className="flex-1 overflow-y-auto no-scrollbar">
+            {profileModalTab === 'profile' && (
+              <div className="p-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <div className="flex flex-col items-center">
+                  <div className="relative group cursor-pointer" onClick={() => profileImageInputRef.current?.click()}>
+                    <div className="w-32 h-32 rounded-full bg-violet-100 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">
+                      {profileImage ? <img src={profileImage} className="w-full h-full object-cover" alt="Profile" /> : <User size={56} className="text-violet-300" />}
+                    </div>
+                    <div className="absolute bottom-0 right-0 bg-slate-800 text-white p-2.5 rounded-full shadow-md hover:scale-110 transition-transform"><Camera size={18} /></div>
+                  </div>
+                  <p className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-widest">{appUser.role}</p>
+                </div>
+
+                <div className="space-y-5 max-w-xl mx-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                      <input type="text" value={profileData.name} onChange={(e) => setProfileData(p => ({ ...p, name: e.target.value }))} className="w-full bg-slate-50 p-4 rounded-2xl font-bold border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none transition-all" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                      <input type="email" value={profileData.email} onChange={(e) => setProfileData(p => ({ ...p, email: e.target.value }))} className="w-full bg-slate-50 p-4 rounded-2xl font-bold border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none transition-all" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {appUser?.role === ROLES.STUDENT && (
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Grade / Year</label>
+                        <select value={profileData.grade} onChange={(e) => setProfileData(p => ({ ...p, grade: e.target.value }))} className="w-full bg-slate-50 p-4 rounded-2xl font-bold border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none appearance-none cursor-pointer">
+                          <option value="">Select grade</option>
+                          {[1,2,3,4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={String(g)}>Grade {g}</option>)}
+                        </select>
+                      </div>
+                    )}
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">School / Institution</label>
+                      <input type="text" value={profileData.school} onChange={(e) => setProfileData(p => ({ ...p, school: e.target.value }))} className="w-full bg-slate-50 p-4 rounded-2xl font-bold border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none transition-all" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Gamification Level</label>
+                    <select value={profileData.gamificationLevel} onChange={(e) => setProfileData(p => ({ ...p, gamificationLevel: e.target.value }))} disabled={appUser?.role !== ROLES.TEACHER} className={`w-full p-4 rounded-2xl font-bold border border-slate-100 outline-none transition-all ${appUser?.role === ROLES.TEACHER ? 'bg-slate-50 focus:ring-2 focus:ring-violet-300' : 'bg-slate-100 text-slate-500 cursor-not-allowed'}`}>
+                      <option value="off">Off</option>
+                      <option value="simple">Simple (badges)</option>
+                      <option value="full">Full (badges + leaderboard)</option>
+                    </select>
+                  </div>
+
+                  <div className="pt-6">
+                    <button onClick={saveProfile} className="w-full py-4 bg-slate-800 text-white font-black rounded-2xl shadow-lg hover:shadow-xl hover:translate-y-[-2px] active:translate-y-0 transition-all uppercase tracking-widest text-sm">Save Changes</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {profileModalTab === 'premium' && (
+              <div className="p-6 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300 max-w-2xl mx-auto">
+                <div className="bg-gradient-to-br from-violet-600 to-fuchsia-600 p-6 rounded-3xl text-white shadow-xl">
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">Current Membership</p>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
+                        {subscriptionPlan === 'pro' ? <Sparkles size={32} /> : <Wallet size={32} />}
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-black">{subscriptionPlan === 'pro' ? 'Pro Access' : 'Free Plan'}</h3>
+                        <p className="text-xs opacity-90">{subscriptionPlan === 'pro' ? 'Unlimited features active' : 'Basic features limited'}</p>
+                      </div>
+                    </div>
+                    {subscriptionPlan === 'pro' && <span className="px-3 py-1 bg-white/20 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md border border-white/30">Active</span>}
+                  </div>
+                </div>
+
+                {subscriptionPlan === 'pro' ? (
+                  <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 border-l-4 border-l-slate-400">
+                    <h4 className="font-bold text-slate-800 mb-1">Manage Subscription</h4>
+                    <p className="text-xs text-slate-500 mb-4">You can cancel or change your plan at the end of the billing period.</p>
+                    <button onClick={() => confirm('Cancel Pro?', handleCancelSubscription, 'danger')} disabled={cancelLoading} className="px-6 py-3 bg-white border border-slate-200 text-rose-500 font-bold rounded-xl text-sm hover:bg-rose-50 hover:border-rose-200 transition-all disabled:opacity-50">
+                      {cancelLoading ? 'Processing...' : 'Cancel Subscription'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between px-2">
+                        <h4 className="font-bold text-slate-800">Upgrade your experience</h4>
+                        <span className="text-[10px] font-black text-violet-500 uppercase tracking-wider bg-violet-50 px-2 py-1 rounded-lg">Popular</span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {SUBSCRIPTION_PLANS.map(plan => (
+                        <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={`relative p-5 rounded-3xl border-2 transition-all cursor-pointer ${selectedPlan === plan.id ? 'border-violet-500 bg-violet-50/30' : 'border-slate-100 bg-white hover:border-slate-200'}`}>
+                          <div className="flex justify-between items-start mb-3">
+                            <h5 className="font-black text-slate-800">{plan.name}</h5>
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPlan === plan.id ? 'bg-violet-500 border-violet-500' : 'border-slate-200'}`}>{selectedPlan === plan.id && <Check size={12} className="text-white" strokeWidth={4} />}</div>
+                          </div>
+                          <div className="flex items-baseline gap-1 mb-3"><span className="text-3xl font-black">R{plan.price}</span><span className="text-xs text-slate-400 font-bold">/mo</span></div>
+                          <div className="space-y-1.5 opacity-80">
+                            {plan.features.slice(0, 3).map((f, i) => (
+                              <div key={i} className="flex items-center gap-2 text-[10px] font-bold text-slate-600"><Check size={12} className={f.included ? 'text-emerald-500' : 'text-slate-300'} /> {f.text}</div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <button onClick={handleConfirmPlan} disabled={checkoutLoading} className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all text-sm uppercase tracking-widest">
+                       {checkoutLoading ? 'Redirecting...' : selectedPlan === 'free' ? 'Stay on Free' : 'Secure Checkout'}
+                    </button>
+                  </div>
+                )}
+
+                <div className="bg-white p-6 rounded-3xl border border-slate-100">
+                  <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><CreditCard size={18} className="text-violet-500" /> Payment History</h4>
+                  <div className="text-center py-8 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                    <History size={32} className="mx-auto text-slate-200 mb-2" />
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">No transactions yet</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {profileModalTab === 'settings' && (
+              <div className="p-6 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300 max-w-xl mx-auto">
+                {(appUser?.role === ROLES.STUDENT || appUser?.role === ROLES.TEACHER) && (
+                  <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h4 className="font-bold text-slate-800 flex items-center gap-2"><BookOpen size={18} className="text-violet-500" /> Academic Subjects</h4>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Manage your curriculum</p>
+                      </div>
+                      <button onClick={() => confirm('Reset to defaults?', () => setSubjects([...DEFAULT_SUBJECTS]))} className="p-2 text-slate-400 hover:text-slate-600 transition-colors"><RefreshCw size={16} /></button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {subjects.map(s => (
+                        <div key={s} className="flex items-center gap-2 pl-4 pr-2 py-2 bg-violet-50 text-violet-700 rounded-xl text-xs font-black shadow-sm ring-1 ring-violet-200/50">
+                          {s}
+                          <button onClick={() => subjects.length > 1 && setSubjects(prev => prev.filter(x => x !== s))} className="p-1 hover:bg-violet-200 rounded-lg transition-colors"><X size={14} /></button>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                       <input type="text" value={newSubjectInput} onChange={e => setNewSubjectInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), newSubjectInput.trim() && !subjects.includes(newSubjectInput.trim()) && (setSubjects(prev => [...prev, newSubjectInput.trim()]), setNewSubjectInput('')))} placeholder="Add new subject..." className="flex-1 bg-slate-50 p-3.5 rounded-xl font-bold text-slate-700 border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none" />
+                       <button onClick={() => { const v = newSubjectInput.trim(); if (v && !subjects.includes(v)) { setSubjects(prev => [...prev, v]); setNewSubjectInput(''); } }} className="px-5 py-3.5 bg-violet-500 text-white font-black rounded-xl text-sm hover:bg-violet-600 transition-all shadow-md active:scale-95">Add</button>
+                    </div>
+                  </div>
+                )}
+
+                {appUser.role === ROLES.STUDENT && pairingCode && (
+                  <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-7 rounded-3xl text-white shadow-xl">
+                    <h4 className="text-xs font-black uppercase tracking-[0.2em] opacity-60 mb-2">Parent Linking</h4>
+                    <p className="text-sm font-medium opacity-80 mb-6">Share this unique code with a parent to connect your accounts.</p>
+                    <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl flex flex-col items-center border border-white/10">
+                      <p className="text-4xl font-black tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400 select-all">{pairingCode}</p>
+                      <p className="mt-3 text-[10px] font-black uppercase tracking-widest opacity-40">Tap to select code</p>
+                    </div>
+                  </div>
+                )}
+
+                <div className="bg-white p-6 rounded-3xl border border-slate-100 border-l-4 border-l-violet-500">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 border border-slate-100"><BookOpen size={24} /></div>
+                    <div>
+                      <h4 className="font-bold text-slate-800">External Integrations</h4>
+                      <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">LMS Connectivity</p>
+                    </div>
+                  </div>
+                  <button onClick={() => confirm('Import from Google Classroom?', handleGoogleClassroomImport)} disabled={isGoogleClassroomImporting} className="w-full p-4 rounded-2xl bg-white border border-slate-200 hover:border-violet-300 hover:bg-violet-50/30 transition-all flex items-center justify-between group disabled:opacity-50">
+                    <span className="font-bold text-slate-600 group-hover:text-violet-600">{isGoogleClassroomImporting ? 'Syncing...' : 'Sync Google Classroom'}</span>
+                    <ChevronRight size={20} className="text-slate-300 group-hover:text-violet-400 group-hover:translate-x-1 transition-all" />
+                  </button>
+                  {integrationMessage && <p className="mt-3 px-3 py-2 bg-slate-50 rounded-xl text-[10px] font-bold text-slate-500">{integrationMessage}</p>}
+                </div>
+
+                <div className="pt-4">
+                  <button onClick={handleSignOut} className="w-full flex items-center justify-center gap-3 py-4 bg-rose-50 text-rose-500 font-black rounded-2xl border border-rose-100 hover:bg-rose-100 transition-all active:scale-95 uppercase tracking-widest text-xs">
+                    <LogOut size={18} /> {copy.signOut || 'Log Out'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
