@@ -306,12 +306,23 @@ export default function Chat({ userEmail, userName, userRole, isPremium, linkedS
   }, [userEmail]);
 
   const handleStartChat = async ({ participants, type, name }) => {
-    const chatId = await createChat({ participants, type, name });
-    if (chatId) {
-      setShowNewChat(false);
-      const chat = chats.find(c => c.id === chatId) || { id: chatId, participants, type, name };
-      setActiveChat(chat);
-      setViewOnly(false);
+    try {
+      if (participants.some(p => !p || p.trim() === '')) {
+        alert("Cannot start chat: one or more participant emails are missing. Please make sure your profile email is set in the Account Dashboard.");
+        return;
+      }
+      const chatId = await createChat({ participants, type, name });
+      if (chatId) {
+        setShowNewChat(false);
+        const chat = chats.find(c => c.id === chatId) || { id: chatId, participants, type, name };
+        setActiveChat(chat);
+        setViewOnly(false);
+      } else {
+        alert("Failed to create chat. Unable to connect to the database.");
+      }
+    } catch (err) {
+      console.error("Chat creation error:", err);
+      alert("Error starting chat: " + (err.message || err));
     }
   };
 
