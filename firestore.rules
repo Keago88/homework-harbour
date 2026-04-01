@@ -18,5 +18,19 @@ service cloud.firestore {
       allow read: if request.auth != null;
       allow write: if request.auth != null;
     }
+
+    // Chat system: participants can read/write their own threads
+    match /chats/{chatId} {
+      allow read, write: if request.auth != null && (
+        request.auth.token.email in resource.data.participants || 
+        request.auth.token.email in request.resource.data.participants
+      );
+      
+      // Messages within a chat: only accessible to participants of the thread
+      match /messages/{msgId} {
+        allow read, write: if request.auth != null && 
+          request.auth.token.email in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+      }
+    }
   }
 }
