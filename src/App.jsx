@@ -1269,7 +1269,9 @@ export default function App() {
   const [profileImage, setProfileImage] = useState(null);
   const [profileData, setProfileData] = useState({ name: '', grade: '', school: '', favoriteSubject: '', email: '', gamificationLevel: 'simple' });
   const [selectedPlan, setSelectedPlan] = useState('pro');
+  const FULL_ACCESS_RELEASE = true; // Toggle this to false to re-enable strict paywalls
   const [subscriptionPlan, setSubscriptionPlan] = useState('pro');
+  const hasPremiumAccess = subscriptionPlan === 'pro' || FULL_ACCESS_RELEASE;
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
 
@@ -2256,7 +2258,7 @@ export default function App() {
             {activeTab === TABS.SCHOOL && <SchoolDashboard schools={adminSchools} search={dashboardSearch} key={schoolsRefresh} onRefresh={() => setSchoolsRefresh(Date.now())} confirm={confirm} />}
             {activeTab === TABS.CHAT && (
               <div className="animate-in fade-in h-[calc(100dvh-128px)] md:h-[calc(100dvh-72px)]">
-                <Chat userEmail={profileData.email} userName={profileData.name || appUser.name} userRole={appUser.role} isPremium={subscriptionPlan === 'pro'} linkedStudents={linkedStudents} confirm={confirm} />
+                <Chat userEmail={profileData.email} userName={profileData.name || appUser.name} userRole={appUser.role} isPremium={hasPremiumAccess} linkedStudents={linkedStudents} confirm={confirm} />
               </div>
             )}
             {activeTab === TABS.PAYMENTS && (
@@ -2547,13 +2549,24 @@ export default function App() {
             );
           })}
         </nav>
-        <div className={`p-3 border-t border-slate-100 ${sidebarCollapsed ? 'flex justify-center' : ''}`}>
+        <div className={`p-3 border-t border-slate-100 space-y-1.5`}>
           <button onClick={() => setIsProfileSettingsOpen(true)} className={`flex items-center gap-3 w-full rounded-xl p-2 hover:bg-slate-50 transition-colors ${sidebarCollapsed ? 'justify-center' : ''}`}>
             <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden shrink-0 border border-violet-200">
               {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={14} />}
             </div>
             {!sidebarCollapsed && <div className="min-w-0"><p className="text-xs font-bold text-slate-700 truncate">{appUser.name}</p><p className="text-[10px] text-slate-400 capitalize">{appUser.role}</p></div>}
           </button>
+          
+          <div className={`flex ${sidebarCollapsed ? 'flex-col items-center' : 'items-center gap-1.5'}`}>
+            <button key="premium-btn" onClick={() => setActiveTab(TABS.PAYMENTS)} className={`flex items-center justify-center rounded-xl transition-all duration-200 ${sidebarCollapsed ? 'w-10 h-10 hover:bg-violet-50 text-violet-500' : 'flex-1 gap-2 py-2 px-3 text-[11px] font-black uppercase tracking-wider bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-sm hover:scale-[1.02] active:scale-95'}`}>
+              <Sparkles size={sidebarCollapsed ? 18 : 14} />
+              {!sidebarCollapsed && <span>{copy.premium || 'Premium'}</span>}
+            </button>
+            <button key="settings-btn" onClick={() => setActiveTab(TABS.SETTINGS)} className={`flex items-center justify-center rounded-xl transition-all duration-200 ${sidebarCollapsed ? 'w-10 h-10 hover:bg-slate-50 text-slate-400' : 'flex-1 gap-2 py-2 px-3 text-[11px] font-black uppercase tracking-wider border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 active:scale-95'}`}>
+              <Settings size={sidebarCollapsed ? 18 : 14} />
+              {!sidebarCollapsed && <span>{copy.navSettings || 'Settings'}</span>}
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -3379,7 +3392,7 @@ export default function App() {
               userEmail={profileData.email}
               userName={profileData.name || appUser.name}
               userRole={appUser.role}
-              isPremium={subscriptionPlan === 'pro'}
+              isPremium={hasPremiumAccess}
               linkedStudents={linkedStudents}
               confirm={confirm}
             />
@@ -3996,6 +4009,25 @@ export default function App() {
                   </div>
                 </div>
               )}
+
+              {/* Account Quick Links */}
+              <div className="pt-4 border-t border-slate-50">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Account & Billing</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => { setActiveTab(TABS.PAYMENTS); setIsProfileSettingsOpen(false); }} className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 border border-violet-100 text-left group hover:border-violet-300 transition-all">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center text-white shadow-lg shadow-violet-200 group-hover:scale-110 transition-transform">
+                      <Sparkles size={20} />
+                    </div>
+                    <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-violet-600 transition-colors">Premium</span>
+                  </button>
+                  <button onClick={() => { setActiveTab(TABS.SETTINGS); setIsProfileSettingsOpen(false); }} className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-slate-50 border border-slate-100 text-left group hover:border-slate-300 transition-all">
+                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-slate-500 border border-slate-200 group-hover:scale-110 transition-transform">
+                      <Settings size={20} />
+                    </div>
+                    <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-slate-700 transition-colors">Settings</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           <div className="p-6 border-t border-slate-100 flex gap-3">

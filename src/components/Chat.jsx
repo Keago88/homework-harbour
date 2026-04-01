@@ -261,21 +261,46 @@ export default function Chat({ userEmail, userName, userRole, isPremium, linkedS
 
   useEffect(() => {
     const buildContacts = async () => {
+      // 1. Try Firestore if available
       try {
         const { db } = await import('../lib/firebase');
-        if (!db) return;
-        const { collection, getDocs } = await import('firebase/firestore');
-        const snap = await getDocs(collection(db, 'user_data'));
-        const list = [];
-        snap.docs.forEach(d => {
-          const data = d.data();
-          const profile = data.profile;
-          if (profile?.email && profile.email !== userEmail) {
-            list.push({ email: profile.email, name: profile.name || profile.email.split('@')[0], role: profile.role || 'Student' });
+        if (db) {
+          const { collection, getDocs } = await import('firebase/firestore');
+          const snap = await getDocs(collection(db, 'user_data'));
+          const list = [];
+          snap.docs.forEach(d => {
+            const data = d.data();
+            const profile = data.profile;
+            if (profile?.email && profile.email !== userEmail) {
+              list.push({ email: profile.email, name: profile.name || profile.email.split('@')[0], role: profile.role || 'Student' });
+            }
+          });
+          if (list.length > 0) {
+            setContacts(list);
+            return;
           }
-        });
-        setContacts(list);
-      } catch {}
+        }
+      } catch (e) {
+        console.warn('Firestore contacts fetch failed:', e);
+      }
+
+      // 2. Fallback to Local Storage (Demo Mode)
+      try {
+        const raw = localStorage.getItem('homework_companion_users');
+        if (raw) {
+          const users = JSON.parse(raw);
+          const list = users
+            .filter(u => u.email !== userEmail)
+            .map(u => ({
+              email: u.email,
+              name: u.name || u.email.split('@')[0],
+              role: u.role || 'Student'
+            }));
+          setContacts(list);
+        }
+      } catch (err) {
+        console.warn('Local storage contacts fetch failed:', err);
+      }
     };
     buildContacts();
   }, [userEmail]);
