@@ -15,7 +15,7 @@ export const isSubscriptionApiConfigured = () => !!API_BASE;
 export async function getSubscriptionStatus(userId) {
   if (!userId) return { plan: 'free' };
   if (!API_BASE) {
-    return { plan: 'pro' };
+    return { plan: 'free' };
   }
   try {
     const res = await fetch(`${API_BASE}/subscription/status?userId=${encodeURIComponent(userId)}`);

@@ -1270,8 +1270,8 @@ export default function App() {
   const [profileImage, setProfileImage] = useState(null);
   const [profileData, setProfileData] = useState({ name: '', grade: '', school: '', favoriteSubject: '', email: '', gamificationLevel: 'simple' });
   const [selectedPlan, setSelectedPlan] = useState('pro');
-  const FULL_ACCESS_RELEASE = true; // Toggle this to false to re-enable strict paywalls
-  const [subscriptionPlan, setSubscriptionPlan] = useState('pro');
+  const FULL_ACCESS_RELEASE = false; // Toggle this to false to re-enable strict paywalls
+  const [subscriptionPlan, setSubscriptionPlan] = useState('free');
   const hasPremiumAccess = subscriptionPlan === 'pro' || FULL_ACCESS_RELEASE;
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
