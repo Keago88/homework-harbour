@@ -117,17 +117,18 @@ const noScrollbarStyles = `
 
   /* Glassmorphism Utilities */
   .glass-panel {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(30, 41, 59, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   }
 
   @keyframes blob {
@@ -2781,18 +2782,24 @@ export default function App() {
   ];
 
   return (
-    <div className="h-[100dvh] w-full bg-slate-50 font-sans relative flex overflow-hidden">
+    <div className="h-[100dvh] w-full bg-slate-950 font-sans relative flex overflow-hidden text-slate-100">
       <style>{noScrollbarStyles}</style>
+      
+      {/* Dynamic Animated Blobs Background */}
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-violet-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob pointer-events-none z-0"></div>
+      <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-fuchsia-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
+      <div className="absolute bottom-[-10%] left-[20%] w-96 h-96 bg-emerald-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob animation-delay-4000 pointer-events-none z-0"></div>
+
 
       <input type="file" ref={profileImageInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleProfileImageChange} />
       <input type="file" ref={assignmentFileInputRef} style={{ display: 'none' }} accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.xls,.xlsx,.ppt,.pptx" onChange={handleAssignmentFileChange} />
       <input type="file" ref={csvFileInputRef} style={{ display: 'none' }} accept=".csv,text/csv,text/plain" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onloadend = () => { setCsvImportText(r.result || ''); }; r.readAsText(f); e.target.value = ''; }} />
 
       {/* Desktop left sidebar */}
-      <aside className={`hidden md:flex flex-col shrink-0 bg-white border-r border-slate-100 transition-all duration-300 z-30 ${sidebarCollapsed ? 'w-[68px]' : 'w-56'}`}>
-        <div className={`h-14 flex items-center border-b border-slate-100 shrink-0 ${sidebarCollapsed ? 'justify-center px-2' : 'px-5'}`}>
-          {!sidebarCollapsed && <span className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600 truncate">Homework Companion</span>}
-          <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className={`p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors ${sidebarCollapsed ? '' : 'ml-auto'}`}>
+      <aside className={`hidden md:flex flex-col shrink-0 glass-panel border-r border-slate-700/50 transition-all duration-300 z-30 ${sidebarCollapsed ? 'w-[68px]' : 'w-56'}`}>
+        <div className={`h-14 flex items-center border-b border-slate-700/50 shrink-0 ${sidebarCollapsed ? 'justify-center px-2' : 'px-5'}`}>
+          {!sidebarCollapsed && <span className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400 truncate">Homework Companion</span>}
+          <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className={`p-1.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-slate-100 transition-colors ${sidebarCollapsed ? '' : 'ml-auto'}`}>
             {sidebarCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
           </button>
         </div>
@@ -2800,22 +2807,22 @@ export default function App() {
           {sidebarNavItems.map(item => {
             const isActive = item.key === 'calendar' ? (activeTab === TABS.HOMEWORK && viewMode === 'calendar') : item.key === TABS.HOMEWORK ? (activeTab === TABS.HOMEWORK && viewMode !== 'calendar') : item.key === activeTab;
             return (
-              <button key={item.key} onClick={() => { if (item.action) item.action(); else setActiveTab(item.key); }} className={`w-full flex items-center gap-3 rounded-xl transition-all ${sidebarCollapsed ? 'justify-center p-2.5' : 'px-3 py-2.5'} ${isActive ? 'bg-violet-50 text-violet-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'}`}>
+              <button key={item.key} onClick={() => { if (item.action) item.action(); else setActiveTab(item.key); }} className={`w-full flex items-center gap-3 rounded-xl transition-all ${sidebarCollapsed ? 'justify-center p-2.5' : 'px-3 py-2.5'} ${isActive ? 'bg-violet-500/20 text-violet-300' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`}>
                 <div className="relative shrink-0">
                   <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
                   {item.badge > 0 && <span className={`absolute -top-1.5 -right-1.5 ${item.badgeColor} text-white text-[8px] font-bold min-w-[14px] h-[14px] px-0.5 rounded-full flex items-center justify-center`}>{item.badge}</span>}
                 </div>
-                {!sidebarCollapsed && <span className={`text-sm truncate ${isActive ? 'font-bold' : 'font-medium'}`}>{item.label}</span>}
+                {!sidebarCollapsed && <span className={`text-sm truncate ${isActive ? 'font-bold text-slate-100' : 'font-medium'}`}>{item.label}</span>}
               </button>
             );
           })}
         </nav>
-        <div className={`p-3 border-t border-slate-100 ${sidebarCollapsed ? 'flex justify-center' : ''}`}>
-          <button onClick={() => { setProfileModalTab('profile'); setIsProfileSettingsOpen(true); }} className={`flex items-center gap-3 w-full rounded-xl p-2 hover:bg-slate-50 transition-colors ${sidebarCollapsed ? 'justify-center border border-transparent active:scale-95' : ''}`}>
-            <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden shrink-0 border border-violet-200">
+        <div className={`p-3 border-t border-slate-700/50 ${sidebarCollapsed ? 'flex justify-center' : ''}`}>
+          <button onClick={() => { setProfileModalTab('profile'); setIsProfileSettingsOpen(true); }} className={`flex items-center gap-3 w-full rounded-xl p-2 hover:bg-slate-800/50 transition-colors ${sidebarCollapsed ? 'justify-center border border-transparent active:scale-95' : ''}`}>
+            <div className="w-8 h-8 bg-violet-900/50 rounded-full flex items-center justify-center text-violet-300 overflow-hidden shrink-0 border border-violet-500/30">
               {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={14} />}
             </div>
-            {!sidebarCollapsed && <div className="min-w-0"><p className="text-xs font-bold text-slate-700 truncate">{appUser.name}</p><p className="text-[10px] text-slate-400 capitalize">{appUser.role}</p></div>}
+            {!sidebarCollapsed && <div className="min-w-0 text-left"><p className="text-xs font-bold text-slate-200 truncate">{appUser.name}</p><p className="text-[10px] text-slate-400 capitalize">{appUser.role}</p></div>}
           </button>
         </div>
       </aside>
@@ -2823,7 +2830,7 @@ export default function App() {
       {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="h-14 bg-white border-b border-slate-100 flex items-center gap-3 px-4 md:px-6 shrink-0 z-20">
+        <header className="h-14 glass-panel border-b border-slate-700/50 flex items-center gap-3 px-4 md:px-6 shrink-0 z-20">
           <div className="flex-1 max-w-xs relative">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
@@ -2836,14 +2843,14 @@ export default function App() {
               className="w-full pl-8 pr-8 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400 text-slate-700"
             />
             {dashboardSearch && (
-              <button onClick={() => { setDashboardSearch(''); setSearchOpen(false); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <button onClick={() => { setDashboardSearch(''); setSearchOpen(false); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200">
                 <X size={13} />
               </button>
             )}
           </div>
 
           <div className="flex items-center gap-2">
-            <button onClick={() => setIsNotifPanelOpen(true)} className="relative p-2 text-slate-400 hover:bg-slate-50 hover:text-violet-500 rounded-lg transition-all">
+            <button onClick={() => setIsNotifPanelOpen(true)} className="relative p-2 text-slate-400 hover:bg-slate-800/50 hover:text-violet-400 rounded-lg transition-all">
               <Bell size={20} />
               {alerts.length > 0 && (
                 <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white text-[9px] font-black flex items-center justify-center rounded-full border-2 border-white">
@@ -2851,12 +2858,12 @@ export default function App() {
                 </span>
               )}
             </button>
-            <div className="w-px h-6 bg-slate-100 mx-1 hidden sm:block" />
-            <button onClick={() => setIsProfileSettingsOpen(true)} className="flex items-center gap-2 p-1 hover:bg-slate-50 rounded-lg transition-all group">
-              <div className="w-7 h-7 rounded-lg bg-violet-100 flex items-center justify-center text-violet-500 overflow-hidden border border-violet-200 group-hover:border-violet-300">
+            <div className="w-px h-6 bg-slate-700/50 mx-1 hidden sm:block" />
+            <button onClick={() => setIsProfileSettingsOpen(true)} className="flex items-center gap-2 p-1 hover:bg-slate-800/50 rounded-lg transition-all group">
+              <div className="w-7 h-7 rounded-lg bg-violet-900/50 flex items-center justify-center text-violet-300 overflow-hidden border border-violet-500/30 group-hover:border-violet-500/60">
                 {profileImage ? <img src={profileImage} className="w-full h-full object-cover" alt="" /> : <User size={14} />}
               </div>
-              <ChevronRight size={14} className="text-slate-300 group-hover:text-slate-500" />
+              <ChevronRight size={14} className="text-slate-400 group-hover:text-slate-200" />
             </button>
           </div>
 
@@ -2990,10 +2997,10 @@ export default function App() {
         <div className="flex-1 overflow-y-auto no-scrollbar px-4 md:px-8 pb-24 md:pb-8 pt-6">
 
         {activeTab === TABS.OVERVIEW && (
-          <div className="space-y-5 animate-in fade-in text-slate-800 max-w-4xl">
+          <div className="space-y-5 animate-in fade-in text-slate-100 max-w-4xl">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h1 className="text-xl md:text-2xl font-black text-slate-800">{copy.welcome}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600">{appUser.name.split(' ')[0]?.toUpperCase() || appUser.name}</span></h1>
+                <h1 className="text-xl md:text-2xl font-black text-slate-100">{copy.welcome}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">{appUser.name.split(' ')[0]?.toUpperCase() || appUser.name}</span></h1>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> {copy.status} • {localTime || '--:--:--'} • Session {sessionTime}</p>
               </div>
               {alerts.length > 0 && (
@@ -3005,20 +3012,20 @@ export default function App() {
             </div>
 
             {/* Summary cards - dense, actionable */}
-            <div className="grid grid-cols-3 gap-3">
-              <div onClick={() => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.OVERDUE); }} className="bg-white p-4 rounded-xl cursor-pointer hover:shadow-md transition-all border border-slate-100 group">
-                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-rose-500 uppercase tracking-wider">{copy.cardLate}</p><ChevronRight size={14} className="text-slate-300 group-hover:text-rose-400 transition-colors" /></div>
-                <p className="text-2xl font-black text-rose-600">{stats.overdue}</p>
+            <div className="grid grid-cols-3 gap-3 drop-shadow-xl">
+              <div onClick={() => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.OVERDUE); }} className="glass-card border-slate-700/50 p-4 rounded-xl cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:border-slate-500/50 transition-all group">
+                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-rose-400 uppercase tracking-wider">{copy.cardLate}</p><ChevronRight size={14} className="text-slate-500 group-hover:text-rose-300 transition-colors" /></div>
+                <p className="text-2xl font-black text-rose-500 drop-shadow-md">{stats.overdue}</p>
                 <p className="text-[10px] font-medium text-slate-400 mt-0.5">{stats.overdue > 0 ? copy.alertsNeedAttention : copy.statAllCaughtUp}</p>
               </div>
-              <div onClick={() => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.DUE); }} className="bg-white p-4 rounded-xl cursor-pointer hover:shadow-md transition-all border border-slate-100 group">
-                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-violet-500 uppercase tracking-wider">{copy.cardTodo}</p><ChevronRight size={14} className="text-slate-300 group-hover:text-violet-400 transition-colors" /></div>
-                <p className="text-2xl font-black text-violet-600">{stats.dueToday}</p>
+              <div onClick={() => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.DUE); }} className="glass-card border-slate-700/50 p-4 rounded-xl cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:border-slate-500/50 transition-all group">
+                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-violet-400 uppercase tracking-wider">{copy.cardTodo}</p><ChevronRight size={14} className="text-slate-500 group-hover:text-violet-300 transition-colors" /></div>
+                <p className="text-2xl font-black text-violet-400 drop-shadow-md">{stats.dueToday}</p>
                 <p className="text-[10px] font-medium text-slate-400 mt-0.5">{copy.cardTasksTodo}</p>
               </div>
-              <div onClick={() => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.COMPLETED); }} className="bg-white p-4 rounded-xl cursor-pointer hover:shadow-md transition-all border border-slate-100 group">
-                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-emerald-500 uppercase tracking-wider">{copy.cardDone}</p><ChevronRight size={14} className="text-slate-300 group-hover:text-emerald-400 transition-colors" /></div>
-                <p className="text-2xl font-black text-emerald-600">{stats.completed}</p>
+              <div onClick={() => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.COMPLETED); }} className="glass-card border-slate-700/50 p-4 rounded-xl cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:border-slate-500/50 transition-all group">
+                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-emerald-400 uppercase tracking-wider">{copy.cardDone}</p><ChevronRight size={14} className="text-slate-500 group-hover:text-emerald-300 transition-colors" /></div>
+                <p className="text-2xl font-black text-emerald-400 drop-shadow-md">{stats.completed}</p>
                 <p className="text-[10px] font-medium text-slate-400 mt-0.5">{copy.cardCompleted}</p>
               </div>
             </div>
@@ -3033,30 +3040,30 @@ export default function App() {
 
             {/* At Risk module - only show when there are assignments to base risk on */}
             {(appUser.role === ROLES.STUDENT || (appUser.role === ROLES.PARENT && selectedChildEmail)) && riskScore != null && assignments.length > 0 && (
-              <div className={`bg-white p-5 rounded-xl border border-slate-100 border-l-4 cursor-pointer hover:shadow-md transition-all ${riskScore >= 80 ? 'border-l-emerald-500' : riskScore >= 60 ? 'border-l-amber-500' : riskScore >= 40 ? 'border-l-orange-500' : 'border-l-rose-500'}`} onClick={() => setActiveTab(TABS.ANALYTICS)}>
+              <div className={`glass-card p-5 rounded-xl border border-slate-700/50 border-l-4 cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:border-slate-500/50 transition-all ${riskScore >= 80 ? 'border-l-emerald-500' : riskScore >= 60 ? 'border-l-amber-500' : riskScore >= 40 ? 'border-l-orange-500' : 'border-l-rose-500'}`} onClick={() => setActiveTab(TABS.ANALYTICS)}>
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <AlertTriangle size={14} className={riskScore >= 80 ? 'text-emerald-500' : riskScore >= 60 ? 'text-amber-500' : 'text-rose-500'} />
-                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-wider">{copy.riskTitle}</p>
+                      <AlertTriangle size={14} className={riskScore >= 80 ? 'text-emerald-400' : riskScore >= 60 ? 'text-amber-400' : 'text-rose-400'} />
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">{copy.riskTitle}</p>
                     </div>
                     <div className="flex items-baseline gap-2">
-                      <p className="text-3xl font-black text-slate-800">{riskScore}</p>
-                      <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase ${riskScore >= 80 ? 'bg-emerald-100 text-emerald-700' : riskScore >= 60 ? 'bg-amber-100 text-amber-700' : riskScore >= 40 ? 'bg-orange-100 text-orange-700' : 'bg-rose-100 text-rose-700'}`}>{riskScore >= 80 ? copy.riskLow : riskScore >= 60 ? copy.riskModerate : riskScore >= 40 ? copy.riskHigh : copy.riskCritical}</span>
+                      <p className="text-3xl font-black text-slate-100 drop-shadow-md">{riskScore}</p>
+                      <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase ${riskScore >= 80 ? 'bg-emerald-500/20 text-emerald-300' : riskScore >= 60 ? 'bg-amber-500/20 text-amber-300' : riskScore >= 40 ? 'bg-orange-500/20 text-orange-300' : 'bg-rose-500/20 text-rose-300'}`}>{riskScore >= 80 ? copy.riskLow : riskScore >= 60 ? copy.riskModerate : riskScore >= 40 ? copy.riskHigh : copy.riskCritical}</span>
                     </div>
                     {riskReasons.length > 0 && (
-                      <p className="text-xs text-slate-500 mt-1.5">Top reasons: {riskReasons.join(', ')}</p>
+                      <p className="text-xs text-slate-400 mt-1.5">Top reasons: {riskReasons.join(', ')}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
-                    {forecast && forecast.trendDirection && <span className={`px-2 py-0.5 rounded-lg text-xs font-bold ${forecast.trendDirection === 'Upward' ? 'bg-emerald-100 text-emerald-700' : forecast.trendDirection === 'Downward' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600'}`}>{forecast.trendDirection}</span>}
-                    {forecast && forecast.projectedGrade != null && <span className="text-sm font-black text-slate-600">{forecast.projectedGrade}%</span>}
+                    {forecast && forecast.trendDirection && <span className={`px-2 py-0.5 rounded-lg text-xs font-bold ${forecast.trendDirection === 'Upward' ? 'bg-emerald-500/20 text-emerald-300' : forecast.trendDirection === 'Downward' ? 'bg-rose-500/20 text-rose-300' : 'bg-slate-700/50 text-slate-300'}`}>{forecast.trendDirection}</span>}
+                    {forecast && forecast.projectedGrade != null && <span className="text-sm font-black text-slate-200">{forecast.projectedGrade}%</span>}
                   </div>
                 </div>
                 {/* Action-driven CTA */}
-                <div className="mt-3 flex items-center gap-3 bg-slate-50 p-3 rounded-lg">
-                  <Zap size={14} className="text-violet-500 shrink-0" />
-                  <p className="text-xs font-bold text-slate-700 flex-1">{actionCTA}</p>
+                <div className="mt-3 flex items-center gap-3 bg-slate-900/50 p-3 rounded-lg border border-slate-700/50">
+                  <Zap size={14} className="text-violet-400 shrink-0" />
+                  <p className="text-xs font-bold text-slate-200 flex-1">{actionCTA}</p>
                   {stats.overdue > 0 && (
                     <button onClick={() => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.OVERDUE); }} className="px-3 py-1.5 bg-violet-500 text-white text-[10px] font-bold rounded-lg shrink-0 hover:bg-violet-600 transition-colors">{copy.completeBtn}</button>
                   )}
@@ -3069,18 +3076,18 @@ export default function App() {
 
             {/* Alerts summary → opens notification panel */}
             {alerts.length > 0 && (
-              <div onClick={() => setIsNotifPanelOpen(true)} className="bg-white p-4 rounded-xl border border-slate-100 border-l-4 border-l-amber-500 cursor-pointer hover:shadow-md transition-all">
+              <div onClick={() => setIsNotifPanelOpen(true)} className="glass-card p-4 rounded-xl border border-slate-700/50 border-l-4 border-l-amber-500 cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:border-slate-500/50 transition-all">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[10px] font-black text-amber-600 uppercase tracking-wider">Alerts</p>
-                  <span className="text-[10px] font-bold text-violet-500">{copy.viewAll}</span>
+                  <p className="text-[10px] font-black text-amber-400 uppercase tracking-wider">Alerts</p>
+                  <span className="text-[10px] font-bold text-violet-400">{copy.viewAll}</span>
                 </div>
                 {alerts.slice(0, 2).map(a => (
                   <div key={a.id} className="flex items-center gap-2 text-xs py-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
-                    <span className="font-medium text-slate-600 truncate">{a.message}</span>
+                    <span className="font-medium text-slate-300 truncate">{a.message}</span>
                   </div>
                 ))}
-                {alerts.length > 2 && <p className="text-[10px] text-slate-400 mt-1">+{alerts.length - 2} more</p>}
+                {alerts.length > 2 && <p className="text-[10px] text-slate-500 mt-1">+{alerts.length - 2} more</p>}
               </div>
             )}
 
@@ -3101,41 +3108,41 @@ export default function App() {
             )}
 
             {/* Two-column: Focus Area (left) + Recent & Next Up (right) */}
-            <div className="grid md:grid-cols-5 gap-5">
+            <div className="grid md:grid-cols-5 gap-5 pb-8">
               <div className="md:col-span-3 space-y-4">
-                <div className="bg-white rounded-xl p-5 border border-slate-100">
-                  <p className="text-[10px] font-black text-violet-500 uppercase tracking-widest mb-3">{copy.focusLabel}</p>
-                  <div className="mb-3 bg-violet-50 p-3 rounded-lg flex items-center gap-3">
-                    <Zap size={14} className="text-violet-500 shrink-0" />
-                    <p className="text-xs font-bold text-slate-700 leading-snug">{actionCTA}</p>
+                <div className="glass-card rounded-xl p-5 border border-slate-700/50">
+                  <p className="text-[10px] font-black text-violet-400 uppercase tracking-widest mb-3">{copy.focusLabel}</p>
+                  <div className="mb-3 bg-violet-900/30 border border-violet-500/20 p-3 rounded-lg flex items-center gap-3">
+                    <Zap size={14} className="text-violet-400 shrink-0" />
+                    <p className="text-xs font-bold text-slate-200 leading-snug">{actionCTA}</p>
                   </div>
                   {(() => {
                     const next = assignments.find(a => a.status === 'Pending');
                     if (!next) return (
-                      <div className="text-center py-8 text-slate-400 rounded-xl bg-slate-50">
+                      <div className="text-center py-8 text-slate-400 rounded-xl bg-slate-900/50 border border-slate-700/50">
                         <p className="font-bold">{copy.allCaughtUp}</p>
-                        <p className="text-xs mt-1">Great job clearing your list.</p>
+                        <p className="text-xs mt-1 text-slate-500">Great job clearing your list.</p>
                       </div>
                     );
                     return (
-                      <div className="bg-slate-50 rounded-xl p-5 border-l-4 border-violet-500">
+                      <div className="bg-slate-900/50 rounded-xl p-5 border-l-4 border-violet-500 border border-slate-700/50">
                         <div className="flex items-start gap-4">
                           <div className="relative w-20 h-20 shrink-0">
                             <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                              <path fill="none" stroke="rgb(203 213 225)" strokeWidth="3" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                              <path fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                               <path fill="none" stroke="url(#violetGrad)" strokeWidth="3" strokeDasharray={`${getAssignmentProgress(next)}, ${100 - getAssignmentProgress(next)}`} strokeLinecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                               <defs><linearGradient id="violetGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#8b5cf6" /><stop offset="100%" stopColor="#d946ef" /></linearGradient></defs>
                             </svg>
-                            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-slate-700">{getAssignmentProgress(next)}%</span>
+                            <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-slate-200">{getAssignmentProgress(next)}%</span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <span className="inline-block px-2 py-0.5 rounded-full bg-violet-100 text-violet-600 text-[10px] font-black uppercase mb-2">{copy.comingUpLabel}</span>
-                            <p className="text-[10px] text-violet-500 font-medium mb-0.5">{next.subject}</p>
-                            <h4 className="font-black text-slate-800 text-lg leading-tight">{next.title}</h4>
-                            <p className="text-xs text-slate-500 mt-1 line-clamp-2">{next.description || copy.notesPlaceholder}</p>
+                            <span className="inline-block px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 text-[10px] font-black uppercase mb-2">{copy.comingUpLabel}</span>
+                            <p className="text-[10px] text-violet-400 font-medium mb-0.5">{next.subject}</p>
+                            <h4 className="font-black text-slate-100 text-lg leading-tight drop-shadow-md">{next.title}</h4>
+                            <p className="text-xs text-slate-400 mt-1 line-clamp-2">{next.description || copy.notesPlaceholder}</p>
                             <div className="flex flex-wrap items-center gap-2 mt-3">
-                              <span className="text-[10px] font-bold text-violet-600">{getTimeUntilDeadline(next.dueDate)}</span>
-                              <span className="text-[10px] font-black text-slate-600">{next.priority === 'High' ? copy.priorityHigh : copy.filterDue}</span>
+                              <span className="text-[10px] font-bold text-violet-400">{getTimeUntilDeadline(next.dueDate)}</span>
+                              <span className="text-[10px] font-black text-slate-400">{next.priority === 'High' ? copy.priorityHigh : copy.filterDue}</span>
                             </div>
                             <button onClick={() => { setSelectedAssignment(next); setIsUploadModalOpen(true); }} className="mt-4 w-full py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold rounded-xl text-sm hover:opacity-90 transition-opacity">Open</button>
                           </div>
@@ -3147,38 +3154,38 @@ export default function App() {
               </div>
 
               <div className="md:col-span-2 space-y-4">
-                <div className="bg-white rounded-xl p-5 border border-slate-100">
+                <div className="glass-card rounded-xl p-5 border border-slate-700/50">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-[10px] font-black text-violet-500 uppercase tracking-widest">{copy.recentLabel}</p>
-                    <button onClick={() => setIsActivityLogOpen(true)} className="text-[10px] font-bold text-violet-500 hover:text-violet-600">{copy.viewAll}</button>
+                    <p className="text-[10px] font-black text-violet-400 uppercase tracking-widest">{copy.recentLabel}</p>
+                    <button onClick={() => setIsActivityLogOpen(true)} className="text-[10px] font-bold text-violet-400 hover:text-violet-300">{copy.viewAll}</button>
                   </div>
                   <div className="space-y-3">
                     {recentHistory.length === 0 ? (
                       <p className="text-xs text-slate-400 text-center py-4">No activity yet</p>
                     ) : recentHistory.map((item) => (
-                      <div key={item.id} className="flex items-start gap-3 pb-3 border-b border-slate-100 last:border-0">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${item.type === 'success' ? 'bg-emerald-100 text-emerald-600' : 'bg-violet-100 text-violet-600'}`}>
+                      <div key={item.id} className="flex items-start gap-3 pb-3 border-b border-slate-800 last:border-0">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${item.type === 'success' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-violet-900/50 text-violet-400 border border-violet-500/30'}`}>
                           {item.type === 'success' ? <CheckCircle2 size={16} /> : <History size={16} />}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-bold text-slate-700">{item.title}</p>
+                          <p className="text-xs font-bold text-slate-200">{item.title}</p>
                           <p className="text-[10px] text-slate-400 font-medium">{item.time}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="bg-white rounded-xl p-5 border border-slate-100">
+                <div className="glass-card rounded-xl p-5 border border-slate-700/50">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-[10px] font-black text-violet-500 uppercase tracking-widest">{copy.comingUpLabel}</p>
-                    <Calendar size={14} className="text-violet-500" />
+                    <p className="text-[10px] font-black text-violet-400 uppercase tracking-widest">{copy.comingUpLabel}</p>
+                    <Calendar size={14} className="text-violet-400" />
                   </div>
                   <div className="space-y-3">
                     {nextUpAssignments.length > 0 ? nextUpAssignments.map((a) => (
-                      <div key={a.id} onClick={() => { setSelectedAssignment(a); setIsUploadModalOpen(true); }} className="flex items-center gap-3 cursor-pointer hover:bg-white/50 p-2 rounded-xl -mx-2 transition-colors">
-                        <span className="text-[10px] font-black text-violet-600 shrink-0">{new Date(a.dueDate).getDate()} {new Date(a.dueDate).toLocaleString('default',{month:'short'}).toUpperCase()}</span>
-                        <p className="text-sm font-bold text-slate-700 truncate">{a.title}</p>
-                        <ChevronRight size={16} className="text-slate-400 shrink-0" />
+                      <div key={a.id} onClick={() => { setSelectedAssignment(a); setIsUploadModalOpen(true); }} className="flex items-center gap-3 cursor-pointer hover:bg-slate-800/50 p-2 rounded-xl -mx-2 transition-colors">
+                        <span className="text-[10px] font-black text-violet-400 shrink-0">{new Date(a.dueDate).getDate()} {new Date(a.dueDate).toLocaleString('default',{month:'short'}).toUpperCase()}</span>
+                        <p className="text-sm font-bold text-slate-200 truncate">{a.title}</p>
+                        <ChevronRight size={16} className="text-slate-500 shrink-0" />
                       </div>
                     )) : (
                       <p className="text-xs text-slate-400">{copy.emptyComingUp}</p>
