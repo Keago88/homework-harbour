@@ -49,8 +49,10 @@ export function computeRiskScore(params) {
 
   // 2. Late Submission Frequency (20%) - inverse: fewer lates = higher score
   const submittedLate = assignments.filter(a => {
+    const isOverdue = (a.status !== 'Completed' && a.status !== 'Submitted') && a.dueDate && today > a.dueDate;
     const sub = a.submittedAt || (a.status === 'Completed' ? today : null);
-    return sub && a.dueDate && sub > a.dueDate;
+    const wasSubmittedLate = sub && a.dueDate && sub > a.dueDate;
+    return isOverdue || wasSubmittedLate;
   }).length;
   const latePct = total > 0 ? (submittedLate / total) * 100 : 0;
   const lateScore = Math.max(0, 100 - latePct);
