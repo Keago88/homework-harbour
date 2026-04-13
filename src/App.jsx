@@ -2083,92 +2083,352 @@ export default function App() {
       <div className="h-[100dvh] w-full bg-slate-50 font-sans relative flex overflow-hidden">
         <style>{noScrollbarStyles}</style>
 
-        {/* Desktop left sidebar - matches main app */}
-        <aside className="hidden md:flex flex-col shrink-0 bg-white border-r border-slate-100 w-56 z-30">
-          <div className="h-14 flex items-center border-b border-slate-100 shrink-0 px-5">
-            <span className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600 truncate">Homework Companion</span>
+        {/* Desktop left sidebar - matches premium dashboard */}
+        <aside className="hidden md:flex flex-col shrink-0 bg-[#0f172a] border-r border-[#1e293b] w-[260px] z-30 relative overflow-hidden">
+          {/* Logo */}
+          <div className="h-20 flex items-center shrink-0 px-6 mt-2 relative z-10">
+             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center mr-3 shadow-lg shadow-violet-500/20">
+               <Building2 size={16} className="text-white" />
+             </div>
+            <span className="text-xl font-black text-white tracking-tight">HomeworkApp</span>
           </div>
-          <nav className="flex-1 py-3 px-2 space-y-1 overflow-y-auto no-scrollbar">
+          
+          {/* Nav */}
+          <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto no-scrollbar relative z-10">
             {adminNavItems.map(item => (
-              <button key={item.key} onClick={() => setActiveTab(item.key)} className={`w-full flex items-center gap-3 rounded-xl transition-all px-3 py-2.5 ${activeTab === item.key ? 'bg-violet-50 text-violet-600' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'}`}>
+              <button key={item.key} onClick={() => setActiveTab(item.key)} className={`w-full flex items-center gap-3 rounded-xl transition-all px-4 py-3.5 ${activeTab === item.key ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/25' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`}>
                 <item.icon size={20} strokeWidth={activeTab === item.key ? 2.5 : 2} />
-                <span className={`text-sm truncate ${activeTab === item.key ? 'font-bold' : 'font-medium'}`}>{item.label}</span>
+                <span className={`text-[13px] tracking-wide ${activeTab === item.key ? 'font-bold' : 'font-semibold'}`}>{item.label}</span>
               </button>
             ))}
           </nav>
-          <div className="p-3 border-t border-slate-100">
-            <button onClick={() => setIsProfileSettingsOpen(true)} className="flex items-center gap-3 w-full rounded-xl p-2 hover:bg-slate-50 transition-colors">
-              <div className="w-8 h-8 bg-violet-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden shrink-0 border border-violet-200">
-                {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={14} />}
-              </div>
-              <div className="min-w-0"><p className="text-xs font-bold text-slate-700 truncate">{appUser.name}</p><p className="text-[10px] text-slate-400 capitalize">{appUser.role}</p></div>
-            </button>
+
+          {/* Support Widget - matching the image */}
+          <div className="mx-4 mb-4 mt-6 p-5 rounded-2xl bg-[#131d36] border border-slate-700/50 relative overflow-hidden z-10 flex flex-col items-center shadow-2xl">
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-violet-600 rounded-full blur-3xl opacity-30"></div>
+            <div className="w-[72px] h-[72px] rounded-full bg-gradient-to-b from-slate-700 to-slate-800 border-[3px] border-[#0f172a] flex items-center justify-center mb-4 translate-y-[-50%] absolute top-4 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.5)]">
+              <span className="text-3xl relative top-0.5">🧑‍💻</span>
+            </div>
+            <div className="mt-7 text-center">
+              <p className="text-white text-sm font-black mb-1.5">Hi, how can we help?</p>
+              <p className="text-slate-400 text-[10px] font-medium leading-relaxed mb-4 px-1">Contact us if you have any assistance, we will contact you as soon as possible.</p>
+              <button className="w-full py-2.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-black text-[11px] rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:-translate-y-0.5 transition-all">
+                Contact support
+              </button>
+            </div>
           </div>
         </aside>
 
         {/* Main content area */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          {/* Header bar - matches main app */}
-          <header className="h-14 bg-white border-b border-slate-100 flex items-center gap-3 px-4 md:px-6 shrink-0 z-20">
-            <div className="flex-1" />
-            <span className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 rounded-lg text-[10px] font-black text-violet-600 uppercase tracking-wider shrink-0"><Building2 size={12} /> Admin</span>
-            <div className="relative">
-              <button onClick={() => setIsQuickAddOpen(!isQuickAddOpen)} className="w-8 h-8 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-lg text-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-transform shrink-0">
-                <Plus size={16} strokeWidth={2.5} />
-              </button>
-              {isQuickAddOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setIsQuickAddOpen(false)} />
-                  <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
-                    <button onClick={() => { setIsAdminCsvImportOpen(true); setIsQuickAddOpen(false); }} className="w-full px-4 py-2.5 text-left text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-3 transition-colors"><FileSpreadsheet size={16} className="text-violet-500" /> Import CSV</button>
-                  </div>
-                </>
-              )}
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50 pb-8">
+          {/* Header bar - premium look */}
+          <header className="h-[88px] bg-slate-50 flex items-center justify-between px-8 shrink-0 z-20">
+            {/* Search */}
+            <div className="flex-1 max-w-md relative">
+              <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search"
+                className="w-full pl-12 pr-4 py-3.5 text-sm font-medium bg-white border-none rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.03)] outline-none focus:ring-2 focus:ring-violet-200 transition-all placeholder:text-slate-400 text-slate-700"
+              />
             </div>
-            <button onClick={() => setIsProfileSettingsOpen(true)} className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-violet-500 overflow-hidden border border-slate-200 transition-transform hover:scale-105 shrink-0 md:hidden">
-              {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={14} />}
-            </button>
+            
+            {/* Utilities */}
+            <div className="flex items-center gap-4">
+              <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+                <span className="text-xl">🇬🇧</span>
+              </button>
+              <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-white rounded-full shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-colors">
+                <span className="text-lg">🌙</span>
+              </button>
+              <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-white rounded-full shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative transition-colors">
+                <Bell size={18} />
+                <span className="absolute top-2.5 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-[2px] border-white focus:outline-none focus:border-white m-0 p-0 before:absolute before:inset-0 before:rounded-full before:bg-rose-500 before:animate-ping opacity-100"></span>
+              </button>
+              <div className="flex items-center gap-3 pl-4 ml-2 cursor-pointer hover:opacity-80 transition-opacity">
+                <div className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center overflow-hidden shadow-base border border-slate-100">
+                  {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={16} className="text-violet-500" />}
+                </div>
+                <div className="hidden md:block">
+                  <p className="text-sm font-bold text-slate-700 leading-tight">{appUser.name}</p>
+                  <p className="text-[11px] font-medium text-slate-400 capitalize">{appUser.role}</p>
+                </div>
+                <ChevronRight size={14} className="text-slate-400" />
+              </div>
+            </div>
           </header>
 
           {/* Scrollable content */}
           <div className="flex-1 overflow-y-auto no-scrollbar px-4 md:px-8 pb-24 md:pb-8 pt-6">
             {activeTab === TABS.OVERVIEW && (
-              <div className="space-y-5 animate-in fade-in text-slate-800 max-w-4xl">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="animate-in fade-in max-w-[1400px] mx-auto w-full">
+                
+                {/* Dashboard Title & Segment Controller */}
+                <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
                   <div>
-                    <h1 className="text-xl md:text-2xl font-black text-slate-800">{copy.welcome}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-fuchsia-600">{appUser.name.split(' ')[0]?.toUpperCase() || appUser.name}</span></h1>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5 flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> {copy.status} • {localTime || '--:--:--'} • Session {sessionTime}</p>
+                    <h1 className="text-[26px] font-black text-slate-800 tracking-tight mb-1">Overview</h1>
+                    <p className="text-[12px] font-medium text-slate-500 flex items-center gap-2">
+                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]" /> {copy.status} • Session {sessionTime}
+                    </p>
+                  </div>
+                  
+                  {/* Segmented Control like the Sales/Reps/Data toggle */}
+                  <div className="bg-white p-1 rounded-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.03)] border border-slate-100 flex items-center w-[400px]">
+                    <button className="flex-1 py-2 text-sm font-bold text-white bg-violet-500 rounded-lg shadow-sm transition-all text-center tracking-wide">Overview</button>
+                    <button className="flex-1 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors text-center tracking-wide">Schools</button>
+                    <button className="flex-1 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors text-center tracking-wide">Analytics</button>
                   </div>
                 </div>
 
-                {/* Summary cards - same style as main app */}
-                <div className="grid grid-cols-3 gap-3">
-                  <div onClick={() => setActiveTab(TABS.SCHOOL)} className="bg-white p-4 rounded-xl cursor-pointer hover:shadow-md transition-all border border-slate-100 group">
-                    <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-violet-500 uppercase tracking-wider">Schools</p><ChevronRight size={14} className="text-slate-300 group-hover:text-violet-400 transition-colors" /></div>
-                    <p className="text-2xl font-black text-violet-600">{adminSchools.length}</p>
-                    <p className="text-[10px] font-medium text-slate-400 mt-0.5">Manage schools</p>
-                  </div>
-                  <div onClick={() => setActiveTab(TABS.SCHOOL)} className="bg-white p-4 rounded-xl cursor-pointer hover:shadow-md transition-all border border-slate-100 group">
-                    <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-amber-500 uppercase tracking-wider">Teachers</p><ChevronRight size={14} className="text-slate-300 group-hover:text-amber-400 transition-colors" /></div>
-                    <p className="text-2xl font-black text-amber-600">{totalTeachers}</p>
-                    <p className="text-[10px] font-medium text-slate-400 mt-0.5">Across all schools</p>
-                  </div>
-                  <div onClick={() => setActiveTab(TABS.SCHOOL)} className="bg-white p-4 rounded-xl cursor-pointer hover:shadow-md transition-all border border-slate-100 group">
-                    <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-emerald-500 uppercase tracking-wider">Classes</p><ChevronRight size={14} className="text-slate-300 group-hover:text-emerald-400 transition-colors" /></div>
-                    <p className="text-2xl font-black text-emerald-600">{totalClasses}</p>
-                    <p className="text-[10px] font-medium text-slate-400 mt-0.5">Across all schools</p>
-                  </div>
-                </div>
+                <div className="flex gap-6 flex-col xl:flex-row">
+                  {/* Left Main Content */}
+                  <div className="flex-1 space-y-6 min-w-0">
+                    
+                    {/* Top Stat Cards Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div onClick={() => setActiveTab(TABS.SCHOOL)} className="bg-white p-5 rounded-2xl cursor-pointer hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] transition-all border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <div className="flex justify-between items-start mb-2">
+                           <div className="w-10 h-10 rounded-xl bg-violet-100 text-violet-500 flex items-center justify-center font-black text-xl"><Building2 size={20} /></div>
+                           <span className="text-[11px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-lg">+12%</span>
+                        </div>
+                        <div className="mb-2">
+                           <p className="text-[13px] font-semibold text-slate-500 mb-0.5">Total Schools</p>
+                           <h3 className="text-[28px] font-black text-slate-800 leading-none">{adminSchools.length}</h3>
+                        </div>
+                        <div className="flex items-end justify-between mt-4">
+                           <p className="text-[11px] font-semibold text-emerald-500 tracking-wide flex items-center"><span className="text-emerald-500 mr-1">▲</span> 12% from yesterday</p>
+                           <svg className="w-16 h-8 text-emerald-400 group-hover:drop-shadow-[0_4px_4px_rgba(52,211,153,0.3)] transition-all" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 25 Q 25 15 45 20 T 75 10 T 95 5" /></svg>
+                        </div>
+                      </div>
 
-                {/* Quick actions */}
-                <div className="bg-white p-5 rounded-xl border border-slate-100">
-                  <p className="text-[10px] font-black text-violet-500 uppercase tracking-widest mb-3">Quick actions</p>
-                  <div className="flex flex-wrap gap-3">
-                    <button onClick={() => setActiveTab(TABS.SCHOOL)} className="px-5 py-2.5 bg-violet-500 text-white font-bold rounded-xl text-sm hover:bg-violet-600 transition-colors flex items-center gap-2"><Building2 size={18} /> School Management</button>
-                    <button onClick={() => setActiveTab(TABS.PAYMENTS)} className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl text-sm hover:bg-slate-50 transition-colors flex items-center gap-2"><CreditCard size={18} /> Payments</button>
-                    <button onClick={() => setIsAdminCsvImportOpen(true)} className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl text-sm hover:bg-slate-50 transition-colors flex items-center gap-2"><FileSpreadsheet size={18} /> Import CSV</button>
-                    <button onClick={() => setActiveTab(TABS.SETTINGS)} className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl text-sm hover:bg-slate-50 transition-colors flex items-center gap-2"><Settings size={18} /> Settings</button>
+                      <div onClick={() => setActiveTab(TABS.SCHOOL)} className="bg-white p-5 rounded-2xl cursor-pointer hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] transition-all border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <div className="flex justify-between items-start mb-2">
+                           <div className="w-10 h-10 rounded-xl bg-violet-100 text-violet-500 flex items-center justify-center"><BarChart2 size={20} className="relative top-0.5" /></div>
+                           <span className="text-[11px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-lg">+5%</span>
+                        </div>
+                        <div className="mb-2">
+                           <p className="text-[13px] font-semibold text-slate-500 mb-0.5">Total Teachers</p>
+                           <h3 className="text-[28px] font-black text-slate-800 leading-none">{totalTeachers}</h3>
+                        </div>
+                        <div className="flex items-end justify-between mt-4">
+                           <p className="text-[11px] font-semibold text-emerald-500 tracking-wide flex items-center"><span className="text-emerald-500 mr-1">▲</span> 5% from yesterday</p>
+                           <svg className="w-16 h-8 text-emerald-400 group-hover:drop-shadow-[0_4px_4px_rgba(52,211,153,0.3)] transition-all" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 25 Q 30 10 50 15 T 80 5 T 95 2" /></svg>
+                        </div>
+                      </div>
+
+                      <div onClick={() => setActiveTab(TABS.SCHOOL)} className="bg-white p-5 rounded-2xl cursor-pointer hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] transition-all border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <div className="flex justify-between items-start mb-2">
+                           <div className="w-10 h-10 rounded-xl bg-violet-100 text-violet-500 flex items-center justify-center font-black"><Users size={20} /></div>
+                           <span className="text-[11px] font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-lg">-2%</span>
+                        </div>
+                        <div className="mb-2">
+                           <p className="text-[13px] font-semibold text-slate-500 mb-0.5">Total Classes</p>
+                           <h3 className="text-[28px] font-black text-slate-800 leading-none">{totalClasses}</h3>
+                        </div>
+                        <div className="flex items-end justify-between mt-4">
+                           <p className="text-[11px] font-semibold text-rose-500 tracking-wide flex items-center"><span className="text-rose-500 mr-1">▼</span> -2% from yesterday</p>
+                           <svg className="w-16 h-8 text-rose-400 group-hover:drop-shadow-[0_4px_4px_rgba(244,63,94,0.3)] transition-all" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 5 Q 25 10 45 5 T 75 25 T 95 20" /></svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Main Chart Section */}
+                    <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                      <div className="flex items-center justify-between mb-8">
+                         <div>
+                           <p className="text-[13px] font-bold text-slate-400 tracking-wide">Statistics</p>
+                           <h3 className="text-[20px] font-black text-slate-800">Schools report</h3>
+                         </div>
+                         <div className="flex items-center gap-3">
+                           <select className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 outline-none cursor-pointer hover:border-slate-300 transition-colors">
+                             <option>Schools</option>
+                             <option>Teachers</option>
+                           </select>
+                           <select className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 outline-none cursor-pointer hover:border-slate-300 transition-colors">
+                             <option>Monthly</option>
+                             <option>Weekly</option>
+                           </select>
+                         </div>
+                      </div>
+                      
+                      <div className="relative h-64 flex items-end justify-between gap-3 px-4">
+                        {/* Fake background lines */}
+                        <div className="absolute inset-0 flex flex-col justify-between z-0 pb-6 opacity-30 pointer-events-none">
+                          <div className="border-b border-dashed border-slate-300 w-full h-0"></div>
+                          <div className="border-b border-dashed border-slate-300 w-full h-0"></div>
+                          <div className="border-b border-dashed border-slate-300 w-full h-0"></div>
+                          <div className="border-b border-dashed border-slate-300 w-full h-0"></div>
+                          <div className="border-b border-dashed border-slate-300 w-full h-0 text-slate-400 text-[10px] font-medium absolute bottom-3 -left-4">0</div>
+                          <div className="text-slate-400 text-[10px] font-medium absolute top-[75%] -left-6">1k</div>
+                          <div className="text-slate-400 text-[10px] font-medium absolute top-[50%] -left-6">2k</div>
+                          <div className="text-slate-400 text-[10px] font-medium absolute top-[25%] -left-6">3k</div>
+                          <div className="text-slate-400 text-[10px] font-medium absolute top-0 -left-6">4k</div>
+                        </div>
+
+                        {/* Chart Bars matching image */}
+                        {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, i) => {
+                          const isJun = month === 'Jun';
+                          const heights = [40, 60, 30, 80, 50, 90, 50, 50, 75, 45, 80, 70];
+                          const height = heights[i] || 40;
+                          return (
+                            <div key={month} className="relative z-10 flex flex-col items-center flex-1 group">
+                               {isJun && (
+                                 <div className="absolute -top-14 bg-white shadow-[0_8px_20px_-5px_rgba(0,0,0,0.15)] rounded-xl py-2 px-3 border border-slate-100 z-20 min-w-[90px] text-center animate-bounce duration-3000">
+                                   <p className="text-[9px] font-semibold text-slate-400 whitespace-nowrap mb-0.5">Jul 15, 2023</p>
+                                   <p className="text-[13px] font-black text-slate-800 flex items-center justify-center gap-1"><span className="text-emerald-500">↑</span>$3,348</p>
+                                   <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b border-r border-slate-100 transform rotate-45"></div>
+                                 </div>
+                               )}
+                               <div className="w-full max-w-[28px] h-[200px] flex items-end relative overflow-hidden rounded-md cursor-pointer">
+                                  <div className={`w-full rounded-md transition-all duration-500 ${isJun ? 'bg-[#0f172a]' : 'bg-gradient-to-t from-violet-100 to-violet-300 group-hover:from-violet-200 group-hover:to-violet-400'}`} style={{ height: `${height}%` }}></div>
+                                  {isJun && <div className="absolute top-1 left-1.5 w-4 h-4 bg-violet-400 rounded-full shadow-[0_0_10px_rgba(139,92,246,0.8)] border-2 border-[#0f172a]"></div>}
+                               </div>
+                               <span className={`text-[11px] font-bold mt-4 ${isJun ? 'text-white bg-[#0f172a] px-2.5 py-0.5 rounded-md' : 'text-slate-400'}`}>{month}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Bottom Widget Row */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      
+                      {/* Donut Chart Widget */}
+                      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
+                        <div className="flex justify-between items-start mb-6">
+                          <h4 className="font-bold text-slate-800 text-[15px]">Schools Size</h4>
+                          <div className="px-2 py-1 border border-slate-200 rounded-md text-[10px] font-semibold text-slate-600 flex items-center gap-1">This Week <ChevronRight size={10} className="rotate-90"/></div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                           <div className="relative w-32 h-32 flex-shrink-0">
+                              <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90">
+                                 <circle cx="50" cy="50" r="40" fill="none" stroke="#f1f5f9" strokeWidth="16" />
+                                 <circle cx="50" cy="50" r="40" fill="none" stroke="#8b5cf6" strokeWidth="16" strokeDasharray="251.2" strokeDashoffset="62.8" className="transition-all duration-1000 ease-out" />
+                                 <circle cx="50" cy="50" r="40" fill="none" stroke="#0f172a" strokeWidth="16" strokeDasharray="251.2" strokeDashoffset="188.4" className="transition-all duration-1000 ease-out" />
+                              </svg>
+                              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                <p className="text-[9px] font-semibold text-slate-400 mb-0.5">Total Value</p>
+                                <p className="text-[16px] font-black text-slate-800">{adminSchools.length * 100}</p>
+                                <p className="text-[9px] font-bold text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded mt-0.5">↑ 24%</p>
+                              </div>
+                           </div>
+                           <div className="flex-1 space-y-3">
+                              <div>
+                                <div className="flex items-center gap-2 mb-0.5">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-[#0f172a]"></span>
+                                  <span className="text-[15px] font-black text-slate-800">12</span>
+                                </div>
+                                <span className="text-[10px] font-medium text-slate-400 ml-3.5">Large</span>
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2 mb-0.5">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-violet-500"></span>
+                                  <span className="text-[15px] font-black text-slate-800">48</span>
+                                </div>
+                                <span className="text-[10px] font-medium text-slate-400 ml-3.5">Medium</span>
+                              </div>
+                           </div>
+                        </div>
+                      </div>
+
+                      {/* Half Donut Widget */}
+                      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-bold text-slate-800 text-[15px]">About Coverage</h4>
+                          <div className="px-2 py-1 border border-slate-200 rounded-md text-[10px] font-semibold text-slate-600 flex items-center gap-1">This Week <ChevronRight size={10} className="rotate-90"/></div>
+                        </div>
+                        <p className="text-[11px] text-slate-400 mb-6">Information about school coverage</p>
+                        <div className="relative w-full h-24 overflow-hidden mb-2">
+                            <svg viewBox="0 0 200 100" className="w-full h-[200%] absolute bottom-[-100%]">
+                                <path d="M 10 100 A 90 90 0 0 1 190 100" fill="none" stroke="#ede9fe" strokeWidth="20" strokeLinecap="round" />
+                                <path d="M 10 100 A 90 90 0 0 1 80 25" fill="none" stroke="#8b5cf6" strokeWidth="20" strokeLinecap="round" className="transition-all duration-1000 ease-out" />
+                            </svg>
+                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-center">
+                              <p className="text-[10px] font-semibold text-slate-400 mb-0.5">Total</p>
+                              <p className="text-[22px] font-black text-slate-800 leading-none">{totalClasses * 30}</p>
+                              <p className="text-[10px] font-bold text-rose-500 mt-1">↓ 24%</p>
+                            </div>
+                        </div>
+                        <div className="flex justify-between mt-2 pt-2 border-t border-slate-50">
+                          <div><p className="text-[14px] font-black text-slate-800">30K</p><p className="text-[10px] text-slate-400">New Users</p></div>
+                          <div className="text-right"><p className="text-[14px] font-black text-slate-800">80K</p><p className="text-[10px] text-slate-400">Current Users</p></div>
+                        </div>
+                      </div>
+
+                      {/* Add Your Widget / Quick actions matching dark tile */}
+                      <div className="bg-[#0f172a] p-6 rounded-2xl border border-slate-800 shadow-[0_15px_30px_-10px_rgba(15,23,42,0.3)] relative overflow-hidden group cursor-pointer hover:scale-[1.01] transition-transform">
+                        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at right bottom, rgba(139, 92, 246, 0.15) 0%, transparent 60%)' }}></div>
+                        <div className="absolute right-0 bottom-0 opacity-20 w-40 h-40">
+                           <svg viewBox="0 0 100 100" className="w-full h-full text-white">
+                             <path d="M20,80 Q50,90 90,50" fill="none" stroke="currentColor" strokeWidth="4" className="animate-pulse" />
+                             <path d="M10,60 Q40,90 80,40" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.5" />
+                             <path d="M85,55 L90,50 L85,45" fill="none" stroke="currentColor" strokeWidth="4" />
+                           </svg>
+                        </div>
+                        <div className="relative z-10 h-full flex flex-col justify-between">
+                          <div>
+                            <h4 className="font-black text-white text-[24px] leading-tight mb-2">Quick<br/>Actions</h4>
+                            <p className="text-[11px] text-slate-400 leading-relaxed max-w-[140px]">Manage schools or customize operations easily.</p>
+                          </div>
+                          
+                          <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                            <button onClick={() => setIsQuickAddOpen(true)} className="w-16 h-16 rounded-full bg-violet-500 text-white flex items-center justify-center shadow-[0_0_20px_rgba(14,165,233,0.5)] transform group-hover:scale-110 transition-all border-[3px] border-[#0f172a]">
+                               <Plus size={28} strokeWidth={2.5} />
+                            </button>
+                          </div>
+                          <div className="mt-8 flex gap-2 flex-wrap max-w-[65%]">
+                            <button onClick={() => setActiveTab(TABS.SCHOOL)} className="bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors backdrop-blur-sm">Schools</button>
+                            <button onClick={() => setIsAdminCsvImportOpen(true)} className="bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors backdrop-blur-sm">Import CSV</button>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
                   </div>
+
+                  {/* Right Side Panel */}
+                  <div className="w-full xl:w-[320px] bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col shrink-0">
+                    <div className="flex border-b border-slate-100">
+                      <button className="flex-1 py-4 text-[13px] font-bold text-violet-500 border-b-2 border-violet-500 transition-colors">Top Schools</button>
+                      <button className="flex-1 py-4 text-[13px] font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors">Recent Activity</button>
+                    </div>
+                    
+                    <div className="flex-1 overflow-y-auto w-full p-0">
+                       <ul className="divide-y divide-slate-50 w-full">
+                         {adminSchools.slice(0, 7).map((s, idx) => {
+                           const tCount = s.teachers?.length || 0;
+                           const cCount = s.classes?.length || 0;
+                           const score = (tCount * 5) + cCount;
+                           const isUp = idx % 2 === 0;
+                           return (
+                             <li key={s.id || idx} className="p-4 hover:bg-slate-50 cursor-pointer transition-colors flex items-center w-full gap-4 group">
+                               <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200 shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+                                 <Building2 size={22} className="text-slate-500" />
+                               </div>
+                               <div className="flex-1 min-w-0">
+                                 <h4 className="text-[13px] font-bold text-slate-800 truncate mb-0.5">{s.name}</h4>
+                                 <p className="text-[10px] font-medium text-slate-400">{tCount} Teachers • {cCount} Classes</p>
+                               </div>
+                               <div className="text-right shrink-0">
+                                 <p className="text-[13px] font-black text-slate-700">{score > 0 ? score : 15} pts</p>
+                                 <p className={`text-[10px] font-bold mt-1 ${isUp ? 'text-emerald-500 bg-emerald-50' : 'text-rose-500 bg-rose-50'} inline-flex items-center px-1.5 py-0.5 rounded-md`}>
+                                   {isUp ? '▲' : '▼'} {Math.floor(Math.random() * 20) + 5}%
+                                 </p>
+                               </div>
+                             </li>
+                           );
+                         })}
+                         {adminSchools.length === 0 && (
+                           <li className="p-8 text-center text-slate-400 text-sm font-medium">No schools yet. Add a school to see the leaderboard.</li>
+                         )}
+                       </ul>
+                    </div>
+                    
+                    <div className="p-4 border-t border-slate-100 text-center bg-slate-50/50 mt-auto">
+                      <button onClick={() => setActiveTab(TABS.SCHOOL)} className="text-[11px] font-bold text-violet-500 hover:text-[#0284c7] tracking-wider transition-colors">SEE ALL SCHOOLS ></button>
+                    </div>
+                  </div>
+                  
                 </div>
               </div>
             )}
