@@ -923,7 +923,7 @@ const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
   };
 
   return (
-    <div className="min-h-screen wallpaper-auth flex items-center justify-center p-4 relative overflow-y-auto overflow-x-hidden text-slate-800 transition-all duration-700">
+    <div className="min-h-screen wallpaper-auth flex items-center justify-center p-4 relative overflow-y-auto overflow-x-hidden text-slate-100 drop-shadow-md transition-all duration-700">
       <style>{noScrollbarStyles}</style>
 
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -938,39 +938,39 @@ const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
           <form className="w-full space-y-4" onSubmit={handleSubmit}>
             {useFirebase && auth && (
               <>
-                <button type="button" onClick={handleGoogleSignIn} disabled={isLoading || submitting} className="w-full py-3.5 border-2 border-slate-200 rounded-2xl font-bold text-slate-700 text-sm hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 bg-white/50">
+                <button type="button" onClick={handleGoogleSignIn} disabled={isLoading || submitting} className="w-full py-3.5 border-2 border-slate-600/50 rounded-2xl font-bold text-slate-200 text-sm hover:bg-slate-900/50 transition-colors flex items-center justify-center gap-2 glass-card border-slate-700/50/50">
                   <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
                   Sign up with Google
                 </button>
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 h-px bg-slate-200" /><span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">or</span><div className="flex-1 h-px bg-slate-200" />
+                  <div className="flex-1 h-px bg-slate-200" /><span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">or</span><div className="flex-1 h-px bg-slate-200" />
                 </div>
               </>
             )}
-            <div className="bg-white/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm focus-within:ring-2 focus-within:ring-violet-400 transition-all">
+            <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm focus-within:ring-2 focus-within:ring-violet-400 transition-all">
               <UserIcon size={18} className="text-violet-400" />
-              <input type="text" placeholder="First Name" className="bg-transparent outline-none flex-1 text-sm font-bold text-slate-700 placeholder:text-slate-400" value={formData.name} onChange={(e) => setFormData(prev => ({...prev, name: e.target.value}))} required />
+              <input type="text" placeholder="First Name" className="bg-transparent outline-none flex-1 text-sm font-bold text-slate-200 placeholder:text-slate-400" value={formData.name} onChange={(e) => setFormData(prev => ({...prev, name: e.target.value}))} required />
             </div>
             <div className="w-full">
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">I am a</label>
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">I am a</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[ROLES.STUDENT, ROLES.PARENT, ROLES.TEACHER, ROLES.ADMIN].map(r => (
-                  <button key={r} type="button" onClick={() => setFormData(prev => ({...prev, role: r}))} className={`flex items-center justify-center min-h-[44px] py-3 px-4 rounded-2xl text-xs font-black uppercase tracking-wider border-2 transition-all shadow-sm w-full ${formData.role === r ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-transparent bg-white/50 text-slate-400 hover:bg-white'}`}>{r}</button>
+                  <button key={r} type="button" onClick={() => setFormData(prev => ({...prev, role: r}))} className={`flex items-center justify-center min-h-[44px] py-3 px-4 rounded-2xl text-xs font-black uppercase tracking-wider border-2 transition-all shadow-sm w-full ${formData.role === r ? 'border-violet-500 bg-violet-900/30 text-violet-700' : 'border-transparent glass-card border-slate-700/50/50 text-slate-400 hover:glass-card border-slate-700/50'}`}>{r}</button>
                 ))}
               </div>
             </div>
-            <div className="bg-white/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
+            <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
               <Mail size={18} className="text-violet-400" />
               <input type="email" placeholder="Email Address" className="bg-transparent outline-none flex-1 text-sm font-medium" value={formData.email} onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))} required />
             </div>
-            <div className="bg-white/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
+            <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
               <Lock size={18} className="text-violet-400" />
               <input type="password" placeholder="Password (at least 6 letters)" className="bg-transparent outline-none flex-1 text-sm font-medium" value={formData.password} onChange={(e) => setFormData(prev => ({...prev, password: e.target.value}))} required minLength={6} />
             </div>
             {useFirebase && auth && (
               <label className="flex items-center gap-2 cursor-pointer group">
-                <input type="checkbox" checked={formData.stayLoggedIn} onChange={(e) => setFormData(prev => ({...prev, stayLoggedIn: e.target.checked}))} className="w-4 h-4 rounded border-slate-300 text-violet-500 focus:ring-violet-400 accent-violet-500" />
-                <span className="text-xs font-medium text-slate-600 group-hover:text-slate-800">Stay logged in</span>
+                <input type="checkbox" checked={formData.stayLoggedIn} onChange={(e) => setFormData(prev => ({...prev, stayLoggedIn: e.target.checked}))} className="w-4 h-4 rounded border-slate-300 text-violet-300 focus:ring-violet-400 accent-violet-500" />
+                <span className="text-xs font-medium text-slate-300 group-hover:text-slate-100 drop-shadow-md">Stay logged in</span>
               </label>
             )}
             {error && <p className="text-rose-600 text-xs font-bold">{error}</p>}
@@ -978,7 +978,7 @@ const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
               {submitting ? 'Creating...' : 'Create account'}
             </button>
           </form>
-          <button type="button" onClick={() => { setIsSignUp(false); setError(""); }} className="text-xs font-bold text-violet-400 hover:text-violet-600 mt-6 transition-colors">Already have an account? Sign in</button>
+          <button type="button" onClick={() => { setIsSignUp(false); setError(""); }} className="text-xs font-bold text-violet-400 hover:text-violet-400 mt-6 transition-colors">Already have an account? Sign in</button>
         </div>
 
         {/* Sign-in form - on left when active, slides out when sign-up active */}
@@ -986,15 +986,15 @@ const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
           {showForgotPassword ? (
             <>
               <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-600 mb-2">Reset password</h1>
-              <p className="text-xs text-slate-500 mb-6 font-medium">Enter your email and we&apos;ll send a reset link.</p>
+              <p className="text-xs text-slate-400 mb-6 font-medium">Enter your email and we&apos;ll send a reset link.</p>
               {forgotSuccess ? (
                 <div className="w-full space-y-4">
                   <p className="text-emerald-600 text-sm font-bold">Check your email for the reset link.</p>
-                  <button type="button" onClick={() => { setShowForgotPassword(false); setForgotSuccess(false); setError(""); }} className="text-xs font-bold text-violet-400 hover:text-violet-600 transition-colors">Back to sign in</button>
+                  <button type="button" onClick={() => { setShowForgotPassword(false); setForgotSuccess(false); setError(""); }} className="text-xs font-bold text-violet-400 hover:text-violet-400 transition-colors">Back to sign in</button>
                 </div>
               ) : (
                 <form className="w-full space-y-4" onSubmit={(e) => { e.preventDefault(); handleForgotPassword(); }}>
-                  <div className="bg-white/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
+                  <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
                     <Mail size={18} className="text-violet-400" />
                     <input type="email" placeholder="Email" className="bg-transparent outline-none flex-1 text-sm font-medium" value={formData.email} onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))} required />
                   </div>
@@ -1002,43 +1002,43 @@ const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
                   <button type="submit" disabled={submitting} className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white py-4 rounded-2xl font-black uppercase tracking-wider text-xs disabled:opacity-50 transition-all hover:scale-[1.02] shadow-lg shadow-violet-200">
                     {submitting ? 'Sending...' : 'Send reset link'}
                   </button>
-                  <button type="button" onClick={() => { setShowForgotPassword(false); setError(""); }} className="text-xs font-bold text-violet-400 hover:text-violet-600 transition-colors">Back to sign in</button>
+                  <button type="button" onClick={() => { setShowForgotPassword(false); setError(""); }} className="text-xs font-bold text-violet-400 hover:text-violet-400 transition-colors">Back to sign in</button>
                 </form>
               )}
             </>
           ) : (
             <>
               <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-600 mb-2">Welcome back</h1>
-              <p className="text-xs text-slate-500 mb-6 font-medium">Sign in to keep going.</p>
+              <p className="text-xs text-slate-400 mb-6 font-medium">Sign in to keep going.</p>
               <form className="w-full space-y-4" onSubmit={handleSubmit}>
                 {useFirebase && auth && (
                   <>
-                    <button type="button" onClick={handleGoogleSignIn} disabled={isLoading || submitting} className="w-full py-3.5 border-2 border-slate-200 rounded-2xl font-bold text-slate-700 text-sm hover:bg-slate-50 transition-colors flex items-center justify-center gap-2 bg-white/50">
+                    <button type="button" onClick={handleGoogleSignIn} disabled={isLoading || submitting} className="w-full py-3.5 border-2 border-slate-600/50 rounded-2xl font-bold text-slate-200 text-sm hover:bg-slate-900/50 transition-colors flex items-center justify-center gap-2 glass-card border-slate-700/50/50">
                       <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
                       Continue with Google
                     </button>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 h-px bg-slate-200" /><span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">or</span><div className="flex-1 h-px bg-slate-200" />
+                      <div className="flex-1 h-px bg-slate-200" /><span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">or</span><div className="flex-1 h-px bg-slate-200" />
                     </div>
                   </>
                 )}
-                <div className="bg-white/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
+                <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
                   <Mail size={18} className="text-violet-400" />
                   <input type="email" placeholder="Email" className="bg-transparent outline-none flex-1 text-sm font-medium" value={formData.email} onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))} required />
                 </div>
                 <div>
-                  <div className="bg-white/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
+                  <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
                     <Lock size={18} className="text-violet-400" />
                     <input type="password" placeholder="Password" className="bg-transparent outline-none flex-1 text-sm font-medium" value={formData.password} onChange={(e) => setFormData(prev => ({...prev, password: e.target.value}))} required />
                   </div>
                   <div className="flex items-center justify-between mt-2">
                     {useFirebase && auth ? (
                       <label className="flex items-center gap-2 cursor-pointer group">
-                        <input type="checkbox" checked={formData.stayLoggedIn} onChange={(e) => setFormData(prev => ({...prev, stayLoggedIn: e.target.checked}))} className="w-4 h-4 rounded border-slate-300 text-violet-500 focus:ring-violet-400 accent-violet-500" />
-                        <span className="text-xs font-medium text-slate-600 group-hover:text-slate-800">Stay logged in</span>
+                        <input type="checkbox" checked={formData.stayLoggedIn} onChange={(e) => setFormData(prev => ({...prev, stayLoggedIn: e.target.checked}))} className="w-4 h-4 rounded border-slate-300 text-violet-300 focus:ring-violet-400 accent-violet-500" />
+                        <span className="text-xs font-medium text-slate-300 group-hover:text-slate-100 drop-shadow-md">Stay logged in</span>
                       </label>
                     ) : <span />}
-                    <button type="button" onClick={() => { setShowForgotPassword(true); setError(""); }} className="text-xs font-medium text-violet-500 hover:text-violet-600 transition-colors">Forgot password?</button>
+                    <button type="button" onClick={() => { setShowForgotPassword(true); setError(""); }} className="text-xs font-medium text-violet-300 hover:text-violet-400 transition-colors">Forgot password?</button>
                   </div>
                 </div>
                 {error && <p className="text-rose-600 text-xs font-bold">{error}</p>}
@@ -1047,7 +1047,7 @@ const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
                 </button>
               </form>
               <p className="text-[10px] text-slate-400 mt-4">Secure login • POPIA-aligned</p>
-              <button type="button" onClick={() => { setIsSignUp(true); setError(""); setShowForgotPassword(false); setForgotSuccess(false); }} className="text-xs font-bold text-violet-400 hover:text-violet-600 mt-4 transition-colors">New here? Create account</button>
+              <button type="button" onClick={() => { setIsSignUp(true); setError(""); setShowForgotPassword(false); setForgotSuccess(false); }} className="text-xs font-bold text-violet-400 hover:text-violet-400 mt-4 transition-colors">New here? Create account</button>
             </>
           )}
         </div>
@@ -1056,16 +1056,16 @@ const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
         <div className={`absolute inset-y-0 right-0 w-1/2 overflow-hidden transition-transform duration-700 ease-in-out z-10 hidden md:block ${isSignUp ? '-translate-x-full' : 'translate-x-0'}`}>
           <div className={`absolute inset-0 w-[200%] flex transition-transform duration-700 ease-in-out ${isSignUp ? 'translate-x-0' : '-translate-x-1/2'}`}>
             <div className="w-1/2 h-full bg-gradient-to-br from-violet-600 to-fuchsia-700 flex flex-col items-center justify-center px-12 text-center">
-              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-6 backdrop-blur-sm"><Sparkles size={40} className="text-yellow-300" /></div>
+              <div className="w-20 h-20 glass-card border-slate-700/50/20 rounded-full flex items-center justify-center mb-6 backdrop-blur-sm"><Sparkles size={40} className="text-yellow-300" /></div>
               <h2 className="text-3xl font-black text-white mb-3">Hello!</h2>
               <p className="text-white/90 text-sm mb-8 leading-relaxed">Put in your name and make an account to start.</p>
-              <button type="button" onClick={() => { setIsSignUp(false); setError(""); setShowForgotPassword(false); setForgotSuccess(false); }} className="border-2 border-white/50 bg-white/10 backdrop-blur-md text-white px-10 py-3 rounded-2xl font-bold uppercase tracking-wider text-xs hover:bg-white hover:text-violet-600 transition-all">Sign in</button>
+              <button type="button" onClick={() => { setIsSignUp(false); setError(""); setShowForgotPassword(false); setForgotSuccess(false); }} className="border-2 border-white/50 glass-card border-slate-700/50/10 backdrop-blur-md text-white px-10 py-3 rounded-2xl font-bold uppercase tracking-wider text-xs hover:glass-card border-slate-700/50 hover:text-violet-400 transition-all">Sign in</button>
             </div>
             <div className="w-1/2 h-full bg-gradient-to-br from-violet-600 to-fuchsia-700 flex flex-col items-center justify-center px-12 text-center">
-              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-6 backdrop-blur-sm"><Target size={40} className="text-cyan-300" /></div>
+              <div className="w-20 h-20 glass-card border-slate-700/50/20 rounded-full flex items-center justify-center mb-6 backdrop-blur-sm"><Target size={40} className="text-cyan-300" /></div>
               <h2 className="text-3xl font-black text-white mb-3">Welcome back!</h2>
               <p className="text-white/90 text-sm mb-8 leading-relaxed">Sign in with your email and password.</p>
-              <button type="button" onClick={() => { setIsSignUp(true); setError(""); setShowForgotPassword(false); setForgotSuccess(false); }} className="border-2 border-white/50 bg-white/10 backdrop-blur-md text-white px-10 py-3 rounded-2xl font-bold uppercase tracking-wider text-xs hover:bg-white hover:text-violet-600 transition-all">Sign up</button>
+              <button type="button" onClick={() => { setIsSignUp(true); setError(""); setShowForgotPassword(false); setForgotSuccess(false); }} className="border-2 border-white/50 glass-card border-slate-700/50/10 backdrop-blur-md text-white px-10 py-3 rounded-2xl font-bold uppercase tracking-wider text-xs hover:glass-card border-slate-700/50 hover:text-violet-400 transition-all">Sign up</button>
             </div>
           </div>
         </div>
@@ -1112,22 +1112,22 @@ const SchoolDashboard = ({ schools, search = '', onRefresh, confirm }) => {
   };
 
   return (
-    <div className="space-y-6 text-slate-800 animate-in fade-in max-w-4xl">
-      <div className="bg-white px-4 py-2 rounded-xl inline-block border border-slate-100"><h2 className="text-2xl font-black text-slate-800 flex items-center gap-2"><Building2 size={28} className="text-violet-500" /> School Management</h2></div>
-      <div className="bg-white p-6 rounded-2xl border border-slate-100">
-        <h3 className="font-bold text-slate-800 text-lg mb-4">Create school</h3>
+    <div className="space-y-6 text-slate-100 drop-shadow-md animate-in fade-in max-w-4xl">
+      <div className="glass-card border-slate-700/50 px-4 py-2 rounded-xl inline-block border border-slate-700/50"><h2 className="text-2xl font-black text-slate-100 drop-shadow-md flex items-center gap-2"><Building2 size={28} className="text-violet-300" /> School Management</h2></div>
+      <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50">
+        <h3 className="font-bold text-slate-100 drop-shadow-md text-lg mb-4">Create school</h3>
         <div className="flex gap-2">
-          <input value={newSchoolName} onChange={(e) => setNewSchoolName(e.target.value)} placeholder="School name" className="flex-1 px-4 py-3 rounded-xl border border-slate-200 font-medium" />
+          <input value={newSchoolName} onChange={(e) => setNewSchoolName(e.target.value)} placeholder="School name" className="flex-1 px-4 py-3 rounded-xl border border-slate-600/50 font-medium" />
           <button onClick={handleCreate} className="px-6 py-3 bg-violet-500 text-white font-bold rounded-xl">Create</button>
         </div>
       </div>
       <div className="space-y-4">
         {filteredSchools.map(s => (
-          <div key={s.id} className="bg-white p-6 rounded-2xl border border-slate-100">
+          <div key={s.id} className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50">
             <div className="flex items-start justify-between gap-4 mb-3">
               <div>
-                <h4 className="font-bold text-lg text-slate-800">{s.name}</h4>
-                <p className="text-xs text-slate-500">{s.teachers?.length || 0} teachers • {s.classes?.length || 0} classes</p>
+                <h4 className="font-bold text-lg text-slate-100 drop-shadow-md">{s.name}</h4>
+                <p className="text-xs text-slate-400">{s.teachers?.length || 0} teachers • {s.classes?.length || 0} classes</p>
               </div>
               <button onClick={() => handleRemoveSchool(s)} className="px-3 py-1.5 bg-rose-100 text-rose-600 text-xs font-bold rounded-lg hover:bg-rose-200 transition-colors flex items-center gap-1.5 shrink-0"><Trash2 size={12} /> Remove school</button>
             </div>
@@ -1136,7 +1136,7 @@ const SchoolDashboard = ({ schools, search = '', onRefresh, confirm }) => {
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Teachers</p>
                 <div className="flex flex-wrap gap-2">
                   {s.teachers.map(t => (
-                    <span key={t.email} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-50 rounded-lg text-xs font-medium text-slate-700">
+                    <span key={t.email} className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-900/50 rounded-lg text-xs font-medium text-slate-200">
                       {t.name || t.email}
                       <button type="button" onClick={(e) => { e.stopPropagation(); handleRemoveTeacher(s, t.email); }} className="p-0.5 rounded hover:bg-rose-100 text-rose-500 hover:text-rose-600 transition-colors" title="Remove teacher"><Trash2 size={12} /></button>
                     </span>
@@ -1145,8 +1145,8 @@ const SchoolDashboard = ({ schools, search = '', onRefresh, confirm }) => {
               </div>
             )}
             <div className="flex flex-wrap gap-2">
-              <button onClick={() => { setAddTeacherFor(s); setTeacherForm({ email: '', name: '' }); }} className="px-3 py-1.5 bg-violet-100 text-violet-700 text-xs font-bold rounded-lg hover:bg-violet-200 transition-colors">Add teacher</button>
-              <button onClick={() => { setAddClassFor(s); setClassForm({ name: '', teacherEmail: (s.teachers?.[0]?.email) || '' }); }} className="px-3 py-1.5 bg-violet-100 text-violet-700 text-xs font-bold rounded-lg hover:bg-violet-200 transition-colors">Add class</button>
+              <button onClick={() => { setAddTeacherFor(s); setTeacherForm({ email: '', name: '' }); }} className="px-3 py-1.5 bg-violet-900/50 text-violet-700 text-xs font-bold rounded-lg hover:bg-violet-200 transition-colors">Add teacher</button>
+              <button onClick={() => { setAddClassFor(s); setClassForm({ name: '', teacherEmail: (s.teachers?.[0]?.email) || '' }); }} className="px-3 py-1.5 bg-violet-900/50 text-violet-700 text-xs font-bold rounded-lg hover:bg-violet-200 transition-colors">Add class</button>
             </div>
           </div>
         ))}
@@ -1154,23 +1154,23 @@ const SchoolDashboard = ({ schools, search = '', onRefresh, confirm }) => {
 
       {addTeacherFor && (
         <div className="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
+          <div className="glass-card border-slate-700/50 rounded-2xl w-full max-w-md p-6 shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-slate-800">Add teacher to {addTeacherFor.name}</h3>
-              <button onClick={() => { setAddTeacherFor(null); setTeacherForm({ email: '', name: '' }); }} className="p-2 bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200"><X size={18} /></button>
+              <h3 className="text-lg font-bold text-slate-100 drop-shadow-md">Add teacher to {addTeacherFor.name}</h3>
+              <button onClick={() => { setAddTeacherFor(null); setTeacherForm({ email: '', name: '' }); }} className="p-2 bg-slate-800/50 rounded-full text-slate-400 hover:bg-slate-200"><X size={18} /></button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">Email</label>
-                <input type="email" value={teacherForm.email} onChange={(e) => setTeacherForm(f => ({ ...f, email: e.target.value }))} placeholder="teacher@school.com" className="w-full px-4 py-3 rounded-xl border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-violet-400" />
+                <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Email</label>
+                <input type="email" value={teacherForm.email} onChange={(e) => setTeacherForm(f => ({ ...f, email: e.target.value }))} placeholder="teacher@school.com" className="w-full px-4 py-3 rounded-xl border border-slate-600/50 font-medium outline-none focus:ring-2 focus:ring-violet-400" />
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">Name (optional)</label>
-                <input type="text" value={teacherForm.name} onChange={(e) => setTeacherForm(f => ({ ...f, name: e.target.value }))} placeholder="Teacher name" className="w-full px-4 py-3 rounded-xl border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-violet-400" />
+                <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Name (optional)</label>
+                <input type="text" value={teacherForm.name} onChange={(e) => setTeacherForm(f => ({ ...f, name: e.target.value }))} placeholder="Teacher name" className="w-full px-4 py-3 rounded-xl border border-slate-600/50 font-medium outline-none focus:ring-2 focus:ring-violet-400" />
               </div>
             </div>
             <div className="flex gap-2 mt-6">
-              <button onClick={() => { setAddTeacherFor(null); setTeacherForm({ email: '', name: '' }); }} className="flex-1 py-3 text-slate-500 font-bold rounded-xl">Cancel</button>
+              <button onClick={() => { setAddTeacherFor(null); setTeacherForm({ email: '', name: '' }); }} className="flex-1 py-3 text-slate-400 font-bold rounded-xl">Cancel</button>
               <button onClick={handleAddTeacher} disabled={!teacherForm.email?.trim()} className="flex-1 py-3 bg-violet-500 text-white font-bold rounded-xl disabled:opacity-50">Add</button>
             </div>
           </div>
@@ -1179,23 +1179,23 @@ const SchoolDashboard = ({ schools, search = '', onRefresh, confirm }) => {
 
       {addClassFor && (
         <div className="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
+          <div className="glass-card border-slate-700/50 rounded-2xl w-full max-w-md p-6 shadow-2xl">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-slate-800">Add class to {addClassFor.name}</h3>
-              <button onClick={() => { setAddClassFor(null); setClassForm({ name: '', teacherEmail: '' }); }} className="p-2 bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200"><X size={18} /></button>
+              <h3 className="text-lg font-bold text-slate-100 drop-shadow-md">Add class to {addClassFor.name}</h3>
+              <button onClick={() => { setAddClassFor(null); setClassForm({ name: '', teacherEmail: '' }); }} className="p-2 bg-slate-800/50 rounded-full text-slate-400 hover:bg-slate-200"><X size={18} /></button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">Class name</label>
-                <input type="text" value={classForm.name} onChange={(e) => setClassForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Math 101, Period 3" className="w-full px-4 py-3 rounded-xl border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-violet-400" />
+                <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Class name</label>
+                <input type="text" value={classForm.name} onChange={(e) => setClassForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Math 101, Period 3" className="w-full px-4 py-3 rounded-xl border border-slate-600/50 font-medium outline-none focus:ring-2 focus:ring-violet-400" />
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">Teacher email (optional)</label>
-                <input type="email" value={classForm.teacherEmail} onChange={(e) => setClassForm(f => ({ ...f, teacherEmail: e.target.value }))} placeholder="teacher@school.com" className="w-full px-4 py-3 rounded-xl border border-slate-200 font-medium outline-none focus:ring-2 focus:ring-violet-400" />
+                <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">Teacher email (optional)</label>
+                <input type="email" value={classForm.teacherEmail} onChange={(e) => setClassForm(f => ({ ...f, teacherEmail: e.target.value }))} placeholder="teacher@school.com" className="w-full px-4 py-3 rounded-xl border border-slate-600/50 font-medium outline-none focus:ring-2 focus:ring-violet-400" />
               </div>
             </div>
             <div className="flex gap-2 mt-6">
-              <button onClick={() => { setAddClassFor(null); setClassForm({ name: '', teacherEmail: '' }); }} className="flex-1 py-3 text-slate-500 font-bold rounded-xl">Cancel</button>
+              <button onClick={() => { setAddClassFor(null); setClassForm({ name: '', teacherEmail: '' }); }} className="flex-1 py-3 text-slate-400 font-bold rounded-xl">Cancel</button>
               <button onClick={handleAddClass} disabled={!classForm.name?.trim()} className="flex-1 py-3 bg-violet-500 text-white font-bold rounded-xl disabled:opacity-50">Add</button>
             </div>
           </div>
@@ -1229,7 +1229,7 @@ const ParentLinkInput = ({ onLink, confirm }) => {
   };
   return (
     <div className="flex gap-2">
-      <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="e.g. TEST-1234" className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-sm font-medium" />
+      <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="e.g. TEST-1234" className="flex-1 px-4 py-2 rounded-xl border border-slate-600/50 text-sm font-medium" />
       <button onClick={handle} disabled={loading} className="px-4 py-2 bg-violet-500 text-white font-bold rounded-xl text-sm disabled:opacity-60 disabled:cursor-not-allowed">Link</button>
       {err && <p className="text-rose-600 text-xs">{err}</p>}
     </div>
@@ -1237,7 +1237,7 @@ const ParentLinkInput = ({ onLink, confirm }) => {
 };
 
 const FloatingNavItem = ({ icon: Icon, label, isActive, onClick, badgeCount, badgeColor = "bg-rose-500" }) => (
-  <button onClick={onClick} className={`flex flex-col items-center justify-center p-2 rounded-2xl min-w-[60px] transition-all ${isActive ? 'text-violet-600 bg-violet-50' : 'text-slate-400 hover:text-slate-600 hover:bg-white/50'}`}>
+  <button onClick={onClick} className={`flex flex-col items-center justify-center p-2 rounded-2xl min-w-[60px] transition-all ${isActive ? 'text-violet-400 bg-violet-900/30' : 'text-slate-400 hover:text-slate-300 hover:glass-card border-slate-700/50/50'}`}>
     <div className="relative">
       <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
       {badgeCount > 0 && (
@@ -2053,13 +2053,13 @@ export default function App() {
   if (authLoading) return (
     <div className="h-[100dvh] wallpaper-auth flex flex-col items-center justify-center relative overflow-hidden">
       <div className="w-full max-w-md px-8 space-y-4">
-        <div className="h-8 w-48 bg-white/20 rounded-xl animate-pulse" />
-        <div className="h-4 w-32 bg-white/15 rounded-lg animate-pulse" />
+        <div className="h-8 w-48 glass-card border-slate-700/50/20 rounded-xl animate-pulse" />
+        <div className="h-4 w-32 glass-card border-slate-700/50/15 rounded-lg animate-pulse" />
         <div className="grid grid-cols-3 gap-3 mt-6">
-          {[1,2,3].map(i => <div key={i} className="h-24 bg-white/10 rounded-2xl animate-pulse" style={{ animationDelay: `${i * 150}ms` }} />)}
+          {[1,2,3].map(i => <div key={i} className="h-24 glass-card border-slate-700/50/10 rounded-2xl animate-pulse" style={{ animationDelay: `${i * 150}ms` }} />)}
         </div>
-        <div className="h-32 bg-white/10 rounded-2xl animate-pulse mt-4" />
-        <div className="h-20 bg-white/10 rounded-2xl animate-pulse" />
+        <div className="h-32 glass-card border-slate-700/50/10 rounded-2xl animate-pulse mt-4" />
+        <div className="h-20 glass-card border-slate-700/50/10 rounded-2xl animate-pulse" />
       </div>
     </div>
   );
@@ -2081,7 +2081,7 @@ export default function App() {
       <>
       <input type="file" ref={profileImageInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleProfileImageChange} />
       <input type="file" ref={csvFileInputRef} style={{ display: 'none' }} accept=".csv,text/csv,text/plain" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onloadend = () => { setCsvImportText(r.result || ''); }; r.readAsText(f); e.target.value = ''; }} />
-      <div className="h-[100dvh] w-full bg-slate-50 font-sans relative flex overflow-hidden">
+      <div className="h-[100dvh] w-full bg-slate-900/50 font-sans relative flex overflow-hidden">
         <style>{noScrollbarStyles}</style>
 
         {/* Desktop left sidebar - matches premium dashboard */}
@@ -2121,37 +2121,37 @@ export default function App() {
         </aside>
 
         {/* Main content area */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50 pb-8">
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-900/50 pb-8">
           {/* Header bar - premium look */}
-          <header className="h-[88px] bg-slate-50 flex items-center justify-between px-8 shrink-0 z-20">
+          <header className="h-[88px] bg-slate-900/50 flex items-center justify-between px-8 shrink-0 z-20">
             {/* Search */}
             <div className="flex-1 max-w-md relative">
               <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search"
-                className="w-full pl-12 pr-4 py-3.5 text-sm font-medium bg-white border-none rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.03)] outline-none focus:ring-2 focus:ring-violet-200 transition-all placeholder:text-slate-400 text-slate-700"
+                className="w-full pl-12 pr-4 py-3.5 text-sm font-medium glass-card border-slate-700/50 border-none rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.03)] outline-none focus:ring-2 focus:ring-violet-200 transition-all placeholder:text-slate-400 text-slate-200"
               />
             </div>
             
             {/* Utilities */}
             <div className="flex items-center gap-4">
-              <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+              <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-300 transition-colors">
                 <span className="text-xl">🇬🇧</span>
               </button>
-              <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-white rounded-full shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-colors">
+              <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-300 glass-card border-slate-700/50 rounded-full shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-colors">
                 <span className="text-lg">🌙</span>
               </button>
-              <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-600 bg-white rounded-full shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative transition-colors">
+              <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-300 glass-card border-slate-700/50 rounded-full shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative transition-colors">
                 <Bell size={18} />
                 <span className="absolute top-2.5 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-[2px] border-white focus:outline-none focus:border-white m-0 p-0 before:absolute before:inset-0 before:rounded-full before:bg-rose-500 before:animate-ping opacity-100"></span>
               </button>
               <div className="flex items-center gap-3 pl-4 ml-2 cursor-pointer hover:opacity-80 transition-opacity">
-                <div className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center overflow-hidden shadow-base border border-slate-100">
-                  {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={16} className="text-violet-500" />}
+                <div className="w-10 h-10 rounded-full bg-violet-900/50 flex items-center justify-center overflow-hidden shadow-base border border-slate-700/50">
+                  {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={16} className="text-violet-300" />}
                 </div>
                 <div className="hidden md:block">
-                  <p className="text-sm font-bold text-slate-700 leading-tight">{appUser.name}</p>
+                  <p className="text-sm font-bold text-slate-200 leading-tight">{appUser.name}</p>
                   <p className="text-[11px] font-medium text-slate-400 capitalize">{appUser.role}</p>
                 </div>
                 <ChevronRight size={14} className="text-slate-400" />
@@ -2167,17 +2167,17 @@ export default function App() {
                 {/* Dashboard Title & Segment Controller */}
                 <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
                   <div>
-                    <h1 className="text-[26px] font-black text-slate-800 tracking-tight mb-1">Overview</h1>
-                    <p className="text-[12px] font-medium text-slate-500 flex items-center gap-2">
+                    <h1 className="text-[26px] font-black text-slate-100 drop-shadow-md tracking-tight mb-1">Overview</h1>
+                    <p className="text-[12px] font-medium text-slate-400 flex items-center gap-2">
                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]" /> {copy.status} • Session {sessionTime}
                     </p>
                   </div>
                   
                   {/* Segmented Control like the Sales/Reps/Data toggle */}
-                  <div className="bg-white p-1 rounded-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.03)] border border-slate-100 flex items-center w-[400px]">
+                  <div className="glass-card border-slate-700/50 p-1 rounded-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.03)] border border-slate-700/50 flex items-center w-[400px]">
                     <button className="flex-1 py-2 text-sm font-bold text-white bg-violet-500 rounded-lg shadow-sm transition-all text-center tracking-wide">Overview</button>
-                    <button className="flex-1 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors text-center tracking-wide">Schools</button>
-                    <button className="flex-1 py-2 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors text-center tracking-wide">Analytics</button>
+                    <button className="flex-1 py-2 text-sm font-semibold text-slate-400 hover:text-slate-100 drop-shadow-md transition-colors text-center tracking-wide">Schools</button>
+                    <button className="flex-1 py-2 text-sm font-semibold text-slate-400 hover:text-slate-100 drop-shadow-md transition-colors text-center tracking-wide">Analytics</button>
                   </div>
                 </div>
 
@@ -2187,14 +2187,14 @@ export default function App() {
                     
                     {/* Top Stat Cards Row */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div onClick={() => setActiveTab(TABS.SCHOOL)} className="bg-white p-5 rounded-2xl cursor-pointer hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] transition-all border border-slate-100 shadow-sm relative overflow-hidden group">
+                      <div onClick={() => setActiveTab(TABS.SCHOOL)} className="glass-card border-slate-700/50 p-5 rounded-2xl cursor-pointer hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] transition-all border border-slate-700/50 shadow-sm relative overflow-hidden group">
                         <div className="flex justify-between items-start mb-2">
-                           <div className="w-10 h-10 rounded-xl bg-violet-100 text-violet-500 flex items-center justify-center font-black text-xl"><Building2 size={20} /></div>
+                           <div className="w-10 h-10 rounded-xl bg-violet-900/50 text-violet-300 flex items-center justify-center font-black text-xl"><Building2 size={20} /></div>
                            <span className="text-[11px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-lg">+12%</span>
                         </div>
                         <div className="mb-2">
-                           <p className="text-[13px] font-semibold text-slate-500 mb-0.5">Total Schools</p>
-                           <h3 className="text-[28px] font-black text-slate-800 leading-none">{adminSchools.length}</h3>
+                           <p className="text-[13px] font-semibold text-slate-400 mb-0.5">Total Schools</p>
+                           <h3 className="text-[28px] font-black text-slate-100 drop-shadow-md leading-none">{adminSchools.length}</h3>
                         </div>
                         <div className="flex items-end justify-between mt-4">
                            <p className="text-[11px] font-semibold text-emerald-500 tracking-wide flex items-center"><span className="text-emerald-500 mr-1">▲</span> 12% from yesterday</p>
@@ -2202,14 +2202,14 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div onClick={() => setActiveTab(TABS.SCHOOL)} className="bg-white p-5 rounded-2xl cursor-pointer hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] transition-all border border-slate-100 shadow-sm relative overflow-hidden group">
+                      <div onClick={() => setActiveTab(TABS.SCHOOL)} className="glass-card border-slate-700/50 p-5 rounded-2xl cursor-pointer hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] transition-all border border-slate-700/50 shadow-sm relative overflow-hidden group">
                         <div className="flex justify-between items-start mb-2">
-                           <div className="w-10 h-10 rounded-xl bg-violet-100 text-violet-500 flex items-center justify-center"><BarChart2 size={20} className="relative top-0.5" /></div>
+                           <div className="w-10 h-10 rounded-xl bg-violet-900/50 text-violet-300 flex items-center justify-center"><BarChart2 size={20} className="relative top-0.5" /></div>
                            <span className="text-[11px] font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-lg">+5%</span>
                         </div>
                         <div className="mb-2">
-                           <p className="text-[13px] font-semibold text-slate-500 mb-0.5">Total Teachers</p>
-                           <h3 className="text-[28px] font-black text-slate-800 leading-none">{totalTeachers}</h3>
+                           <p className="text-[13px] font-semibold text-slate-400 mb-0.5">Total Teachers</p>
+                           <h3 className="text-[28px] font-black text-slate-100 drop-shadow-md leading-none">{totalTeachers}</h3>
                         </div>
                         <div className="flex items-end justify-between mt-4">
                            <p className="text-[11px] font-semibold text-emerald-500 tracking-wide flex items-center"><span className="text-emerald-500 mr-1">▲</span> 5% from yesterday</p>
@@ -2217,14 +2217,14 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div onClick={() => setActiveTab(TABS.SCHOOL)} className="bg-white p-5 rounded-2xl cursor-pointer hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] transition-all border border-slate-100 shadow-sm relative overflow-hidden group">
+                      <div onClick={() => setActiveTab(TABS.SCHOOL)} className="glass-card border-slate-700/50 p-5 rounded-2xl cursor-pointer hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.1)] transition-all border border-slate-700/50 shadow-sm relative overflow-hidden group">
                         <div className="flex justify-between items-start mb-2">
-                           <div className="w-10 h-10 rounded-xl bg-violet-100 text-violet-500 flex items-center justify-center font-black"><Users size={20} /></div>
+                           <div className="w-10 h-10 rounded-xl bg-violet-900/50 text-violet-300 flex items-center justify-center font-black"><Users size={20} /></div>
                            <span className="text-[11px] font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-lg">-2%</span>
                         </div>
                         <div className="mb-2">
-                           <p className="text-[13px] font-semibold text-slate-500 mb-0.5">Total Classes</p>
-                           <h3 className="text-[28px] font-black text-slate-800 leading-none">{totalClasses}</h3>
+                           <p className="text-[13px] font-semibold text-slate-400 mb-0.5">Total Classes</p>
+                           <h3 className="text-[28px] font-black text-slate-100 drop-shadow-md leading-none">{totalClasses}</h3>
                         </div>
                         <div className="flex items-end justify-between mt-4">
                            <p className="text-[11px] font-semibold text-rose-500 tracking-wide flex items-center"><span className="text-rose-500 mr-1">▼</span> -2% from yesterday</p>
@@ -2234,18 +2234,18 @@ export default function App() {
                     </div>
 
                     {/* Main Chart Section */}
-                    <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                    <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50 shadow-sm">
                       <div className="flex items-center justify-between mb-8">
                          <div>
                            <p className="text-[13px] font-bold text-slate-400 tracking-wide">Statistics</p>
-                           <h3 className="text-[20px] font-black text-slate-800">Schools report</h3>
+                           <h3 className="text-[20px] font-black text-slate-100 drop-shadow-md">Schools report</h3>
                          </div>
                          <div className="flex items-center gap-3">
-                           <select className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 outline-none cursor-pointer hover:border-slate-300 transition-colors">
+                           <select className="px-4 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-sm font-semibold text-slate-300 outline-none cursor-pointer hover:border-slate-300 transition-colors">
                              <option>Schools</option>
                              <option>Teachers</option>
                            </select>
-                           <select className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold text-slate-600 outline-none cursor-pointer hover:border-slate-300 transition-colors">
+                           <select className="px-4 py-2 bg-slate-900/50 border border-slate-600/50 rounded-lg text-sm font-semibold text-slate-300 outline-none cursor-pointer hover:border-slate-300 transition-colors">
                              <option>Monthly</option>
                              <option>Weekly</option>
                            </select>
@@ -2274,10 +2274,10 @@ export default function App() {
                           return (
                             <div key={month} className="relative z-10 flex flex-col items-center flex-1 group">
                                {isJun && (
-                                 <div className="absolute -top-14 bg-white shadow-[0_8px_20px_-5px_rgba(0,0,0,0.15)] rounded-xl py-2 px-3 border border-slate-100 z-20 min-w-[90px] text-center animate-bounce duration-3000">
+                                 <div className="absolute -top-14 glass-card border-slate-700/50 shadow-[0_8px_20px_-5px_rgba(0,0,0,0.15)] rounded-xl py-2 px-3 border border-slate-700/50 z-20 min-w-[90px] text-center animate-bounce duration-3000">
                                    <p className="text-[9px] font-semibold text-slate-400 whitespace-nowrap mb-0.5">Jul 15, 2023</p>
-                                   <p className="text-[13px] font-black text-slate-800 flex items-center justify-center gap-1"><span className="text-emerald-500">↑</span>$3,348</p>
-                                   <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-b border-r border-slate-100 transform rotate-45"></div>
+                                   <p className="text-[13px] font-black text-slate-100 drop-shadow-md flex items-center justify-center gap-1"><span className="text-emerald-500">↑</span>$3,348</p>
+                                   <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 glass-card border-slate-700/50 border-b border-r border-slate-700/50 transform rotate-45"></div>
                                  </div>
                                )}
                                <div className="w-full max-w-[28px] h-[200px] flex items-end relative overflow-hidden rounded-md cursor-pointer">
@@ -2295,10 +2295,10 @@ export default function App() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       
                       {/* Donut Chart Widget */}
-                      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
+                      <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
                         <div className="flex justify-between items-start mb-6">
-                          <h4 className="font-bold text-slate-800 text-[15px]">Schools Size</h4>
-                          <div className="px-2 py-1 border border-slate-200 rounded-md text-[10px] font-semibold text-slate-600 flex items-center gap-1">This Week <ChevronRight size={10} className="rotate-90"/></div>
+                          <h4 className="font-bold text-slate-100 drop-shadow-md text-[15px]">Schools Size</h4>
+                          <div className="px-2 py-1 border border-slate-600/50 rounded-md text-[10px] font-semibold text-slate-300 flex items-center gap-1">This Week <ChevronRight size={10} className="rotate-90"/></div>
                         </div>
                         <div className="flex items-center gap-4">
                            <div className="relative w-32 h-32 flex-shrink-0">
@@ -2309,7 +2309,7 @@ export default function App() {
                               </svg>
                               <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <p className="text-[9px] font-semibold text-slate-400 mb-0.5">Total Value</p>
-                                <p className="text-[16px] font-black text-slate-800">{adminSchools.length * 100}</p>
+                                <p className="text-[16px] font-black text-slate-100 drop-shadow-md">{adminSchools.length * 100}</p>
                                 <p className="text-[9px] font-bold text-emerald-500 bg-emerald-50 px-1.5 py-0.5 rounded mt-0.5">↑ 24%</p>
                               </div>
                            </div>
@@ -2317,14 +2317,14 @@ export default function App() {
                               <div>
                                 <div className="flex items-center gap-2 mb-0.5">
                                   <span className="w-1.5 h-1.5 rounded-full bg-[#0f172a]"></span>
-                                  <span className="text-[15px] font-black text-slate-800">12</span>
+                                  <span className="text-[15px] font-black text-slate-100 drop-shadow-md">12</span>
                                 </div>
                                 <span className="text-[10px] font-medium text-slate-400 ml-3.5">Large</span>
                               </div>
                               <div>
                                 <div className="flex items-center gap-2 mb-0.5">
                                   <span className="w-1.5 h-1.5 rounded-full bg-violet-500"></span>
-                                  <span className="text-[15px] font-black text-slate-800">48</span>
+                                  <span className="text-[15px] font-black text-slate-100 drop-shadow-md">48</span>
                                 </div>
                                 <span className="text-[10px] font-medium text-slate-400 ml-3.5">Medium</span>
                               </div>
@@ -2333,10 +2333,10 @@ export default function App() {
                       </div>
 
                       {/* Half Donut Widget */}
-                      <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
+                      <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50 shadow-sm relative overflow-hidden group cursor-pointer hover:shadow-md transition-all">
                         <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-bold text-slate-800 text-[15px]">About Coverage</h4>
-                          <div className="px-2 py-1 border border-slate-200 rounded-md text-[10px] font-semibold text-slate-600 flex items-center gap-1">This Week <ChevronRight size={10} className="rotate-90"/></div>
+                          <h4 className="font-bold text-slate-100 drop-shadow-md text-[15px]">About Coverage</h4>
+                          <div className="px-2 py-1 border border-slate-600/50 rounded-md text-[10px] font-semibold text-slate-300 flex items-center gap-1">This Week <ChevronRight size={10} className="rotate-90"/></div>
                         </div>
                         <p className="text-[11px] text-slate-400 mb-6">Information about school coverage</p>
                         <div className="relative w-full h-24 overflow-hidden mb-2">
@@ -2346,13 +2346,13 @@ export default function App() {
                             </svg>
                             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-center">
                               <p className="text-[10px] font-semibold text-slate-400 mb-0.5">Total</p>
-                              <p className="text-[22px] font-black text-slate-800 leading-none">{totalClasses * 30}</p>
+                              <p className="text-[22px] font-black text-slate-100 drop-shadow-md leading-none">{totalClasses * 30}</p>
                               <p className="text-[10px] font-bold text-rose-500 mt-1">↓ 24%</p>
                             </div>
                         </div>
                         <div className="flex justify-between mt-2 pt-2 border-t border-slate-50">
-                          <div><p className="text-[14px] font-black text-slate-800">30K</p><p className="text-[10px] text-slate-400">New Users</p></div>
-                          <div className="text-right"><p className="text-[14px] font-black text-slate-800">80K</p><p className="text-[10px] text-slate-400">Current Users</p></div>
+                          <div><p className="text-[14px] font-black text-slate-100 drop-shadow-md">30K</p><p className="text-[10px] text-slate-400">New Users</p></div>
+                          <div className="text-right"><p className="text-[14px] font-black text-slate-100 drop-shadow-md">80K</p><p className="text-[10px] text-slate-400">Current Users</p></div>
                         </div>
                       </div>
 
@@ -2378,8 +2378,8 @@ export default function App() {
                             </button>
                           </div>
                           <div className="mt-8 flex gap-2 flex-wrap max-w-[65%]">
-                            <button onClick={() => setActiveTab(TABS.SCHOOL)} className="bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors backdrop-blur-sm">Schools</button>
-                            <button onClick={() => setIsAdminCsvImportOpen(true)} className="bg-white/10 hover:bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors backdrop-blur-sm">Import CSV</button>
+                            <button onClick={() => setActiveTab(TABS.SCHOOL)} className="glass-card border-slate-700/50/10 hover:glass-card border-slate-700/50/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors backdrop-blur-sm">Schools</button>
+                            <button onClick={() => setIsAdminCsvImportOpen(true)} className="glass-card border-slate-700/50/10 hover:glass-card border-slate-700/50/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors backdrop-blur-sm">Import CSV</button>
                           </div>
                         </div>
                       </div>
@@ -2388,10 +2388,10 @@ export default function App() {
                   </div>
 
                   {/* Right Side Panel */}
-                  <div className="w-full xl:w-[320px] bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col shrink-0">
-                    <div className="flex border-b border-slate-100">
-                      <button className="flex-1 py-4 text-[13px] font-bold text-violet-500 border-b-2 border-violet-500 transition-colors">Top Schools</button>
-                      <button className="flex-1 py-4 text-[13px] font-bold text-slate-400 hover:text-slate-600 border-b-2 border-transparent transition-colors">Recent Activity</button>
+                  <div className="w-full xl:w-[320px] glass-card border-slate-700/50 rounded-2xl border border-slate-700/50 shadow-sm overflow-hidden flex flex-col shrink-0">
+                    <div className="flex border-b border-slate-700/50">
+                      <button className="flex-1 py-4 text-[13px] font-bold text-violet-300 border-b-2 border-violet-500 transition-colors">Top Schools</button>
+                      <button className="flex-1 py-4 text-[13px] font-bold text-slate-400 hover:text-slate-300 border-b-2 border-transparent transition-colors">Recent Activity</button>
                     </div>
                     
                     <div className="flex-1 overflow-y-auto w-full p-0">
@@ -2402,16 +2402,16 @@ export default function App() {
                            const score = (tCount * 5) + cCount;
                            const isUp = idx % 2 === 0;
                            return (
-                             <li key={s.id || idx} className="p-4 hover:bg-slate-50 cursor-pointer transition-colors flex items-center w-full gap-4 group">
-                               <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center border border-slate-200 shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
-                                 <Building2 size={22} className="text-slate-500" />
+                             <li key={s.id || idx} className="p-4 hover:bg-slate-900/50 cursor-pointer transition-colors flex items-center w-full gap-4 group">
+                               <div className="w-12 h-12 rounded-xl bg-slate-800/50 flex items-center justify-center border border-slate-600/50 shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+                                 <Building2 size={22} className="text-slate-400" />
                                </div>
                                <div className="flex-1 min-w-0">
-                                 <h4 className="text-[13px] font-bold text-slate-800 truncate mb-0.5">{s.name}</h4>
+                                 <h4 className="text-[13px] font-bold text-slate-100 drop-shadow-md truncate mb-0.5">{s.name}</h4>
                                  <p className="text-[10px] font-medium text-slate-400">{tCount} Teachers • {cCount} Classes</p>
                                </div>
                                <div className="text-right shrink-0">
-                                 <p className="text-[13px] font-black text-slate-700">{score > 0 ? score : 15} pts</p>
+                                 <p className="text-[13px] font-black text-slate-200">{score > 0 ? score : 15} pts</p>
                                  <p className={`text-[10px] font-bold mt-1 ${isUp ? 'text-emerald-500 bg-emerald-50' : 'text-rose-500 bg-rose-50'} inline-flex items-center px-1.5 py-0.5 rounded-md`}>
                                    {isUp ? '▲' : '▼'} {Math.floor(Math.random() * 20) + 5}%
                                  </p>
@@ -2425,8 +2425,8 @@ export default function App() {
                        </ul>
                     </div>
                     
-                    <div className="p-4 border-t border-slate-100 text-center bg-slate-50/50 mt-auto">
-                      <button onClick={() => setActiveTab(TABS.SCHOOL)} className="text-[11px] font-bold text-violet-500 hover:text-[#0284c7] tracking-wider transition-colors">SEE ALL SCHOOLS ></button>
+                    <div className="p-4 border-t border-slate-700/50 text-center bg-slate-900/50/50 mt-auto">
+                      <button onClick={() => setActiveTab(TABS.SCHOOL)} className="text-[11px] font-bold text-violet-300 hover:text-[#0284c7] tracking-wider transition-colors">SEE ALL SCHOOLS ></button>
                     </div>
                   </div>
                   
@@ -2434,9 +2434,9 @@ export default function App() {
               </div>
             )}
             {activeTab === TABS.ANALYTICS && (
-              <div className="space-y-6 text-slate-800 animate-in fade-in max-w-4xl">
+              <div className="space-y-6 text-slate-100 drop-shadow-md animate-in fade-in max-w-4xl">
                 <div className="flex items-center justify-between flex-wrap gap-3">
-                  <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2"><TrendingUp size={28} className="text-violet-500" /> {copy.analyticsTitle || 'Platform Analytics'}</h2>
+                  <h2 className="text-2xl font-black text-slate-100 drop-shadow-md flex items-center gap-2"><TrendingUp size={28} className="text-violet-300" /> {copy.analyticsTitle || 'Platform Analytics'}</h2>
                   <button onClick={() => confirm('Export platform stats as CSV?', () => {
                     const rows = adminSchools.map(s => `${s.name},${(s.teachers?.length || 0)},${(s.classes?.length || 0)}`);
                     const csv = 'School,Teachers,Classes\n' + rows.join('\n');
@@ -2445,30 +2445,30 @@ export default function App() {
                     const a = document.createElement('a'); a.href = url; a.download = 'platform-stats.csv'; a.click();
                     URL.revokeObjectURL(url);
                     showToast(copy.toastExported || 'Exported');
-                  })} className="px-3 py-1.5 bg-white/80 rounded-lg text-[10px] font-bold text-slate-600 hover:bg-white transition-colors flex items-center gap-1 border border-slate-100"><Download size={12} /> {copy.exportBtn || 'Export'}</button>
+                  })} className="px-3 py-1.5 glass-card border-slate-700/50/80 rounded-lg text-[10px] font-bold text-slate-300 hover:glass-card border-slate-700/50 transition-colors flex items-center gap-1 border border-slate-700/50"><Download size={12} /> {copy.exportBtn || 'Export'}</button>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="bg-white p-4 rounded-xl border border-slate-100">
-                    <p className="text-[10px] font-black text-violet-500 uppercase tracking-wider mb-1">Schools</p>
-                    <p className="text-2xl font-black text-slate-800">{adminSchools.length}</p>
+                  <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
+                    <p className="text-[10px] font-black text-violet-300 uppercase tracking-wider mb-1">Schools</p>
+                    <p className="text-2xl font-black text-slate-100 drop-shadow-md">{adminSchools.length}</p>
                   </div>
-                  <div className="bg-white p-4 rounded-xl border border-slate-100">
+                  <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
                     <p className="text-[10px] font-black text-amber-500 uppercase tracking-wider mb-1">Teachers</p>
-                    <p className="text-2xl font-black text-slate-800">{totalTeachers}</p>
+                    <p className="text-2xl font-black text-slate-100 drop-shadow-md">{totalTeachers}</p>
                   </div>
-                  <div className="bg-white p-4 rounded-xl border border-slate-100">
+                  <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
                     <p className="text-[10px] font-black text-emerald-500 uppercase tracking-wider mb-1">Classes</p>
-                    <p className="text-2xl font-black text-slate-800">{totalClasses}</p>
+                    <p className="text-2xl font-black text-slate-100 drop-shadow-md">{totalClasses}</p>
                   </div>
-                  <div className="bg-white p-4 rounded-xl border border-slate-100">
+                  <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
                     <p className="text-[10px] font-black text-sky-500 uppercase tracking-wider mb-1">Avg per school</p>
-                    <p className="text-2xl font-black text-slate-800">{adminSchools.length > 0 ? Math.round((totalTeachers + totalClasses) / adminSchools.length) : 0}</p>
+                    <p className="text-2xl font-black text-slate-100 drop-shadow-md">{adminSchools.length > 0 ? Math.round((totalTeachers + totalClasses) / adminSchools.length) : 0}</p>
                   </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-slate-100">
-                  <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><BarChart2 size={18} className="text-violet-500" /> Schools by size</h3>
+                <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50">
+                  <h3 className="font-bold text-slate-100 drop-shadow-md mb-4 flex items-center gap-2"><BarChart2 size={18} className="text-violet-300" /> Schools by size</h3>
                   <div className="flex items-end justify-between gap-2 h-36">
                     {adminSchools.slice(0, 7).map((s, i) => {
                       const size = (s.teachers?.length || 0) + (s.classes?.length || 0);
@@ -2494,8 +2494,8 @@ export default function App() {
                   )}
                 </div>
 
-                <div className="bg-white p-5 rounded-xl border border-slate-100">
-                  <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><PieChart size={16} className="text-violet-500" /> Schools overview</h3>
+                <div className="glass-card border-slate-700/50 p-5 rounded-xl border border-slate-700/50">
+                  <h3 className="font-bold text-slate-100 drop-shadow-md mb-4 flex items-center gap-2"><PieChart size={16} className="text-violet-300" /> Schools overview</h3>
                   <div className="space-y-2.5">
                     {adminSchools.map(s => {
                       const tCount = s.teachers?.length || 0;
@@ -2504,11 +2504,11 @@ export default function App() {
                       const pct = total > 0 ? Math.round(((tCount + cCount) / total) * 100) : 0;
                       return (
                         <div key={s.id} className="flex items-center gap-3">
-                          <span className="w-32 text-xs font-bold text-slate-700 truncate">{s.name}</span>
-                          <div className="flex-1 h-4 bg-slate-100 rounded overflow-hidden">
+                          <span className="w-32 text-xs font-bold text-slate-200 truncate">{s.name}</span>
+                          <div className="flex-1 h-4 bg-slate-800/50 rounded overflow-hidden">
                             <div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full transition-all" style={{ width: `${pct}%`, minWidth: pct > 0 ? 4 : 0 }} />
                           </div>
-                          <span className="text-[10px] font-black text-slate-500 w-16 text-right">{tCount} teachers, {cCount} classes</span>
+                          <span className="text-[10px] font-black text-slate-400 w-16 text-right">{tCount} teachers, {cCount} classes</span>
                         </div>
                       );
                     })}
@@ -2524,69 +2524,69 @@ export default function App() {
               </div>
             )}
             {activeTab === TABS.PAYMENTS && (
-              <div className="space-y-6 text-slate-800 animate-in fade-in max-w-4xl">
+              <div className="space-y-6 text-slate-100 drop-shadow-md animate-in fade-in max-w-4xl">
                 <div className="flex items-center justify-between flex-wrap gap-3">
-                  <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2"><CreditCard size={28} className="text-violet-500" /> Payments Portal</h2>
+                  <h2 className="text-2xl font-black text-slate-100 drop-shadow-md flex items-center gap-2"><CreditCard size={28} className="text-violet-300" /> Payments Portal</h2>
                 </div>
 
                 {/* Platform revenue overview */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="bg-white p-4 rounded-xl border border-slate-100">
-                    <p className="text-[10px] font-black text-violet-500 uppercase tracking-wider mb-1">Pro subscribers</p>
-                    <p className="text-2xl font-black text-slate-800">—</p>
-                    <p className="text-[10px] text-slate-500 mt-0.5">Connect API to view</p>
+                  <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
+                    <p className="text-[10px] font-black text-violet-300 uppercase tracking-wider mb-1">Pro subscribers</p>
+                    <p className="text-2xl font-black text-slate-100 drop-shadow-md">—</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Connect API to view</p>
                   </div>
-                  <div className="bg-white p-4 rounded-xl border border-slate-100">
+                  <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
                     <p className="text-[10px] font-black text-emerald-500 uppercase tracking-wider mb-1">Revenue (MTD)</p>
-                    <p className="text-2xl font-black text-slate-800">—</p>
-                    <p className="text-[10px] text-slate-500 mt-0.5">Connect API to view</p>
+                    <p className="text-2xl font-black text-slate-100 drop-shadow-md">—</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Connect API to view</p>
                   </div>
-                  <div className="bg-white p-4 rounded-xl border border-slate-100">
+                  <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
                     <p className="text-[10px] font-black text-amber-500 uppercase tracking-wider mb-1">New this month</p>
-                    <p className="text-2xl font-black text-slate-800">—</p>
-                    <p className="text-[10px] text-slate-500 mt-0.5">Connect API to view</p>
+                    <p className="text-2xl font-black text-slate-100 drop-shadow-md">—</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Connect API to view</p>
                   </div>
-                  <div className="bg-white p-4 rounded-xl border border-slate-100">
+                  <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
                     <p className="text-[10px] font-black text-sky-500 uppercase tracking-wider mb-1">Churn rate</p>
-                    <p className="text-2xl font-black text-slate-800">—</p>
-                    <p className="text-[10px] text-slate-500 mt-0.5">Connect API to view</p>
+                    <p className="text-2xl font-black text-slate-100 drop-shadow-md">—</p>
+                    <p className="text-[10px] text-slate-400 mt-0.5">Connect API to view</p>
                   </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-slate-100">
-                  <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><BarChart2 size={18} className="text-violet-500" /> Revenue overview</h3>
-                  <div className="text-center py-12 rounded-xl bg-slate-50">
+                <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50">
+                  <h3 className="font-bold text-slate-100 drop-shadow-md mb-4 flex items-center gap-2"><BarChart2 size={18} className="text-violet-300" /> Revenue overview</h3>
+                  <div className="text-center py-12 rounded-xl bg-slate-900/50">
                     <Wallet size={40} className="text-slate-200 mx-auto mb-3" />
-                    <p className="text-sm font-medium text-slate-500">Payment data coming soon</p>
+                    <p className="text-sm font-medium text-slate-400">Payment data coming soon</p>
                     <p className="text-xs text-slate-400 mt-1">Connect your payment provider (Paygate, Stripe) to see revenue and subscriber analytics</p>
                   </div>
                 </div>
 
-                <div className="bg-white p-5 rounded-xl border border-slate-100">
-                  <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2"><Lock size={18} className="text-violet-500" /> Payment security</h3>
-                  <p className="text-xs text-slate-500">All payments are processed securely via Paygate. POPIA compliant. No card data stored.</p>
+                <div className="glass-card border-slate-700/50 p-5 rounded-xl border border-slate-700/50">
+                  <h3 className="font-bold text-slate-100 drop-shadow-md mb-2 flex items-center gap-2"><Lock size={18} className="text-violet-300" /> Payment security</h3>
+                  <p className="text-xs text-slate-400">All payments are processed securely via Paygate. POPIA compliant. No card data stored.</p>
                 </div>
               </div>
             )}
             {activeTab === TABS.SETTINGS && (
-              <div className="space-y-6 text-slate-800 max-w-4xl">
+              <div className="space-y-6 text-slate-100 drop-shadow-md max-w-4xl">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h1 className="text-xl md:text-2xl font-black text-slate-800">{copy.navSettings}</h1>
+                  <h1 className="text-xl md:text-2xl font-black text-slate-100 drop-shadow-md">{copy.navSettings}</h1>
                 </div>
-                <div onClick={() => setIsProfileSettingsOpen(true)} className="bg-white p-5 rounded-xl border border-slate-100 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all">
-                  <div className="w-16 h-16 rounded-full bg-violet-100 flex items-center justify-center text-violet-600 text-2xl font-bold overflow-hidden border-4 border-white shadow-md">
+                <div onClick={() => setIsProfileSettingsOpen(true)} className="glass-card border-slate-700/50 p-5 rounded-xl border border-slate-700/50 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all">
+                  <div className="w-16 h-16 rounded-full bg-violet-900/50 flex items-center justify-center text-violet-400 text-2xl font-bold overflow-hidden border-4 border-white shadow-md">
                     {profileImage ? <img src={profileImage} alt="Profile" className="w-full h-full object-cover" /> : appUser.role[0]}
                   </div>
-                  <div><h3 className="font-bold text-slate-800 text-lg">{copy.profileTitle}</h3><p className="text-xs text-slate-500 font-medium">{copy.profileDesc}</p></div>
+                  <div><h3 className="font-bold text-slate-100 drop-shadow-md text-lg">{copy.profileTitle}</h3><p className="text-xs text-slate-400 font-medium">{copy.profileDesc}</p></div>
                   <div className="ml-auto text-violet-300"><ChevronRight size={24} /></div>
                 </div>
-                <button onClick={handleSignOut} className="w-full bg-white p-4 rounded-xl border border-slate-100 text-rose-500 font-bold flex items-center gap-3 hover:bg-rose-50 transition-colors"><LogOut size={16} /> {copy.logOut || 'Log out'}</button>
+                <button onClick={handleSignOut} className="w-full glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50 text-rose-500 font-bold flex items-center gap-3 hover:bg-rose-50 transition-colors"><LogOut size={16} /> {copy.logOut || 'Log out'}</button>
               </div>
             )}
           </div>
 
           {/* Mobile bottom nav - matches main app */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-100 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-slate-700/50 border-t border-slate-700/50 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
             <div className="flex justify-around py-1.5 px-1">
               {adminNavItems.map(item => (
                 <FloatingNavItem key={item.key} icon={item.icon} label={item.label} isActive={activeTab === item.key} onClick={() => setActiveTab(item.key)} />
@@ -2597,14 +2597,14 @@ export default function App() {
 
         {confirmDialog && (
           <div className="fixed inset-0 z-[600] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setConfirmDialog(null)}>
-            <div className="bg-white rounded-2xl w-full max-w-xs shadow-2xl p-6 text-center" onClick={e => e.stopPropagation()}>
-              <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center ${confirmDialog.variant === 'danger' ? 'bg-rose-100' : 'bg-violet-100'}`}>
-                {confirmDialog.variant === 'danger' ? <Trash2 size={22} className="text-rose-500" /> : <CheckCircle2 size={22} className="text-violet-500" />}
+            <div className="glass-card border-slate-700/50 rounded-2xl w-full max-w-xs shadow-2xl p-6 text-center" onClick={e => e.stopPropagation()}>
+              <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center ${confirmDialog.variant === 'danger' ? 'bg-rose-100' : 'bg-violet-900/50'}`}>
+                {confirmDialog.variant === 'danger' ? <Trash2 size={22} className="text-rose-500" /> : <CheckCircle2 size={22} className="text-violet-300" />}
               </div>
-              <p className="text-sm font-bold text-slate-800 mb-1">Are you sure?</p>
-              <p className="text-xs text-slate-500 mb-5 leading-relaxed">{confirmDialog.message}</p>
+              <p className="text-sm font-bold text-slate-100 drop-shadow-md mb-1">Are you sure?</p>
+              <p className="text-xs text-slate-400 mb-5 leading-relaxed">{confirmDialog.message}</p>
               <div className="flex gap-2">
-                <button onClick={() => setConfirmDialog(null)} className="flex-1 py-2.5 text-slate-500 font-bold rounded-xl text-sm hover:bg-slate-50 transition-colors border border-slate-200">Cancel</button>
+                <button onClick={() => setConfirmDialog(null)} className="flex-1 py-2.5 text-slate-400 font-bold rounded-xl text-sm hover:bg-slate-900/50 transition-colors border border-slate-600/50">Cancel</button>
                 <button onClick={() => { confirmDialog.onConfirm(); setConfirmDialog(null); }} className={`flex-1 py-2.5 text-white font-bold rounded-xl text-sm transition-colors ${confirmDialog.variant === 'danger' ? 'bg-rose-500 hover:bg-rose-600' : 'bg-violet-500 hover:bg-violet-600'}`}>Confirm</button>
               </div>
             </div>
@@ -2613,16 +2613,16 @@ export default function App() {
       </div>
       {isAdminCsvImportOpen && (
         <div className="fixed inset-0 z-[300] bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 animate-in fade-in" onClick={() => setIsAdminCsvImportOpen(false)}>
-          <div className="bg-white w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-4"><h2 className="text-xl font-black text-slate-800">Import schools from CSV</h2><button onClick={() => setIsAdminCsvImportOpen(false)} className="p-2 bg-slate-100 rounded-full text-slate-500"><X size={20} /></button></div>
-            <p className="text-xs text-slate-500 mb-2">Columns: schoolName, teacherEmail, teacherName, className</p>
-            <button type="button" onClick={() => csvFileInputRef.current?.click()} className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl font-bold text-slate-600 text-sm flex items-center justify-center gap-2 hover:border-violet-300 hover:bg-violet-50/50 transition-colors mb-3">
+          <div className="glass-card border-slate-700/50 w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4"><h2 className="text-xl font-black text-slate-100 drop-shadow-md">Import schools from CSV</h2><button onClick={() => setIsAdminCsvImportOpen(false)} className="p-2 bg-slate-800/50 rounded-full text-slate-400"><X size={20} /></button></div>
+            <p className="text-xs text-slate-400 mb-2">Columns: schoolName, teacherEmail, teacherName, className</p>
+            <button type="button" onClick={() => csvFileInputRef.current?.click()} className="w-full py-3 border-2 border-dashed border-slate-600/50 rounded-xl font-bold text-slate-300 text-sm flex items-center justify-center gap-2 hover:border-violet-300 hover:bg-violet-900/30/50 transition-colors mb-3">
               <Upload size={18} /> Choose CSV file
             </button>
             <p className="text-[10px] text-slate-400 text-center mb-2">or paste below</p>
-            <textarea value={csvImportText} onChange={(e) => setCsvImportText(e.target.value)} placeholder="schoolName,teacherEmail,teacherName,className&#10;Acme High,teacher@acme.com,John Doe,Grade 10A&#10;Acme High,jane@acme.com,Jane Smith,Grade 10B" className="w-full h-32 p-4 rounded-xl border border-slate-200 text-sm font-mono mb-4" />
+            <textarea value={csvImportText} onChange={(e) => setCsvImportText(e.target.value)} placeholder="schoolName,teacherEmail,teacherName,className&#10;Acme High,teacher@acme.com,John Doe,Grade 10A&#10;Acme High,jane@acme.com,Jane Smith,Grade 10B" className="w-full h-32 p-4 rounded-xl border border-slate-600/50 text-sm font-mono mb-4" />
             <div className="flex gap-2">
-              <button onClick={() => setIsAdminCsvImportOpen(false)} className="flex-1 py-3 text-slate-500 font-bold rounded-xl">Cancel</button>
+              <button onClick={() => setIsAdminCsvImportOpen(false)} className="flex-1 py-3 text-slate-400 font-bold rounded-xl">Cancel</button>
               <button onClick={() => {
                 const r = parseSchoolsCSV(csvImportText);
                 if (!r.ok) { showToast(r.error || 'Import failed', 'error'); return; }
@@ -2660,46 +2660,46 @@ export default function App() {
         </div>
       )}
       {isProfileSettingsOpen && (
-        <div className="fixed inset-0 z-[400] bg-white flex flex-col animate-in slide-in-from-right duration-300">
-          <div className="p-4 border-b border-slate-100 flex items-center gap-4 bg-white pt-safe"><button onClick={() => setIsProfileSettingsOpen(false)} className="p-2 hover:bg-slate-50 rounded-full"><ArrowLeft size={24} className="text-slate-800" /></button><h2 className="text-xl font-bold text-slate-800">{copy.profileTitle}</h2></div>
+        <div className="fixed inset-0 z-[400] glass-card border-slate-700/50 flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="p-4 border-b border-slate-700/50 flex items-center gap-4 glass-card border-slate-700/50 pt-safe"><button onClick={() => setIsProfileSettingsOpen(false)} className="p-2 hover:bg-slate-900/50 rounded-full"><ArrowLeft size={24} className="text-slate-100 drop-shadow-md" /></button><h2 className="text-xl font-bold text-slate-100 drop-shadow-md">{copy.profileTitle}</h2></div>
           <div className="flex-1 overflow-y-auto p-6 space-y-6">
             <div className="flex flex-col items-center">
               <div className="relative group cursor-pointer" onClick={() => profileImageInputRef.current?.click()}>
-                <div className="w-32 h-32 rounded-full bg-violet-100 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">{profileImage ? <img src={profileImage} className="w-full h-full object-cover" alt="Profile" /> : <User size={56} className="text-violet-300" />}</div>
+                <div className="w-32 h-32 rounded-full bg-violet-900/50 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">{profileImage ? <img src={profileImage} className="w-full h-full object-cover" alt="Profile" /> : <User size={56} className="text-violet-300" />}</div>
                 <div className="absolute bottom-0 right-0 bg-slate-800 text-white p-2.5 rounded-full shadow-md"><Camera size={18} /></div>
               </div>
             </div>
             <div className="space-y-4">
               <div>
                 <label className="text-xs font-bold text-slate-400 mb-2 block uppercase">Name</label>
-                <input type="text" value={profileData.name} onChange={(e) => setProfileData(p => ({ ...p, name: e.target.value }))} placeholder={copy.namePlaceholder} className="w-full bg-slate-50 p-4 rounded-2xl font-bold border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none placeholder:text-slate-400" />
+                <input type="text" value={profileData.name} onChange={(e) => setProfileData(p => ({ ...p, name: e.target.value }))} placeholder={copy.namePlaceholder} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold border border-slate-700/50 focus:ring-2 focus:ring-violet-300 outline-none placeholder:text-slate-400" />
               </div>
               <div>
                 <label className="text-xs font-bold text-slate-400 mb-2 block uppercase">Role</label>
-                <input type="text" value={appUser?.role ?? ''} readOnly disabled className="w-full bg-slate-100 p-4 rounded-2xl font-bold border border-slate-200 text-slate-600 cursor-not-allowed" />
+                <input type="text" value={appUser?.role ?? ''} readOnly disabled className="w-full bg-slate-800/50 p-4 rounded-2xl font-bold border border-slate-600/50 text-slate-300 cursor-not-allowed" />
               </div>
               <div>
                 <label className="text-xs font-bold text-slate-400 mb-2 block uppercase">School</label>
-                <input type="text" value={profileData.school} onChange={(e) => setProfileData(p => ({ ...p, school: e.target.value }))} placeholder={copy.schoolPlaceholder} className="w-full bg-slate-50 p-4 rounded-2xl font-medium border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none placeholder:text-slate-400" />
+                <input type="text" value={profileData.school} onChange={(e) => setProfileData(p => ({ ...p, school: e.target.value }))} placeholder={copy.schoolPlaceholder} className="w-full bg-slate-900/50 p-4 rounded-2xl font-medium border border-slate-700/50 focus:ring-2 focus:ring-violet-300 outline-none placeholder:text-slate-400" />
               </div>
               <div>
                 <label className="text-xs font-bold text-slate-400 mb-2 block uppercase">Email</label>
-                <input type="email" value={profileData.email} onChange={(e) => setProfileData(p => ({ ...p, email: e.target.value }))} placeholder="your@email.com" className="w-full bg-slate-50 p-4 rounded-2xl font-medium border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none" />
+                <input type="email" value={profileData.email} onChange={(e) => setProfileData(p => ({ ...p, email: e.target.value }))} placeholder="your@email.com" className="w-full bg-slate-900/50 p-4 rounded-2xl font-medium border border-slate-700/50 focus:ring-2 focus:ring-violet-300 outline-none" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <button onClick={() => { setIsProfileSettingsOpen(false); setIsSubscriptionOpen(true); }} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors group/btn">
-                <div className="flex items-center gap-3 text-slate-700 font-bold text-sm"><CreditCard size={18} className="text-violet-500" /> {copy.premium}</div>
+              <button onClick={() => { setIsProfileSettingsOpen(false); setIsSubscriptionOpen(true); }} className="flex items-center justify-between p-4 bg-slate-900/50 rounded-2xl border border-slate-700/50 hover:bg-slate-800/50 transition-colors group/btn">
+                <div className="flex items-center gap-3 text-slate-200 font-bold text-sm"><CreditCard size={18} className="text-violet-300" /> {copy.premium}</div>
                 <ChevronRight size={16} className="text-slate-300 group-hover/btn:translate-x-1 transition-transform" />
               </button>
-              <button onClick={() => { setIsProfileSettingsOpen(false); setActiveTab(TABS.SETTINGS); }} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors group/btn">
-                <div className="flex items-center gap-3 text-slate-700 font-bold text-sm"><Settings size={18} className="text-slate-500" /> {copy.navSettings}</div>
+              <button onClick={() => { setIsProfileSettingsOpen(false); setActiveTab(TABS.SETTINGS); }} className="flex items-center justify-between p-4 bg-slate-900/50 rounded-2xl border border-slate-700/50 hover:bg-slate-800/50 transition-colors group/btn">
+                <div className="flex items-center gap-3 text-slate-200 font-bold text-sm"><Settings size={18} className="text-slate-400" /> {copy.navSettings}</div>
                 <ChevronRight size={16} className="text-slate-300 group-hover/btn:translate-x-1 transition-transform" />
               </button>
             </div>
           </div>
-          <div className="p-6 border-t border-slate-100 flex gap-3 shadow-[-4px_0_12px_rgba(0,0,0,0.02)]">
-            <button onClick={() => setIsProfileSettingsOpen(false)} className="flex-1 py-4 bg-slate-100 text-slate-700 font-bold rounded-2xl">Cancel</button>
+          <div className="p-6 border-t border-slate-700/50 flex gap-3 shadow-[-4px_0_12px_rgba(0,0,0,0.02)]">
+            <button onClick={() => setIsProfileSettingsOpen(false)} className="flex-1 py-4 bg-slate-800/50 text-slate-200 font-bold rounded-2xl">Cancel</button>
             <button onClick={saveProfile} className="flex-1 py-4 bg-slate-800 text-white font-bold rounded-2xl">Save</button>
           </div>
         </div>
@@ -2709,35 +2709,35 @@ export default function App() {
         return (
         <div className="fixed inset-0 z-[500] bg-slate-900/60 backdrop-blur-md overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
-            <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 relative overflow-hidden">
-              <div className="px-6 pt-6 pb-4 border-b border-slate-100 flex items-center justify-between">
+            <div className="glass-card border-slate-700/50 rounded-3xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 relative overflow-hidden">
+              <div className="px-6 pt-6 pb-4 border-b border-slate-700/50 flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-black text-slate-800">Choose your plan</h2>
-                  <p className="text-sm text-slate-500 mt-0.5">Upgrade anytime. Cancel anytime.</p>
+                  <h2 className="text-xl font-black text-slate-100 drop-shadow-md">Choose your plan</h2>
+                  <p className="text-sm text-slate-400 mt-0.5">Upgrade anytime. Cancel anytime.</p>
                 </div>
-                <button onClick={() => setIsSubscriptionOpen(false)} className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 transition-colors"><X size={20} /></button>
+                <button onClick={() => setIsSubscriptionOpen(false)} className="p-2 rounded-xl hover:bg-slate-800/50 text-slate-400 transition-colors"><X size={20} /></button>
               </div>
               <div className="p-6 space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {SUBSCRIPTION_PLANS.map(plan => (
-                    <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedPlan === plan.id ? 'border-violet-500 bg-violet-50/50 shadow-md' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                    <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedPlan === plan.id ? 'border-violet-500 bg-violet-900/30/50 shadow-md' : 'border-slate-600/50 glass-card border-slate-700/50 hover:border-slate-300'}`}>
                       {plan.badge && <span className="absolute -top-2.5 left-4 px-2.5 py-0.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-[10px] font-black uppercase tracking-wider rounded-full">{plan.badge}</span>}
                       <div className="flex items-start justify-between mb-3">
-                        <div><h3 className="font-bold text-slate-800">{plan.name}</h3><p className="text-[11px] text-slate-500 mt-0.5">{plan.tagline}</p></div>
+                        <div><h3 className="font-bold text-slate-100 drop-shadow-md">{plan.name}</h3><p className="text-[11px] text-slate-400 mt-0.5">{plan.tagline}</p></div>
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${selectedPlan === plan.id ? 'bg-violet-500 border-violet-500' : 'border-slate-300'}`}>{selectedPlan === plan.id && <Check size={12} className="text-white" strokeWidth={3} />}</div>
                       </div>
-                      <div className="flex items-baseline gap-1"><span className="text-3xl font-black text-slate-800">R{plan.price}</span><span className="text-sm text-slate-400 font-medium">/mo</span></div>
+                      <div className="flex items-baseline gap-1"><span className="text-3xl font-black text-slate-100 drop-shadow-md">R{plan.price}</span><span className="text-sm text-slate-400 font-medium">/mo</span></div>
                     </div>
                   ))}
                 </div>
-                <div className="bg-slate-50 rounded-2xl p-5">
+                <div className="bg-slate-900/50 rounded-2xl p-5">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-3">What's included</p>
                   <div className="space-y-2">
                     {activePlan.features.map((f, i) => (
                       <div key={i} className="flex items-center gap-2.5">
                         {f.included ? <CheckCircle2 size={15} className="text-emerald-500 shrink-0" /> : <X size={15} className="text-slate-300 shrink-0" />}
-                        <span className={`text-sm font-medium ${f.included ? 'text-slate-700' : 'text-slate-400'}`}>{f.text}</span>
-                        {!f.included && selectedPlan === 'free' && <span className="text-[9px] font-bold text-violet-500 bg-violet-50 px-1.5 py-0.5 rounded ml-auto">PRO</span>}
+                        <span className={`text-sm font-medium ${f.included ? 'text-slate-200' : 'text-slate-400'}`}>{f.text}</span>
+                        {!f.included && selectedPlan === 'free' && <span className="text-[9px] font-bold text-violet-300 bg-violet-900/30 px-1.5 py-0.5 rounded ml-auto">PRO</span>}
                       </div>
                     ))}
                   </div>
@@ -2747,7 +2747,7 @@ export default function App() {
                 </div>
               </div>
               <div className="px-6 pb-6 pt-2">
-                <button onClick={handleConfirmPlan} disabled={checkoutLoading} className={`w-full py-4 font-black rounded-2xl text-base transition-all disabled:opacity-60 ${selectedPlan === 'free' ? 'bg-slate-100 text-slate-600 hover:bg-slate-200' : 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-200 hover:shadow-xl hover:shadow-violet-300 hover:scale-[1.01]'}`}>
+                <button onClick={handleConfirmPlan} disabled={checkoutLoading} className={`w-full py-4 font-black rounded-2xl text-base transition-all disabled:opacity-60 ${selectedPlan === 'free' ? 'bg-slate-800/50 text-slate-300 hover:bg-slate-200' : 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-200 hover:shadow-xl hover:shadow-violet-300 hover:scale-[1.01]'}`}>
                   {checkoutLoading ? 'Redirecting...' : selectedPlan === 'free' ? 'Stay on Free' : `Upgrade to Pro — R${activePlan.price}/mo`}
                 </button>
                 {selectedPlan !== 'free' && <p className="text-center text-[11px] text-slate-400 mt-2">You'll be redirected to secure checkout</p>}
@@ -2760,11 +2760,11 @@ export default function App() {
       {/* Toast notifications for admin */}
       <div className="fixed top-16 right-4 z-[500] space-y-2 pointer-events-none">
         {toasts.map(t => (
-          <div key={t.id} className="pointer-events-auto animate-in slide-in-from-right fade-in bg-white border border-slate-100 px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 min-w-[200px]">
+          <div key={t.id} className="pointer-events-auto animate-in slide-in-from-right fade-in glass-card border-slate-700/50 border border-slate-700/50 px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 min-w-[200px]">
             {t.type === 'success' && <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />}
             {t.type === 'info' && <AlertTriangle size={14} className="text-amber-500 shrink-0" />}
             {t.type === 'error' && <AlertTriangle size={14} className="text-rose-500 shrink-0" />}
-            <span className="text-sm font-medium text-slate-700">{t.message}</span>
+            <span className="text-sm font-medium text-slate-200">{t.message}</span>
           </div>
         ))}
       </div>
@@ -2840,7 +2840,7 @@ export default function App() {
               onFocus={() => { if (dashboardSearch) setSearchOpen(true); }}
               onBlur={() => setTimeout(() => setSearchOpen(false), 150)}
               placeholder={copy.searchPlaceholder}
-              className="w-full pl-8 pr-8 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400 text-slate-700"
+              className="w-full pl-8 pr-8 py-2 text-xs font-medium bg-slate-900/50 border border-slate-600/50 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400 text-slate-200"
             />
             {dashboardSearch && (
               <button onClick={() => { setDashboardSearch(''); setSearchOpen(false); }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200">
@@ -2926,7 +2926,7 @@ export default function App() {
               const totalResults = sections.reduce((sum, s) => sum + s.items.length, 0) + hwResults.length;
 
               return (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 max-h-96 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1 glass-card border-slate-700/50 rounded-xl shadow-xl border border-slate-700/50 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 max-h-96 overflow-y-auto">
                   {totalResults === 0 && (
                     <div className="px-4 py-3 text-xs text-slate-400 font-medium">No results found</div>
                   )}
@@ -2934,10 +2934,10 @@ export default function App() {
                     <div key={section.title}>
                       <div className="px-4 pt-2.5 pb-1 text-[10px] font-black text-slate-400 uppercase tracking-wider border-t border-slate-50 first:border-0">{section.title}</div>
                       {section.items.map((item, i) => (
-                        <button key={i} onMouseDown={() => { close(); item.action(); }} className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-slate-50 transition-colors text-left">
-                          <item.Icon size={16} className="text-violet-500 shrink-0" />
+                        <button key={i} onMouseDown={() => { close(); item.action(); }} className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-slate-900/50 transition-colors text-left">
+                          <item.Icon size={16} className="text-violet-300 shrink-0" />
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-slate-700 truncate">{item.label}</p>
+                            <p className="text-xs font-bold text-slate-200 truncate">{item.label}</p>
                             {item.desc && <p className="text-[10px] text-slate-400">{item.desc}</p>}
                           </div>
                         </button>
@@ -2951,10 +2951,10 @@ export default function App() {
                         const isDone = a.status === 'Completed' || a.status === 'Submitted';
                         const isOverdue = a.dueDate < getDate(0) && !isDone;
                         return (
-                          <button key={a.id} onMouseDown={() => { close(); setSelectedAssignment(a); setIsUploadModalOpen(true); }} className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-slate-50 transition-colors text-left">
+                          <button key={a.id} onMouseDown={() => { close(); setSelectedAssignment(a); setIsUploadModalOpen(true); }} className="w-full px-4 py-2.5 flex items-center gap-3 hover:bg-slate-900/50 transition-colors text-left">
                             <BookOpen size={16} className="text-violet-400 shrink-0" />
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-bold text-slate-700 truncate">{a.title}</p>
+                              <p className="text-xs font-bold text-slate-200 truncate">{a.title}</p>
                               <p className="text-[10px] text-slate-400">{a.subject} • Due {new Date(a.dueDate + 'T12:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
                             </div>
                             <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold ${isDone ? 'bg-emerald-100 text-emerald-700' : isOverdue ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-700'}`}>
@@ -2968,7 +2968,7 @@ export default function App() {
                 </div>
               );
             })()}
-          <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 rounded-lg text-[10px] font-black text-violet-600 uppercase tracking-wider shrink-0"><Calendar size={12} /> {currentTerm}</span>
+          <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-violet-900/30 rounded-lg text-[10px] font-black text-violet-400 uppercase tracking-wider shrink-0"><Calendar size={12} /> {currentTerm}</span>
           {appUser.role === ROLES.STUDENT && (
             <div className="flex items-center gap-1 bg-gradient-to-r from-violet-500 to-fuchsia-500 px-2.5 py-1.5 rounded-lg text-white shadow-sm shrink-0">
               <Flame size={12} fill="currentColor" />
@@ -2983,9 +2983,9 @@ export default function App() {
               {isQuickAddOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setIsQuickAddOpen(false)} />
-                  <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
-                    <button onClick={() => { setIsCreateAssignmentModalOpen(true); setIsQuickAddOpen(false); }} className="w-full px-4 py-2.5 text-left text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-3 transition-colors"><BookOpen size={16} className="text-violet-500" /> {copy.addHomework}</button>
-                    <button onClick={() => { setIsCsvImportOpen(true); setIsQuickAddOpen(false); }} className="w-full px-4 py-2.5 text-left text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-3 transition-colors border-t border-slate-50"><FileSpreadsheet size={16} className="text-violet-500" /> Import CSV</button>
+                  <div className="absolute right-0 top-full mt-2 w-52 glass-card border-slate-700/50 rounded-xl shadow-xl border border-slate-700/50 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+                    <button onClick={() => { setIsCreateAssignmentModalOpen(true); setIsQuickAddOpen(false); }} className="w-full px-4 py-2.5 text-left text-sm font-bold text-slate-200 hover:bg-slate-900/50 flex items-center gap-3 transition-colors"><BookOpen size={16} className="text-violet-300" /> {copy.addHomework}</button>
+                    <button onClick={() => { setIsCsvImportOpen(true); setIsQuickAddOpen(false); }} className="w-full px-4 py-2.5 text-left text-sm font-bold text-slate-200 hover:bg-slate-900/50 flex items-center gap-3 transition-colors border-t border-slate-50"><FileSpreadsheet size={16} className="text-violet-300" /> Import CSV</button>
                   </div>
                 </>
               )}
@@ -3014,17 +3014,17 @@ export default function App() {
             {/* Summary cards - dense, actionable */}
             <div className="grid grid-cols-3 gap-3 drop-shadow-xl">
               <div onClick={() => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.OVERDUE); }} className="glass-card border-slate-700/50 p-4 rounded-xl cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:border-slate-500/50 transition-all group">
-                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-rose-400 uppercase tracking-wider">{copy.cardLate}</p><ChevronRight size={14} className="text-slate-500 group-hover:text-rose-300 transition-colors" /></div>
+                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-rose-400 uppercase tracking-wider">{copy.cardLate}</p><ChevronRight size={14} className="text-slate-400 group-hover:text-rose-300 transition-colors" /></div>
                 <p className="text-2xl font-black text-rose-500 drop-shadow-md">{stats.overdue}</p>
                 <p className="text-[10px] font-medium text-slate-400 mt-0.5">{stats.overdue > 0 ? copy.alertsNeedAttention : copy.statAllCaughtUp}</p>
               </div>
               <div onClick={() => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.DUE); }} className="glass-card border-slate-700/50 p-4 rounded-xl cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:border-slate-500/50 transition-all group">
-                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-violet-400 uppercase tracking-wider">{copy.cardTodo}</p><ChevronRight size={14} className="text-slate-500 group-hover:text-violet-300 transition-colors" /></div>
+                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-violet-400 uppercase tracking-wider">{copy.cardTodo}</p><ChevronRight size={14} className="text-slate-400 group-hover:text-violet-300 transition-colors" /></div>
                 <p className="text-2xl font-black text-violet-400 drop-shadow-md">{stats.dueToday}</p>
                 <p className="text-[10px] font-medium text-slate-400 mt-0.5">{copy.cardTasksTodo}</p>
               </div>
               <div onClick={() => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.COMPLETED); }} className="glass-card border-slate-700/50 p-4 rounded-xl cursor-pointer hover:-translate-y-1 hover:shadow-xl hover:border-slate-500/50 transition-all group">
-                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-emerald-400 uppercase tracking-wider">{copy.cardDone}</p><ChevronRight size={14} className="text-slate-500 group-hover:text-emerald-300 transition-colors" /></div>
+                <div className="flex items-center justify-between mb-1"><p className="text-[10px] font-black text-emerald-400 uppercase tracking-wider">{copy.cardDone}</p><ChevronRight size={14} className="text-slate-400 group-hover:text-emerald-300 transition-colors" /></div>
                 <p className="text-2xl font-black text-emerald-400 drop-shadow-md">{stats.completed}</p>
                 <p className="text-[10px] font-medium text-slate-400 mt-0.5">{copy.cardCompleted}</p>
               </div>
@@ -3032,9 +3032,9 @@ export default function App() {
 
             {/* Active recovery target */}
             {(appUser.role === ROLES.STUDENT || (appUser.role === ROLES.PARENT && selectedChildEmail)) && (() => { const r = getActiveRecoveryForStudent(viewingStudentKey); return r; })() && (
-              <div className="bg-white p-4 rounded-xl border border-slate-100 border-l-4 border-l-violet-500">
-                <p className="text-[10px] font-black text-violet-600 uppercase tracking-wider mb-1">{copy.recoveryPlan}</p>
-                {(() => { const rec = getActiveRecoveryForStudent(viewingStudentKey); return rec ? <p className="text-sm font-medium text-slate-700">{rec.achievedCompletions} of {rec.requiredCompletions} days completed • {rec.targetCompletionPct}% target</p> : null; })()}
+              <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50 border-l-4 border-l-violet-500">
+                <p className="text-[10px] font-black text-violet-400 uppercase tracking-wider mb-1">{copy.recoveryPlan}</p>
+                {(() => { const rec = getActiveRecoveryForStudent(viewingStudentKey); return rec ? <p className="text-sm font-medium text-slate-200">{rec.achievedCompletions} of {rec.requiredCompletions} days completed • {rec.targetCompletionPct}% target</p> : null; })()}
               </div>
             )}
 
@@ -3087,18 +3087,18 @@ export default function App() {
                     <span className="font-medium text-slate-300 truncate">{a.message}</span>
                   </div>
                 ))}
-                {alerts.length > 2 && <p className="text-[10px] text-slate-500 mt-1">+{alerts.length - 2} more</p>}
+                {alerts.length > 2 && <p className="text-[10px] text-slate-400 mt-1">+{alerts.length - 2} more</p>}
               </div>
             )}
 
             {/* Parent: Child selector */}
             {appUser.role === ROLES.PARENT && (
-              <div className="bg-white p-4 rounded-xl border border-slate-100">
+              <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
                 {linkedStudents.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
-                    <p className="text-[10px] font-black text-slate-500 uppercase w-full mb-2">Viewing</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase w-full mb-2">Viewing</p>
                     {linkedStudents.map(em => (
-                      <button key={em} onClick={() => setSelectedChildEmail(em)} className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${selectedChildEmail === em ? 'bg-violet-500 text-white' : 'bg-slate-100 text-slate-600'}`}>{em}</button>
+                      <button key={em} onClick={() => setSelectedChildEmail(em)} className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${selectedChildEmail === em ? 'bg-violet-500 text-white' : 'bg-slate-800/50 text-slate-300'}`}>{em}</button>
                     ))}
                   </div>
                 ) : (
@@ -3121,7 +3121,7 @@ export default function App() {
                     if (!next) return (
                       <div className="text-center py-8 text-slate-400 rounded-xl bg-slate-900/50 border border-slate-700/50">
                         <p className="font-bold">{copy.allCaughtUp}</p>
-                        <p className="text-xs mt-1 text-slate-500">Great job clearing your list.</p>
+                        <p className="text-xs mt-1 text-slate-400">Great job clearing your list.</p>
                       </div>
                     );
                     return (
@@ -3185,7 +3185,7 @@ export default function App() {
                       <div key={a.id} onClick={() => { setSelectedAssignment(a); setIsUploadModalOpen(true); }} className="flex items-center gap-3 cursor-pointer hover:bg-slate-800/50 p-2 rounded-xl -mx-2 transition-colors">
                         <span className="text-[10px] font-black text-violet-400 shrink-0">{new Date(a.dueDate).getDate()} {new Date(a.dueDate).toLocaleString('default',{month:'short'}).toUpperCase()}</span>
                         <p className="text-sm font-bold text-slate-200 truncate">{a.title}</p>
-                        <ChevronRight size={16} className="text-slate-500 shrink-0" />
+                        <ChevronRight size={16} className="text-slate-400 shrink-0" />
                       </div>
                     )) : (
                       <p className="text-xs text-slate-400">{copy.emptyComingUp}</p>
@@ -3209,14 +3209,14 @@ export default function App() {
           });
           const allSelected = filteredHw.length > 0 && filteredHw.every(a => selectedHwIds.has(a.id));
           return (
-          <div className="animate-in slide-in-from-bottom-4 text-slate-800">
+          <div className="animate-in slide-in-from-bottom-4 text-slate-100 drop-shadow-md">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-              <h1 className="text-lg font-black text-slate-800">{copy.homeworkTitle}</h1>
+              <h1 className="text-lg font-black text-slate-100 drop-shadow-md">{copy.homeworkTitle}</h1>
               <div className="flex items-center gap-2">
-                <button onClick={() => setIsFilterModalOpen(true)} className="px-3 py-1.5 bg-white/80 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition-colors flex items-center gap-1.5" title={copy.filterBy}>
+                <button onClick={() => setIsFilterModalOpen(true)} className="px-3 py-1.5 glass-card border-slate-700/50/80 rounded-lg text-xs font-bold text-slate-300 hover:glass-card border-slate-700/50 transition-colors flex items-center gap-1.5" title={copy.filterBy}>
                   <Filter size={14} /> {copy.filterBy}
                 </button>
-                <button onClick={() => setViewMode(viewMode === 'list' ? 'calendar' : 'list')} className="px-3 py-1.5 bg-white/80 rounded-lg text-xs font-bold text-slate-600 hover:bg-white transition-colors flex items-center gap-1.5">
+                <button onClick={() => setViewMode(viewMode === 'list' ? 'calendar' : 'list')} className="px-3 py-1.5 glass-card border-slate-700/50/80 rounded-lg text-xs font-bold text-slate-300 hover:glass-card border-slate-700/50 transition-colors flex items-center gap-1.5">
                   <Calendar size={14} /> {viewMode === 'list' ? 'Calendar' : 'List'}
                 </button>
               </div>
@@ -3226,23 +3226,23 @@ export default function App() {
               <div className="flex gap-6">
                 <div className="flex-1 min-w-0 space-y-4">
                   {/* Filters bar */}
-                  <div className="bg-white p-2 rounded-xl border border-slate-100 flex flex-wrap items-center gap-2">
-                    <div className="flex gap-1 bg-white/60 rounded-lg p-0.5">
+                  <div className="glass-card border-slate-700/50 p-2 rounded-xl border border-slate-700/50 flex flex-wrap items-center gap-2">
+                    <div className="flex gap-1 glass-card border-slate-700/50/60 rounded-lg p-0.5">
                       {Object.entries(HW_FILTERS).map(([k, f]) => (
-                        <button key={f} onClick={() => { setHwFilter(f); setSelectedHwIds(new Set()); }} className={`px-3 py-1.5 text-[10px] font-bold rounded-md transition-colors ${hwFilter === f ? 'bg-violet-500 text-white' : 'text-slate-500 hover:bg-white'}`}>{k === 'OVERDUE' ? copy.filterOverdue : k === 'DUE' ? copy.filterDue : copy.filterCompleted}</button>
+                        <button key={f} onClick={() => { setHwFilter(f); setSelectedHwIds(new Set()); }} className={`px-3 py-1.5 text-[10px] font-bold rounded-md transition-colors ${hwFilter === f ? 'bg-violet-500 text-white' : 'text-slate-400 hover:glass-card border-slate-700/50'}`}>{k === 'OVERDUE' ? copy.filterOverdue : k === 'DUE' ? copy.filterDue : copy.filterCompleted}</button>
                       ))}
                     </div>
                     <div className="h-4 w-px bg-slate-200 hidden sm:block" />
                     <div className="flex gap-1 flex-wrap">
-                      <button onClick={() => setFilterSubject('All')} className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-colors ${filterSubject === 'All' ? 'bg-slate-800 text-white' : 'text-slate-500 hover:bg-white'}`}>All</button>
+                      <button onClick={() => setFilterSubject('All')} className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-colors ${filterSubject === 'All' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:glass-card border-slate-700/50'}`}>All</button>
                       {subjects.map(sub => (
-                        <button key={sub} onClick={() => setFilterSubject(sub)} className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-colors ${filterSubject === sub ? 'bg-slate-800 text-white' : 'text-slate-500 hover:bg-white'}`}>{sub}</button>
+                        <button key={sub} onClick={() => setFilterSubject(sub)} className={`px-2.5 py-1 rounded-md text-[10px] font-bold transition-colors ${filterSubject === sub ? 'bg-slate-800 text-white' : 'text-slate-400 hover:glass-card border-slate-700/50'}`}>{sub}</button>
                       ))}
                     </div>
                     {!isReadOnly && selectedHwIds.size > 0 && (
                       <>
                         <div className="h-4 w-px bg-slate-200" />
-                        <span className="text-[10px] font-bold text-violet-600">{selectedHwIds.size} {copy.selectedCount}</span>
+                        <span className="text-[10px] font-bold text-violet-400">{selectedHwIds.size} {copy.selectedCount}</span>
                         <button onClick={() => confirm(`Mark ${selectedHwIds.size} task${selectedHwIds.size > 1 ? 's' : ''} as complete?`, () => { const now = getDate(0); const ids = [...selectedHwIds]; setAssignments(prev => prev.map(a => ids.includes(a.id) ? { ...a, status: 'Completed', progress: 100, submittedAt: now } : a)); ids.forEach(id => { const a = assignments.find(x => x.id === id); if (a) { handleLogCompletion(a, viewingStudentKey); } }); setSelectedHwIds(new Set()); showToast(copy.toastMarkedDone); addToHistory(`Completed ${ids.length} tasks`, 'success'); })} className="px-2.5 py-1 bg-emerald-500 text-white rounded-md text-[10px] font-bold">{copy.markDone}</button>
                         <button onClick={() => confirm(`Export ${selectedHwIds.size} task${selectedHwIds.size > 1 ? 's' : ''} as CSV?`, () => { const data = filteredHw.filter(a => selectedHwIds.has(a.id)).map(a => `${a.subject},${a.title},${a.dueDate},${a.status},${a.priority}`); const csv = 'Subject,Task,Due Date,Status,Priority\n' + data.join('\n'); const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = 'homework-export.csv'; link.click(); URL.revokeObjectURL(url); showToast(copy.toastExported); })} className="px-2.5 py-1 bg-slate-700 text-white rounded-md text-[10px] font-bold flex items-center gap-1"><Download size={10} /> {copy.exportBtn}</button>
                       </>
@@ -3265,24 +3265,24 @@ export default function App() {
                       const isDone = a.status === 'Completed' || a.status === 'Submitted';
                       const isOverdue = a.dueDate < today && !isDone;
                       return (
-                        <div key={a.id} onClick={() => { setHwDetailDrawer(a); setSelectedAssignment(a); }} className={`bg-white rounded-xl px-4 py-3 cursor-pointer hover:shadow-sm transition-all border border-slate-100 grid grid-cols-1 ${isReadOnly ? 'sm:grid-cols-[1fr_120px_100px_80px_80px]' : 'sm:grid-cols-[32px_1fr_120px_100px_80px_80px]'} gap-3 items-center ${hwDetailDrawer?.id === a.id ? 'ring-2 ring-violet-400' : ''}`}>
+                        <div key={a.id} onClick={() => { setHwDetailDrawer(a); setSelectedAssignment(a); }} className={`glass-card border-slate-700/50 rounded-xl px-4 py-3 cursor-pointer hover:shadow-sm transition-all border border-slate-700/50 grid grid-cols-1 ${isReadOnly ? 'sm:grid-cols-[1fr_120px_100px_80px_80px]' : 'sm:grid-cols-[32px_1fr_120px_100px_80px_80px]'} gap-3 items-center ${hwDetailDrawer?.id === a.id ? 'ring-2 ring-violet-400' : ''}`}>
                           {!isReadOnly && <div className="hidden sm:block" onClick={(e) => e.stopPropagation()}>
                             <input type="checkbox" checked={selectedHwIds.has(a.id)} onChange={() => setSelectedHwIds(prev => { const next = new Set(prev); if (next.has(a.id)) next.delete(a.id); else next.add(a.id); return next; })} className="accent-violet-500" />
                           </div>}
                           <div className="min-w-0">
-                            <h4 className={`font-bold text-sm truncate ${isDone ? 'text-slate-400 line-through' : 'text-slate-800'}`}>{a.title}</h4>
+                            <h4 className={`font-bold text-sm truncate ${isDone ? 'text-slate-400 line-through' : 'text-slate-100 drop-shadow-md'}`}>{a.title}</h4>
                             <p className="text-[10px] text-slate-400 truncate sm:hidden">{a.subject} • Due {a.dueDate}</p>
                           </div>
-                          <div className="hidden sm:block"><span className="px-2 py-0.5 bg-violet-50 text-violet-600 rounded text-[10px] font-bold">{a.subject}</span></div>
-                          <div className={`hidden sm:block text-xs font-medium ${isOverdue ? 'text-rose-500' : 'text-slate-500'}`}>{new Date(a.dueDate + 'T12:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>
+                          <div className="hidden sm:block"><span className="px-2 py-0.5 bg-violet-900/30 text-violet-400 rounded text-[10px] font-bold">{a.subject}</span></div>
+                          <div className={`hidden sm:block text-xs font-medium ${isOverdue ? 'text-rose-500' : 'text-slate-400'}`}>{new Date(a.dueDate + 'T12:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>
                           <div className="hidden sm:block"><span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${isDone ? 'bg-emerald-100 text-emerald-700' : isOverdue ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-700'}`}>{isDone ? copy.statusDone : isOverdue ? copy.statusLate : copy.statusOpen}</span></div>
                           <div className="hidden sm:block"><span className={`text-[10px] font-bold ${a.priority === 'High' ? 'text-rose-500' : a.priority === 'Medium' ? 'text-amber-500' : 'text-slate-400'}`}>{a.priority === 'High' ? copy.priorityHigh : a.priority === 'Medium' ? copy.priorityMedium : copy.priorityLow}</span></div>
                         </div>
                       );
                     })}
                     {filteredHw.length === 0 && (
-                      <div className="bg-white p-8 rounded-xl text-center border border-slate-100">
-                        <p className="font-bold text-slate-500">{copy.noHomework}</p>
+                      <div className="glass-card border-slate-700/50 p-8 rounded-xl text-center border border-slate-700/50">
+                        <p className="font-bold text-slate-400">{copy.noHomework}</p>
                         {!isReadOnly && <button onClick={() => setIsCreateAssignmentModalOpen(true)} className="mt-3 px-4 py-2 bg-violet-500 text-white text-xs font-bold rounded-lg">{copy.addFirstTask}</button>}
                       </div>
                     )}
@@ -3292,48 +3292,48 @@ export default function App() {
                 {/* Right-side detail drawer */}
                 {hwDetailDrawer && (
                   <div className="hidden lg:block w-80 shrink-0 animate-in slide-in-from-right-4">
-                    <div className="bg-white rounded-xl p-5 border border-slate-100 sticky top-4 max-h-[calc(100dvh-160px)] overflow-y-auto">
+                    <div className="glass-card border-slate-700/50 rounded-xl p-5 border border-slate-700/50 sticky top-4 max-h-[calc(100dvh-160px)] overflow-y-auto">
                       <div className="flex items-center justify-between mb-4">
-                        <span className="px-2 py-0.5 bg-violet-50 text-violet-600 rounded text-[10px] font-bold">{hwDetailDrawer.subject}</span>
-                        <button onClick={() => setHwDetailDrawer(null)} className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors"><X size={16} className="text-slate-400" /></button>
+                        <span className="px-2 py-0.5 bg-violet-900/30 text-violet-400 rounded text-[10px] font-bold">{hwDetailDrawer.subject}</span>
+                        <button onClick={() => setHwDetailDrawer(null)} className="p-1.5 hover:bg-slate-800/50 rounded-lg transition-colors"><X size={16} className="text-slate-400" /></button>
                       </div>
-                      <h3 className="font-black text-lg text-slate-800 mb-1">{hwDetailDrawer.title}</h3>
-                      <p className="text-xs text-slate-500 mb-4">Due {new Date(hwDetailDrawer.dueDate + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</p>
+                      <h3 className="font-black text-lg text-slate-100 drop-shadow-md mb-1">{hwDetailDrawer.title}</h3>
+                      <p className="text-xs text-slate-400 mb-4">Due {new Date(hwDetailDrawer.dueDate + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</p>
 
                       {/* Progress */}
                       <div className="mb-4">
-                        <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1"><span>{copy.progressLabel}</span><span>{getAssignmentProgress(hwDetailDrawer)}%</span></div>
-                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full transition-all" style={{ width: `${getAssignmentProgress(hwDetailDrawer)}%` }} /></div>
+                        <div className="flex justify-between text-[10px] font-bold text-slate-400 mb-1"><span>{copy.progressLabel}</span><span>{getAssignmentProgress(hwDetailDrawer)}%</span></div>
+                        <div className="h-2 bg-slate-800/50 rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full transition-all" style={{ width: `${getAssignmentProgress(hwDetailDrawer)}%` }} /></div>
                       </div>
 
                       {/* Notes */}
                       <div className="mb-4">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">{copy.notesSection}</p>
-                        <div className="bg-slate-50 p-3 rounded-xl"><p className="text-xs text-slate-600 leading-relaxed">{hwDetailDrawer.description || copy.notesPlaceholder}</p></div>
+                        <div className="bg-slate-900/50 p-3 rounded-xl"><p className="text-xs text-slate-300 leading-relaxed">{hwDetailDrawer.description || copy.notesPlaceholder}</p></div>
                       </div>
 
                       {/* Attachments */}
                       <div className="mb-4">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">{copy.attachments}</p>
                         {hwDetailDrawer.submittedFile ? (
-                          <div className="flex items-center gap-2 bg-emerald-50 p-2 rounded-lg"><Upload size={12} className="text-emerald-600" /><span className="text-xs font-medium text-slate-700 truncate flex-1">{hwDetailDrawer.submittedFile}</span></div>
+                          <div className="flex items-center gap-2 bg-emerald-50 p-2 rounded-lg"><Upload size={12} className="text-emerald-600" /><span className="text-xs font-medium text-slate-200 truncate flex-1">{hwDetailDrawer.submittedFile}</span></div>
                         ) : (
-                          isReadOnly ? <p className="text-xs text-slate-400">{copy.noAttachments}</p> : <button onClick={() => assignmentFileInputRef.current?.click()} className="w-full py-2 border border-dashed border-slate-200 rounded-lg text-xs font-medium text-slate-500 hover:border-violet-300 transition-colors"><Upload size={12} className="inline mr-1" />{copy.uploadDoc}</button>
+                          isReadOnly ? <p className="text-xs text-slate-400">{copy.noAttachments}</p> : <button onClick={() => assignmentFileInputRef.current?.click()} className="w-full py-2 border border-dashed border-slate-600/50 rounded-lg text-xs font-medium text-slate-400 hover:border-violet-300 transition-colors"><Upload size={12} className="inline mr-1" />{copy.uploadDoc}</button>
                         )}
                       </div>
 
                       {/* Teacher comments */}
                       <div className="mb-4">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">{copy.comments}</p>
-                        <div className="bg-amber-50/60 p-3 rounded-xl"><p className="text-xs text-slate-600">{hwDetailDrawer.teacherComments || copy.noFeedback}</p></div>
+                        <div className="bg-amber-50/60 p-3 rounded-xl"><p className="text-xs text-slate-300">{hwDetailDrawer.teacherComments || copy.noFeedback}</p></div>
                       </div>
 
                       {/* Actions */}
-                      <div className="space-y-2 pt-2 border-t border-slate-100">
+                      <div className="space-y-2 pt-2 border-t border-slate-700/50">
                         {!isReadOnly && hwDetailDrawer.status !== 'Completed' && hwDetailDrawer.status !== 'Submitted' && (
                           <button onClick={() => confirm(`Mark "${hwDetailDrawer.title}" as complete?`, () => { const now = getDate(0); setAssignments(prev => prev.map(x => x.id === hwDetailDrawer.id ? { ...x, status: 'Completed', progress: 100, submittedAt: now } : x)); handleLogCompletion(hwDetailDrawer, viewingStudentKey); updateRecoveryProgress(viewingStudentKey, 1); showToast(copy.toastMarkedDone); addToHistory(`Completed: ${hwDetailDrawer.title}`, 'success'); setHwDetailDrawer(null); })} className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-xl text-sm">{copy.completeBtn}</button>
                         )}
-                        {!isReadOnly && <button onClick={() => { setSelectedAssignment(hwDetailDrawer); setIsUploadModalOpen(true); }} className="w-full py-2 text-violet-600 font-bold rounded-xl text-xs hover:bg-violet-50 transition-colors">{copy.openDetails}</button>}
+                        {!isReadOnly && <button onClick={() => { setSelectedAssignment(hwDetailDrawer); setIsUploadModalOpen(true); }} className="w-full py-2 text-violet-400 font-bold rounded-xl text-xs hover:bg-violet-900/30 transition-colors">{copy.openDetails}</button>}
                         {!isReadOnly && <button onClick={() => handleDeleteTask(hwDetailDrawer.id)} className="w-full py-2 text-rose-500 font-bold rounded-xl text-xs hover:bg-rose-50 transition-colors flex items-center justify-center gap-1"><Trash2 size={12} /> {copy.removeBtn}</button>}
                       </div>
                     </div>
@@ -3342,15 +3342,15 @@ export default function App() {
               </div>
             ) : (
               <div className="flex flex-col space-y-6">
-                <div className="bg-white p-6 rounded-2xl border border-slate-100 relative">
+                <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50 relative">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex flex-col">
-                      <h3 className="text-lg font-black text-slate-800">{calendarDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</h3>
-                      <button onClick={() => { setCalendarDate(new Date()); setSelectedDate(getDate(0)); }} className="text-[10px] font-black text-violet-500 uppercase tracking-widest text-left mt-0.5 hover:text-violet-700 transition-colors">{copy.calendarToday}</button>
+                      <h3 className="text-lg font-black text-slate-100 drop-shadow-md">{calendarDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</h3>
+                      <button onClick={() => { setCalendarDate(new Date()); setSelectedDate(getDate(0)); }} className="text-[10px] font-black text-violet-300 uppercase tracking-widest text-left mt-0.5 hover:text-violet-700 transition-colors">{copy.calendarToday}</button>
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1))} className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors"><ChevronLeft size={20} /></button>
-                      <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1))} className="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors"><ChevronRight size={20} /></button>
+                      <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1))} className="p-2 text-slate-400 hover:bg-slate-800/50 rounded-full transition-colors"><ChevronLeft size={20} /></button>
+                      <button onClick={() => setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1))} className="p-2 text-slate-400 hover:bg-slate-800/50 rounded-full transition-colors"><ChevronRight size={20} /></button>
                     </div>
                   </div>
                   <div className="grid grid-cols-7 gap-1 text-center mb-2">
@@ -3374,12 +3374,12 @@ export default function App() {
                             let styleClasses = 'rounded-2xl flex flex-col items-center justify-center text-xs font-bold cursor-pointer transition-all w-full h-full relative p-2 ';
                             if (isSelected) styleClasses += 'bg-slate-800 text-white ring-4 ring-slate-100 z-10 scale-105 shadow-xl';
                             else if (tasks.length > 0) { const hasOverdue = tasks.some(t => (t.status !== 'Completed' && t.status !== 'Submitted') && t.dueDate < todayStr); styleClasses += hasOverdue ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'; }
-                            else if (isToday) styleClasses += 'bg-violet-50 text-violet-600 ring-1 ring-violet-200';
-                            else styleClasses += 'text-slate-400 hover:bg-slate-50';
+                            else if (isToday) styleClasses += 'bg-violet-900/30 text-violet-400 ring-1 ring-violet-200';
+                            else styleClasses += 'text-slate-400 hover:bg-slate-900/50';
                             days.push(
                               <div key={i} onClick={() => handleDayClick(currentDateStr)} className={styleClasses}>
                                 {i}
-                                {tasks.length > 0 && <div className={`w-1 h-1 rounded-full mt-0.5 ${isSelected ? 'bg-white' : (tasks.some(t => t.dueDate < todayStr && t.status !== 'Completed') ? 'bg-rose-500' : 'bg-emerald-500')}`} />}
+                                {tasks.length > 0 && <div className={`w-1 h-1 rounded-full mt-0.5 ${isSelected ? 'glass-card border-slate-700/50' : (tasks.some(t => t.dueDate < todayStr && t.status !== 'Completed') ? 'bg-rose-500' : 'bg-emerald-500')}`} />}
                               </div>
                             );
                           }
@@ -3391,17 +3391,17 @@ export default function App() {
                 </div>
                 <div className="animate-in fade-in slide-in-from-top-2 pb-12">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2"><Clock size={18} className="text-violet-500" /><h3 className="font-bold text-slate-500 text-base">{new Date(selectedDate).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</h3></div>
-                    {!isReadOnly && <button onClick={() => setIsCreateAssignmentModalOpen(true)} className="text-xs font-black text-violet-500 uppercase tracking-widest hover:bg-violet-50 px-3 py-1.5 rounded-xl transition-colors">+ {copy.addHomework}</button>}
+                    <div className="flex items-center gap-2"><Clock size={18} className="text-violet-300" /><h3 className="font-bold text-slate-400 text-base">{new Date(selectedDate).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</h3></div>
+                    {!isReadOnly && <button onClick={() => setIsCreateAssignmentModalOpen(true)} className="text-xs font-black text-violet-300 uppercase tracking-widest hover:bg-violet-900/30 px-3 py-1.5 rounded-xl transition-colors">+ {copy.addHomework}</button>}
                   </div>
                   <div className="space-y-3">
                     {homeworkForSelectedDate.length > 0 ? homeworkForSelectedDate.map(a => (
-                      <div key={a.id} onClick={() => { setSelectedAssignment(a); setIsUploadModalOpen(true); }} className="bg-white p-4 rounded-xl border border-slate-100 flex items-center justify-between cursor-pointer hover:shadow-sm transition-all">
-                        <div className="flex items-center gap-3"><div className={`p-2 rounded-xl text-white ${a.status === 'Completed' ? 'bg-emerald-400' : 'bg-violet-400'}`}>{a.subject === 'Math' ? <Calculator size={16} /> : <BookOpen size={16} />}</div><div><h4 className="font-bold text-slate-800 text-sm">{a.title}</h4><p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{a.subject}</p></div></div>
-                        <span className={`text-[10px] font-black uppercase tracking-wider ${a.status === 'Completed' || a.status === 'Submitted' ? 'text-emerald-500' : a.dueDate < getDate(0) ? 'text-rose-500' : 'text-violet-500'}`}>{(a.status === 'Completed' || a.status === 'Submitted') ? copy.statusCompleted : a.dueDate < getDate(0) ? copy.statusOverdue : copy.statusOpen}</span>
+                      <div key={a.id} onClick={() => { setSelectedAssignment(a); setIsUploadModalOpen(true); }} className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50 flex items-center justify-between cursor-pointer hover:shadow-sm transition-all">
+                        <div className="flex items-center gap-3"><div className={`p-2 rounded-xl text-white ${a.status === 'Completed' ? 'bg-emerald-400' : 'bg-violet-400'}`}>{a.subject === 'Math' ? <Calculator size={16} /> : <BookOpen size={16} />}</div><div><h4 className="font-bold text-slate-100 drop-shadow-md text-sm">{a.title}</h4><p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{a.subject}</p></div></div>
+                        <span className={`text-[10px] font-black uppercase tracking-wider ${a.status === 'Completed' || a.status === 'Submitted' ? 'text-emerald-500' : a.dueDate < getDate(0) ? 'text-rose-500' : 'text-violet-300'}`}>{(a.status === 'Completed' || a.status === 'Submitted') ? copy.statusCompleted : a.dueDate < getDate(0) ? copy.statusOverdue : copy.statusOpen}</span>
                       </div>
                     )) : (
-                      <div className="bg-white p-8 rounded-xl border border-slate-100 text-center text-slate-400"><p className="text-sm font-bold">{copy.noTasks}</p></div>
+                      <div className="glass-card border-slate-700/50 p-8 rounded-xl border border-slate-700/50 text-center text-slate-400"><p className="text-sm font-bold">{copy.noTasks}</p></div>
                     )}
                   </div>
                 </div>
@@ -3412,22 +3412,22 @@ export default function App() {
         })()}
 
         {activeTab === TABS.ANALYTICS && (
-          <div className="space-y-6 text-slate-800 animate-in fade-in">
+          <div className="space-y-6 text-slate-100 drop-shadow-md animate-in fade-in">
             {subscriptionPlan !== 'pro' ? (
-              <div className="bg-white p-10 rounded-2xl border border-slate-100 flex flex-col items-center text-center">
-                <div className="w-16 h-16 rounded-full bg-violet-100 flex items-center justify-center mb-4"><Lock size={28} className="text-violet-500" /></div>
-                <h3 className="text-xl font-black text-slate-800 mb-2">Advanced Stats</h3>
-                <p className="text-sm text-slate-500 mb-6 max-w-xs">Upgrade to Pro to unlock completion trends, risk trajectory, and subject breakdowns.</p>
+              <div className="glass-card border-slate-700/50 p-10 rounded-2xl border border-slate-700/50 flex flex-col items-center text-center">
+                <div className="w-16 h-16 rounded-full bg-violet-900/50 flex items-center justify-center mb-4"><Lock size={28} className="text-violet-300" /></div>
+                <h3 className="text-xl font-black text-slate-100 drop-shadow-md mb-2">Advanced Stats</h3>
+                <p className="text-sm text-slate-400 mb-6 max-w-xs">Upgrade to Pro to unlock completion trends, risk trajectory, and subject breakdowns.</p>
                 <button onClick={() => setIsSubscriptionOpen(true)} className="px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold rounded-xl text-sm shadow-lg hover:scale-[1.02] transition-all">Upgrade to Pro</button>
               </div>
             ) : (
               <>
             <div className="flex items-center justify-between flex-wrap gap-3">
-              <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2"><TrendingUp size={28} className="text-violet-500" /> {copy.analyticsTitle || 'Advanced Stats'}</h2>
+              <h2 className="text-2xl font-black text-slate-100 drop-shadow-md flex items-center gap-2"><TrendingUp size={28} className="text-violet-300" /> {copy.analyticsTitle || 'Advanced Stats'}</h2>
               <div className="flex items-center gap-2">
-                <div className="flex gap-0.5 bg-white/80 rounded-lg p-0.5">
+                <div className="flex gap-0.5 glass-card border-slate-700/50/80 rounded-lg p-0.5">
                   {[{ v: '7', l: '7d' }, { v: '30', l: '30d' }, { v: 'term', l: 'Term' }].map(({ v, l }) => (
-                    <button key={v} onClick={() => setStatsRange(v)} className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-colors ${statsRange === v ? 'bg-violet-500 text-white' : 'text-slate-500 hover:bg-white'}`}>{l}</button>
+                    <button key={v} onClick={() => setStatsRange(v)} className={`px-3 py-1.5 rounded-md text-[10px] font-bold transition-colors ${statsRange === v ? 'bg-violet-500 text-white' : 'text-slate-400 hover:glass-card border-slate-700/50'}`}>{l}</button>
                   ))}
                 </div>
                 {!isReadOnly && <button onClick={() => confirm('Export stats as CSV?', () => {
@@ -3438,56 +3438,56 @@ export default function App() {
                   const a = document.createElement('a'); a.href = url; a.download = 'stats-export.csv'; a.click();
                   URL.revokeObjectURL(url);
                   showToast(copy.toastExported);
-                })} className="px-3 py-1.5 bg-white/80 rounded-lg text-[10px] font-bold text-slate-600 hover:bg-white transition-colors flex items-center gap-1"><Download size={12} /> {copy.exportBtn}</button>}
+                })} className="px-3 py-1.5 glass-card border-slate-700/50/80 rounded-lg text-[10px] font-bold text-slate-300 hover:glass-card border-slate-700/50 transition-colors flex items-center gap-1"><Download size={12} /> {copy.exportBtn}</button>}
               </div>
             </div>
 
             {analyticsData.total === 0 ? (
-              <div className="bg-white p-10 rounded-2xl text-center border border-slate-100">
-                <div className="w-16 h-16 rounded-full bg-violet-100 flex items-center justify-center mx-auto mb-4"><BarChart2 size={28} className="text-violet-400" /></div>
-                <h3 className="font-bold text-slate-700 mb-1">{copy.statNoData}</h3>
-                <p className="text-sm text-slate-500 mb-4">{copy.statUnlockTrends}</p>
+              <div className="glass-card border-slate-700/50 p-10 rounded-2xl text-center border border-slate-700/50">
+                <div className="w-16 h-16 rounded-full bg-violet-900/50 flex items-center justify-center mx-auto mb-4"><BarChart2 size={28} className="text-violet-400" /></div>
+                <h3 className="font-bold text-slate-200 mb-1">{copy.statNoData}</h3>
+                <p className="text-sm text-slate-400 mb-4">{copy.statUnlockTrends}</p>
                 {!isReadOnly && <button onClick={() => setIsCreateAssignmentModalOpen(true)} className="px-5 py-2.5 bg-violet-500 text-white font-bold rounded-xl text-sm">{copy.addHomework}</button>}
               </div>
             ) : (
               <>
             {/* Row 1: Key metrics */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="bg-white p-4 rounded-xl border border-slate-100">
-                <p className="text-[10px] font-black text-violet-500 uppercase tracking-wider mb-1">{copy.statCompletion}</p>
+              <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
+                <p className="text-[10px] font-black text-violet-300 uppercase tracking-wider mb-1">{copy.statCompletion}</p>
                 <div className="flex items-end gap-1.5">
-                  <p className="text-2xl font-black text-slate-800">{analyticsData.completionRate}%</p>
+                  <p className="text-2xl font-black text-slate-100 drop-shadow-md">{analyticsData.completionRate}%</p>
                 </div>
-                <div className="h-1.5 bg-slate-100 rounded-full mt-2 overflow-hidden"><div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full" style={{ width: `${analyticsData.completionRate}%` }} /></div>
-                <p className="text-[10px] text-slate-500 mt-1">{analyticsData.done} of {analyticsData.total} tasks</p>
+                <div className="h-1.5 bg-slate-800/50 rounded-full mt-2 overflow-hidden"><div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full" style={{ width: `${analyticsData.completionRate}%` }} /></div>
+                <p className="text-[10px] text-slate-400 mt-1">{analyticsData.done} of {analyticsData.total} tasks</p>
               </div>
-              <div className="bg-white p-4 rounded-xl border border-slate-100">
+              <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
                 <p className="text-[10px] font-black text-emerald-500 uppercase tracking-wider mb-1">{copy.statOnTime}</p>
-                <p className="text-2xl font-black text-slate-800">{analyticsData.onTimeRate}%</p>
-                <div className="h-1.5 bg-slate-100 rounded-full mt-2 overflow-hidden"><div className={`h-full rounded-full ${analyticsData.onTimeRate >= 80 ? 'bg-emerald-500' : analyticsData.onTimeRate >= 50 ? 'bg-amber-500' : 'bg-rose-500'}`} style={{ width: `${analyticsData.onTimeRate}%` }} /></div>
-                <p className="text-[10px] text-slate-500 mt-1">{analyticsData.overdue > 0 ? `${analyticsData.overdue} ${copy.statOverdueNow}` : copy.statAllCaughtUp}</p>
+                <p className="text-2xl font-black text-slate-100 drop-shadow-md">{analyticsData.onTimeRate}%</p>
+                <div className="h-1.5 bg-slate-800/50 rounded-full mt-2 overflow-hidden"><div className={`h-full rounded-full ${analyticsData.onTimeRate >= 80 ? 'bg-emerald-500' : analyticsData.onTimeRate >= 50 ? 'bg-amber-500' : 'bg-rose-500'}`} style={{ width: `${analyticsData.onTimeRate}%` }} /></div>
+                <p className="text-[10px] text-slate-400 mt-1">{analyticsData.overdue > 0 ? `${analyticsData.overdue} ${copy.statOverdueNow}` : copy.statAllCaughtUp}</p>
               </div>
-              <div className="bg-white p-4 rounded-xl border border-slate-100">
+              <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
                 <p className="text-[10px] font-black text-amber-500 uppercase tracking-wider mb-1">{copy.statStreak}</p>
                 <div className="flex items-baseline gap-1">
-                  <p className="text-2xl font-black text-slate-800">{analyticsData.streak}</p>
+                  <p className="text-2xl font-black text-slate-100 drop-shadow-md">{analyticsData.streak}</p>
                   <span className="text-xs font-bold text-slate-400">{copy.statDays}</span>
                 </div>
                 {profileData.gamificationLevel !== 'off' && analyticsData.streak >= 7 && <span className="inline-block mt-1.5 px-2 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded">7-day badge</span>}
-                {analyticsData.streak >= 3 && analyticsData.streak < 7 && <div className="flex gap-0.5 mt-2">{[...Array(7)].map((_, i) => <div key={i} className={`h-1.5 flex-1 rounded-full ${i < analyticsData.streak ? 'bg-amber-400' : 'bg-slate-100'}`} />)}</div>}
-                {analyticsData.streak < 3 && <p className="text-[10px] text-slate-500 mt-1">{copy.statKeepGoing}</p>}
+                {analyticsData.streak >= 3 && analyticsData.streak < 7 && <div className="flex gap-0.5 mt-2">{[...Array(7)].map((_, i) => <div key={i} className={`h-1.5 flex-1 rounded-full ${i < analyticsData.streak ? 'bg-amber-400' : 'bg-slate-800/50'}`} />)}</div>}
+                {analyticsData.streak < 3 && <p className="text-[10px] text-slate-400 mt-1">{copy.statKeepGoing}</p>}
               </div>
-              <div className="bg-white p-4 rounded-xl border border-slate-100">
-                <p className="text-[10px] font-black text-violet-500 uppercase tracking-wider mb-1">{copy.statThisWeek}</p>
+              <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
+                <p className="text-[10px] font-black text-violet-300 uppercase tracking-wider mb-1">{copy.statThisWeek}</p>
                 <div className="flex items-baseline gap-1.5">
-                  <p className="text-2xl font-black text-slate-800">{analyticsData.thisWeek}</p>
+                  <p className="text-2xl font-black text-slate-100 drop-shadow-md">{analyticsData.thisWeek}</p>
                   {analyticsData.weekDiff !== 0 && (
                     <span className={`text-xs font-bold flex items-center gap-0.5 ${analyticsData.weekDiff > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                       {analyticsData.weekDiff > 0 ? '↑' : '↓'} {Math.abs(analyticsData.weekDiff)}
                     </span>
                   )}
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1">vs {analyticsData.lastWeek} {copy.statLastWeek.toLowerCase()}</p>
+                <p className="text-[10px] text-slate-400 mt-1">vs {analyticsData.lastWeek} {copy.statLastWeek.toLowerCase()}</p>
               </div>
             </div>
 
@@ -3495,7 +3495,7 @@ export default function App() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Risk overview - only show when there are assignments to base risk on */}
               {riskScore != null && assignments.length > 0 && (
-                <div className={`bg-white p-5 rounded-xl border border-slate-100 border-l-4 ${riskScore >= 80 ? 'border-l-emerald-500' : riskScore >= 60 ? 'border-l-amber-500' : riskScore >= 40 ? 'border-l-orange-500' : 'border-l-rose-500'}`}>
+                <div className={`glass-card border-slate-700/50 p-5 rounded-xl border border-slate-700/50 border-l-4 ${riskScore >= 80 ? 'border-l-emerald-500' : riskScore >= 60 ? 'border-l-amber-500' : riskScore >= 40 ? 'border-l-orange-500' : 'border-l-rose-500'}`}>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">{copy.riskTitle}</p>
                   <div className="flex items-center gap-4">
                     <div className="relative w-16 h-16 shrink-0">
@@ -3503,40 +3503,40 @@ export default function App() {
                         <circle cx="18" cy="18" r="14" fill="none" stroke="#f1f5f9" strokeWidth="3" />
                         <circle cx="18" cy="18" r="14" fill="none" stroke={riskScore >= 80 ? '#10b981' : riskScore >= 60 ? '#f59e0b' : riskScore >= 40 ? '#f97316' : '#ef4444'} strokeWidth="3" strokeDasharray={`${riskScore * 0.88} 88`} strokeLinecap="round" />
                       </svg>
-                      <span className="absolute inset-0 flex items-center justify-center text-sm font-black text-slate-800">{riskScore}</span>
+                      <span className="absolute inset-0 flex items-center justify-center text-sm font-black text-slate-100 drop-shadow-md">{riskScore}</span>
                     </div>
                     <div>
                       <p className={`text-sm font-bold ${riskScore >= 80 ? 'text-emerald-600' : riskScore >= 60 ? 'text-amber-600' : riskScore >= 40 ? 'text-orange-600' : 'text-rose-600'}`}>{riskScore >= 80 ? copy.riskLow : riskScore >= 60 ? copy.riskModerate : riskScore >= 40 ? copy.riskHigh : copy.riskCritical}</p>
-                      {riskReasons.length > 0 && <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">{riskReasons.slice(0, 2).join(' · ')}</p>}
+                      {riskReasons.length > 0 && <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">{riskReasons.slice(0, 2).join(' · ')}</p>}
                     </div>
                   </div>
                 </div>
               )}
 
               {/* Quick insights */}
-              <div className="bg-white p-5 rounded-xl border border-slate-100">
+              <div className="glass-card border-slate-700/50 p-5 rounded-xl border border-slate-700/50">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-3">{copy.statInsights}</p>
                 <div className="space-y-2.5">
                   {analyticsData.bestDay && (
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center shrink-0"><Zap size={14} className="text-violet-500" /></div>
-                      <p className="text-xs text-slate-600"><span className="font-bold text-slate-800">{copy.statMostProductive}</span> {analyticsData.bestDay}s</p>
+                      <div className="w-7 h-7 rounded-lg bg-violet-900/30 flex items-center justify-center shrink-0"><Zap size={14} className="text-violet-300" /></div>
+                      <p className="text-xs text-slate-300"><span className="font-bold text-slate-100 drop-shadow-md">{copy.statMostProductive}</span> {analyticsData.bestDay}s</p>
                     </div>
                   )}
                   {analyticsData.topSubject && (
                     <div className="flex items-center gap-2.5">
                       <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0"><Target size={14} className="text-emerald-500" /></div>
-                      <p className="text-xs text-slate-600"><span className="font-bold text-slate-800">{copy.statTopSubject}</span> {analyticsData.topSubject}</p>
+                      <p className="text-xs text-slate-300"><span className="font-bold text-slate-100 drop-shadow-md">{copy.statTopSubject}</span> {analyticsData.topSubject}</p>
                     </div>
                   )}
                   <div className="flex items-center gap-2.5">
                     <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center shrink-0"><Flame size={14} className="text-amber-500" /></div>
-                      <p className="text-xs text-slate-600"><span className="font-bold text-slate-800">{copy.statDailyAvg}</span> {analyticsData.avgPerDay} {copy.statTasksPerDay}</p>
+                      <p className="text-xs text-slate-300"><span className="font-bold text-slate-100 drop-shadow-md">{copy.statDailyAvg}</span> {analyticsData.avgPerDay} {copy.statTasksPerDay}</p>
                   </div>
                   {forecast && (
                     <div className="flex items-center gap-2.5">
                       <div className="w-7 h-7 rounded-lg bg-sky-50 flex items-center justify-center shrink-0"><TrendingUp size={14} className="text-sky-500" /></div>
-                      <p className="text-xs text-slate-600"><span className="font-bold text-slate-800">{copy.statForecast}</span> {forecast.trendDirection}</p>
+                      <p className="text-xs text-slate-300"><span className="font-bold text-slate-100 drop-shadow-md">{copy.statForecast}</span> {forecast.trendDirection}</p>
                     </div>
                   )}
                 </div>
@@ -3544,9 +3544,9 @@ export default function App() {
             </div>
 
             {/* Row 3: Completions chart */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-100">
+            <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-slate-800 flex items-center gap-2"><BarChart2 size={18} className="text-violet-500" /> {copy.statCompletions}</h3>
+                <h3 className="font-bold text-slate-100 drop-shadow-md flex items-center gap-2"><BarChart2 size={18} className="text-violet-300" /> {copy.statCompletions}</h3>
                 <span className="text-[10px] font-bold text-slate-400">Last {statsRange === 'term' ? 'term' : statsRange + ' days'}</span>
               </div>
               <div className="flex items-end justify-between gap-1.5 h-36">
@@ -3560,7 +3560,7 @@ export default function App() {
                     <div className="w-full flex flex-col justify-end h-28" style={{ minHeight: 112 }}>
                       <div className={`w-full rounded-t-lg transition-all cursor-pointer ${isToday ? 'bg-gradient-to-t from-violet-600 to-fuchsia-500' : 'bg-gradient-to-t from-violet-400 to-fuchsia-400 opacity-70'} hover:opacity-100`} style={{ height: `${(count / analyticsData.maxCount) * 100}%`, minHeight: count > 0 ? 8 : 2 }} />
                     </div>
-                    <span className={`text-[10px] font-bold ${isToday ? 'text-violet-600' : 'text-slate-400'}`}>{analyticsData.rangeDays <= 7 ? new Date(date + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'short' }) : new Date(date + 'T12:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                    <span className={`text-[10px] font-bold ${isToday ? 'text-violet-400' : 'text-slate-400'}`}>{analyticsData.rangeDays <= 7 ? new Date(date + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'short' }) : new Date(date + 'T12:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                   </div>
                   );
                 })}
@@ -3569,8 +3569,8 @@ export default function App() {
 
             {/* Row 4: Subject breakdown + per-subject completion */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="bg-white p-5 rounded-xl border border-slate-100">
-                <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><PieChart size={16} className="text-violet-500" /> {copy.statBySubject}</h3>
+              <div className="glass-card border-slate-700/50 p-5 rounded-xl border border-slate-700/50">
+                <h3 className="font-bold text-slate-100 drop-shadow-md mb-4 flex items-center gap-2"><PieChart size={16} className="text-violet-300" /> {copy.statBySubject}</h3>
                 <div className="space-y-2.5">
                   {subjects.map(sub => {
                     const n = analyticsData.subjectCounts[sub] || 0;
@@ -3578,10 +3578,10 @@ export default function App() {
                     return (
                       <div key={sub}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-bold text-slate-700">{sub}</span>
-                          <span className="text-[10px] font-black text-slate-500">{n} ({pct}%)</span>
+                          <span className="text-xs font-bold text-slate-200">{sub}</span>
+                          <span className="text-[10px] font-black text-slate-400">{n} ({pct}%)</span>
                         </div>
-                        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-2 bg-slate-800/50 rounded-full overflow-hidden">
                           <div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full transition-all" style={{ width: `${analyticsData.maxSubj > 0 ? (n / analyticsData.maxSubj) * 100 : 0}%`, minWidth: n > 0 ? 4 : 0 }} />
                         </div>
                       </div>
@@ -3590,16 +3590,16 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="bg-white p-5 rounded-xl border border-slate-100">
-                <h3 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><CheckCircle2 size={16} className="text-emerald-500" /> {copy.statSubjectHealth}</h3>
+              <div className="glass-card border-slate-700/50 p-5 rounded-xl border border-slate-700/50">
+                <h3 className="font-bold text-slate-100 drop-shadow-md mb-4 flex items-center gap-2"><CheckCircle2 size={16} className="text-emerald-500" /> {copy.statSubjectHealth}</h3>
                 <div className="space-y-2">
                   {subjects.filter(s => analyticsData.subjectCompletionRates[s] !== null).map(sub => {
                     const rate = analyticsData.subjectCompletionRates[sub];
                     return (
                       <div key={sub} className="flex items-center justify-between py-1.5 border-b border-slate-50 last:border-0">
-                        <span className="text-xs font-bold text-slate-700">{sub}</span>
+                        <span className="text-xs font-bold text-slate-200">{sub}</span>
                         <div className="flex items-center gap-2">
-                          <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden"><div className={`h-full rounded-full ${rate >= 80 ? 'bg-emerald-500' : rate >= 50 ? 'bg-amber-500' : 'bg-rose-500'}`} style={{ width: `${rate}%` }} /></div>
+                          <div className="w-16 h-1.5 bg-slate-800/50 rounded-full overflow-hidden"><div className={`h-full rounded-full ${rate >= 80 ? 'bg-emerald-500' : rate >= 50 ? 'bg-amber-500' : 'bg-rose-500'}`} style={{ width: `${rate}%` }} /></div>
                           <span className={`text-[11px] font-black w-10 text-right ${rate >= 80 ? 'text-emerald-600' : rate >= 50 ? 'text-amber-600' : 'text-rose-600'}`}>{rate}%</span>
                         </div>
                       </div>
@@ -3613,18 +3613,18 @@ export default function App() {
             </div>
 
             {/* Row 5: Weekly comparison */}
-            <div className="bg-white p-5 rounded-xl border border-slate-100">
-              <h3 className="font-bold text-slate-800 mb-3 flex items-center gap-2"><Activity size={16} className="text-violet-500" /> {copy.statWeeklyCompare}</h3>
+            <div className="glass-card border-slate-700/50 p-5 rounded-xl border border-slate-700/50">
+              <h3 className="font-bold text-slate-100 drop-shadow-md mb-3 flex items-center gap-2"><Activity size={16} className="text-violet-300" /> {copy.statWeeklyCompare}</h3>
               <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 rounded-xl bg-slate-50">
+                <div className="text-center p-3 rounded-xl bg-slate-900/50">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">{copy.statThisWeek}</p>
-                  <p className="text-3xl font-black text-slate-800">{analyticsData.thisWeek}</p>
-                  <p className="text-[10px] text-slate-500">{copy.statCompleted}</p>
+                  <p className="text-3xl font-black text-slate-100 drop-shadow-md">{analyticsData.thisWeek}</p>
+                  <p className="text-[10px] text-slate-400">{copy.statCompleted}</p>
                 </div>
-                <div className="text-center p-3 rounded-xl bg-slate-50">
+                <div className="text-center p-3 rounded-xl bg-slate-900/50">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">{copy.statLastWeek}</p>
-                  <p className="text-3xl font-black text-slate-800">{analyticsData.lastWeek}</p>
-                  <p className="text-[10px] text-slate-500">{copy.statCompleted}</p>
+                  <p className="text-3xl font-black text-slate-100 drop-shadow-md">{analyticsData.lastWeek}</p>
+                  <p className="text-[10px] text-slate-400">{copy.statCompleted}</p>
                 </div>
               </div>
               {analyticsData.weekDiff !== 0 && (
@@ -3633,7 +3633,7 @@ export default function App() {
                 </div>
               )}
               {analyticsData.weekDiff === 0 && analyticsData.thisWeek > 0 && (
-                <div className="mt-3 p-2.5 rounded-lg text-center text-xs font-bold bg-slate-50 text-slate-500">{copy.statSamePace}</div>
+                <div className="mt-3 p-2.5 rounded-lg text-center text-xs font-bold bg-slate-900/50 text-slate-400">{copy.statSamePace}</div>
               )}
             </div>
               </>
@@ -3661,22 +3661,22 @@ export default function App() {
         )}
 
         {activeTab === TABS.PAYMENTS && (
-          <div className="space-y-6 text-slate-800 animate-in fade-in max-w-4xl">
+          <div className="space-y-6 text-slate-100 drop-shadow-md animate-in fade-in max-w-4xl">
             <div className="flex items-center justify-between flex-wrap gap-3">
-              <h2 className="text-2xl font-black text-slate-800 flex items-center gap-2"><CreditCard size={28} className="text-violet-500" /> {copy.navPayments}</h2>
+              <h2 className="text-2xl font-black text-slate-100 drop-shadow-md flex items-center gap-2"><CreditCard size={28} className="text-violet-300" /> {copy.navPayments}</h2>
             </div>
 
             {/* Current plan */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-100">
+            <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Current plan</p>
               <div className="flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${subscriptionPlan === 'pro' ? 'bg-gradient-to-br from-violet-500 to-fuchsia-500' : 'bg-slate-100'}`}>
-                    {subscriptionPlan === 'pro' ? <Sparkles size={28} className="text-white" /> : <Wallet size={28} className="text-slate-500" />}
+                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${subscriptionPlan === 'pro' ? 'bg-gradient-to-br from-violet-500 to-fuchsia-500' : 'bg-slate-800/50'}`}>
+                    {subscriptionPlan === 'pro' ? <Sparkles size={28} className="text-white" /> : <Wallet size={28} className="text-slate-400" />}
                   </div>
                   <div>
-                    <h3 className="text-xl font-black text-slate-800">{subscriptionPlan === 'pro' ? 'Pro' : 'Free'}</h3>
-                    <p className="text-xs text-slate-500">{subscriptionPlan === 'pro' ? 'Advanced stats, 15 GB storage, priority support' : 'Basic features — upgrade for more'}</p>
+                    <h3 className="text-xl font-black text-slate-100 drop-shadow-md">{subscriptionPlan === 'pro' ? 'Pro' : 'Free'}</h3>
+                    <p className="text-xs text-slate-400">{subscriptionPlan === 'pro' ? 'Advanced stats, 15 GB storage, priority support' : 'Basic features — upgrade for more'}</p>
                   </div>
                 </div>
               </div>
@@ -3684,10 +3684,10 @@ export default function App() {
 
             {/* Cancel subscription - visible for Pro users */}
             {subscriptionPlan === 'pro' && (
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 border-l-4 border-l-slate-200">
-                <h3 className="font-bold text-slate-800 mb-1">Manage subscription</h3>
-                <p className="text-xs text-slate-500 mb-4">Cancel your Pro subscription anytime. You'll keep access until the end of your billing period.</p>
-                <button onClick={() => confirm('Cancel your Pro subscription? You\'ll keep access until the end of your billing period, then return to Free.', () => handleCancelSubscription(), 'danger')} disabled={cancelLoading} className="px-5 py-2.5 bg-slate-100 text-slate-600 font-bold rounded-xl text-sm hover:bg-slate-200 transition-colors disabled:opacity-60 flex items-center gap-2">
+              <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50 border-l-4 border-l-slate-200">
+                <h3 className="font-bold text-slate-100 drop-shadow-md mb-1">Manage subscription</h3>
+                <p className="text-xs text-slate-400 mb-4">Cancel your Pro subscription anytime. You'll keep access until the end of your billing period.</p>
+                <button onClick={() => confirm('Cancel your Pro subscription? You\'ll keep access until the end of your billing period, then return to Free.', () => handleCancelSubscription(), 'danger')} disabled={cancelLoading} className="px-5 py-2.5 bg-slate-800/50 text-slate-300 font-bold rounded-xl text-sm hover:bg-slate-200 transition-colors disabled:opacity-60 flex items-center gap-2">
                   {cancelLoading ? 'Cancelling...' : 'Cancel subscription'}
                 </button>
               </div>
@@ -3695,23 +3695,23 @@ export default function App() {
 
             {/* Sign up to Premium - full checkout portal */}
             {subscriptionPlan !== 'pro' && (
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 border-l-4 border-l-violet-500">
-                <h3 className="text-lg font-black text-slate-800 mb-1 flex items-center gap-2"><Sparkles size={20} className="text-violet-500" /> Sign up to Premium</h3>
-                <p className="text-xs text-slate-500 mb-4">Choose your plan and complete checkout. Upgrade anytime. Cancel anytime.</p>
+              <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50 border-l-4 border-l-violet-500">
+                <h3 className="text-lg font-black text-slate-100 drop-shadow-md mb-1 flex items-center gap-2"><Sparkles size={20} className="text-violet-300" /> Sign up to Premium</h3>
+                <p className="text-xs text-slate-400 mb-4">Choose your plan and complete checkout. Upgrade anytime. Cancel anytime.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                   {SUBSCRIPTION_PLANS.map(plan => (
-                    <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedPlan === plan.id ? 'border-violet-500 bg-violet-50/50 shadow-md' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
+                    <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedPlan === plan.id ? 'border-violet-500 bg-violet-900/30/50 shadow-md' : 'border-slate-600/50 glass-card border-slate-700/50 hover:border-slate-300'}`}>
                       {plan.badge && <span className="absolute -top-2.5 left-4 px-2.5 py-0.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-[10px] font-black uppercase tracking-wider rounded-full">{plan.badge}</span>}
                       <div className="flex items-start justify-between mb-3">
-                        <div><h4 className="font-bold text-slate-800">{plan.name}</h4><p className="text-[11px] text-slate-500 mt-0.5">{plan.tagline}</p></div>
+                        <div><h4 className="font-bold text-slate-100 drop-shadow-md">{plan.name}</h4><p className="text-[11px] text-slate-400 mt-0.5">{plan.tagline}</p></div>
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedPlan === plan.id ? 'bg-violet-500 border-violet-500' : 'border-slate-300'}`}>{selectedPlan === plan.id && <Check size={12} className="text-white" strokeWidth={3} />}</div>
                       </div>
-                      <div className="flex items-baseline gap-1"><span className="text-3xl font-black text-slate-800">R{plan.price}</span><span className="text-sm text-slate-400 font-medium">/mo</span></div>
+                      <div className="flex items-baseline gap-1"><span className="text-3xl font-black text-slate-100 drop-shadow-md">R{plan.price}</span><span className="text-sm text-slate-400 font-medium">/mo</span></div>
                       <div className="mt-3 space-y-1.5">
                         {plan.features.slice(0, 4).map((f, i) => (
                           <div key={i} className="flex items-center gap-2 text-xs">
                             {f.included ? <CheckCircle2 size={14} className="text-emerald-500 shrink-0" /> : <X size={14} className="text-slate-300 shrink-0" />}
-                            <span className={f.included ? 'text-slate-600' : 'text-slate-400'}>{f.text}</span>
+                            <span className={f.included ? 'text-slate-300' : 'text-slate-400'}>{f.text}</span>
                           </div>
                         ))}
                       </div>
@@ -3719,7 +3719,7 @@ export default function App() {
                   ))}
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
-                  <button onClick={handleConfirmPlan} disabled={checkoutLoading} className={`px-6 py-3 font-black rounded-xl text-sm transition-all disabled:opacity-60 ${selectedPlan === 'free' ? 'bg-slate-100 text-slate-600' : 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg hover:scale-[1.02]'}`}>
+                  <button onClick={handleConfirmPlan} disabled={checkoutLoading} className={`px-6 py-3 font-black rounded-xl text-sm transition-all disabled:opacity-60 ${selectedPlan === 'free' ? 'bg-slate-800/50 text-slate-300' : 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg hover:scale-[1.02]'}`}>
                     {checkoutLoading ? 'Redirecting...' : selectedPlan === 'free' ? 'Stay on Free' : `Subscribe to Pro — R${SUBSCRIPTION_PLANS.find(p => p.id === 'pro')?.price || 199}/mo`}
                   </button>
                   <div className="flex items-center gap-4 text-[11px] text-slate-400">
@@ -3741,10 +3741,10 @@ export default function App() {
             </div>
 
             {/* Payment history placeholder */}
-            <div className="bg-white p-6 rounded-2xl border border-slate-100">
-              <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2"><History size={18} className="text-violet-500" /> Payment history</h3>
-              <p className="text-xs text-slate-500 mb-4">View and download past invoices</p>
-              <div className="text-center py-8 rounded-xl bg-slate-50">
+            <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50">
+              <h3 className="font-bold text-slate-100 drop-shadow-md mb-2 flex items-center gap-2"><History size={18} className="text-violet-300" /> Payment history</h3>
+              <p className="text-xs text-slate-400 mb-4">View and download past invoices</p>
+              <div className="text-center py-8 rounded-xl bg-slate-900/50">
                 <CreditCard size={32} className="text-slate-200 mx-auto mb-2" />
                 <p className="text-sm font-medium text-slate-400">No payment history yet</p>
                 <p className="text-xs text-slate-400 mt-1">Payments will appear here after upgrade</p>
@@ -3754,64 +3754,64 @@ export default function App() {
         )}
 
         {activeTab === TABS.SETTINGS && (
-          <div className="space-y-6 text-slate-800">
-            <div className="bg-white px-4 py-2 rounded-xl mb-4 inline-block border border-slate-100"><h2 className="text-2xl font-black text-slate-800">Settings</h2></div>
-            <div onClick={() => setIsProfileSettingsOpen(true)} className="bg-white p-5 rounded-xl border border-slate-100 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all">
-              <div className="w-16 h-16 rounded-full bg-violet-100 flex items-center justify-center text-violet-600 text-2xl font-bold overflow-hidden border-4 border-white shadow-md">
+          <div className="space-y-6 text-slate-100 drop-shadow-md">
+            <div className="glass-card border-slate-700/50 px-4 py-2 rounded-xl mb-4 inline-block border border-slate-700/50"><h2 className="text-2xl font-black text-slate-100 drop-shadow-md">Settings</h2></div>
+            <div onClick={() => setIsProfileSettingsOpen(true)} className="glass-card border-slate-700/50 p-5 rounded-xl border border-slate-700/50 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all">
+              <div className="w-16 h-16 rounded-full bg-violet-900/50 flex items-center justify-center text-violet-400 text-2xl font-bold overflow-hidden border-4 border-white shadow-md">
                 {profileImage ? <img src={profileImage} alt="Profile" className="w-full h-full object-cover" /> : appUser.role[0]}
               </div>
-              <div><h3 className="font-bold text-slate-800 text-lg">{copy.profileTitle}</h3><p className="text-xs text-slate-500 font-medium">{copy.profileDesc}</p></div>
+              <div><h3 className="font-bold text-slate-100 drop-shadow-md text-lg">{copy.profileTitle}</h3><p className="text-xs text-slate-400 font-medium">{copy.profileDesc}</p></div>
               <div className="ml-auto text-violet-300"><ChevronRight size={24} /></div>
             </div>
             {(appUser?.role === ROLES.STUDENT || appUser?.role === ROLES.TEACHER) && (
-              <div className="bg-white p-5 rounded-xl border border-slate-100">
-                <h3 className="font-bold text-slate-800 text-lg mb-1 flex items-center gap-2"><BookOpen size={18} className="text-violet-500" /> Subjects</h3>
-                <p className="text-xs text-slate-500 mb-4">Add or remove subjects for homework and filters</p>
+              <div className="glass-card border-slate-700/50 p-5 rounded-xl border border-slate-700/50">
+                <h3 className="font-bold text-slate-100 drop-shadow-md text-lg mb-1 flex items-center gap-2"><BookOpen size={18} className="text-violet-300" /> Subjects</h3>
+                <p className="text-xs text-slate-400 mb-4">Add or remove subjects for homework and filters</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {subjects.map(sub => (
-                    <span key={sub} className="inline-flex items-center gap-1.5 px-3 py-2 bg-violet-50 text-violet-700 rounded-xl text-sm font-bold">
+                    <span key={sub} className="inline-flex items-center gap-1.5 px-3 py-2 bg-violet-900/30 text-violet-700 rounded-xl text-sm font-bold">
                       {sub}
-                      <button type="button" onClick={() => { if (subjects.length <= 1) { showToast('Keep at least one subject'); return; } confirm(`Remove "${sub}" from your subjects?`, () => setSubjects(prev => prev.filter(s => s !== sub)), 'danger'); }} className="p-0.5 rounded hover:bg-violet-200 text-violet-600 transition-colors" title="Remove subject"><X size={14} /></button>
+                      <button type="button" onClick={() => { if (subjects.length <= 1) { showToast('Keep at least one subject'); return; } confirm(`Remove "${sub}" from your subjects?`, () => setSubjects(prev => prev.filter(s => s !== sub)), 'danger'); }} className="p-0.5 rounded hover:bg-violet-200 text-violet-400 transition-colors" title="Remove subject"><X size={14} /></button>
                     </span>
                   ))}
                 </div>
                 <div className="flex gap-2">
-                  <input type="text" value={newSubjectInput} onChange={(e) => setNewSubjectInput(e.target.value)} placeholder="New subject name" className="flex-1 bg-slate-50 p-3 rounded-xl font-medium text-slate-700 border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none placeholder:text-slate-400" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), newSubjectInput.trim() && !subjects.includes(newSubjectInput.trim()) && (setSubjects(prev => [...prev, newSubjectInput.trim()]), setNewSubjectInput('')))}
+                  <input type="text" value={newSubjectInput} onChange={(e) => setNewSubjectInput(e.target.value)} placeholder="New subject name" className="flex-1 bg-slate-900/50 p-3 rounded-xl font-medium text-slate-200 border border-slate-700/50 focus:ring-2 focus:ring-violet-300 outline-none placeholder:text-slate-400" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), newSubjectInput.trim() && !subjects.includes(newSubjectInput.trim()) && (setSubjects(prev => [...prev, newSubjectInput.trim()]), setNewSubjectInput('')))}
                   />
                   <button type="button" onClick={() => { const v = newSubjectInput.trim(); if (v && !subjects.includes(v)) { setSubjects(prev => [...prev, v]); setNewSubjectInput(''); showToast(`Added ${v}`); } }} className="px-4 py-3 bg-violet-500 text-white font-bold rounded-xl text-sm hover:bg-violet-600 transition-colors">Add</button>
-                  <button type="button" onClick={() => confirm('Reset subjects to defaults? Your custom subjects will be removed.', () => { setSubjects([...DEFAULT_SUBJECTS]); showToast('Reset to default subjects'); }, 'danger')} className="px-4 py-3 text-slate-500 font-bold rounded-xl text-sm hover:bg-slate-100 transition-colors">Reset</button>
+                  <button type="button" onClick={() => confirm('Reset subjects to defaults? Your custom subjects will be removed.', () => { setSubjects([...DEFAULT_SUBJECTS]); showToast('Reset to default subjects'); }, 'danger')} className="px-4 py-3 text-slate-400 font-bold rounded-xl text-sm hover:bg-slate-800/50 transition-colors">Reset</button>
                 </div>
               </div>
             )}
             {appUser.role === ROLES.STUDENT && pairingCode && (
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <h3 className="font-bold text-slate-800 text-lg mb-1">Pairing code</h3>
-                <p className="text-xs text-slate-500 font-medium mb-3">Share this code with a parent to link accounts</p>
-                <p className="text-2xl font-black text-violet-600 tracking-widest">{pairingCode}</p>
+              <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50 shadow-sm">
+                <h3 className="font-bold text-slate-100 drop-shadow-md text-lg mb-1">Pairing code</h3>
+                <p className="text-xs text-slate-400 font-medium mb-3">Share this code with a parent to link accounts</p>
+                <p className="text-2xl font-black text-violet-400 tracking-widest">{pairingCode}</p>
               </div>
             )}
             {!isReadOnly && (
               <div className="space-y-2">
-                <button type="button" onClick={() => confirm('Sync Google Classroom? This will add your assignments from Google Classroom to your list.', handleGoogleClassroomImport)} disabled={isGoogleClassroomImporting} className={`w-full text-left bg-white p-5 rounded-xl border border-slate-100 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all disabled:opacity-75 disabled:cursor-wait ${integrationMessage ? 'ring-2 ring-violet-300' : ''}`}>
-                  <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 shrink-0"><BookOpen size={28} /></div>
+                <button type="button" onClick={() => confirm('Sync Google Classroom? This will add your assignments from Google Classroom to your list.', handleGoogleClassroomImport)} disabled={isGoogleClassroomImporting} className={`w-full text-left glass-card border-slate-700/50 p-5 rounded-xl border border-slate-700/50 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all disabled:opacity-75 disabled:cursor-wait ${integrationMessage ? 'ring-2 ring-violet-300' : ''}`}>
+                  <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 shrink-0"><BookOpen size={28} /></div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-slate-700 text-lg">Integrations</h3>
-                    <p className="text-xs text-slate-500 font-medium">{isGoogleClassroomImporting ? 'Syncing…' : 'Connect Google Classroom to sync assignments'}</p>
+                    <h3 className="font-bold text-slate-200 text-lg">Integrations</h3>
+                    <p className="text-xs text-slate-400 font-medium">{isGoogleClassroomImporting ? 'Syncing…' : 'Connect Google Classroom to sync assignments'}</p>
                   </div>
                   <ChevronRight size={24} className="text-violet-300 shrink-0" />
                 </button>
                 {integrationMessage && (
-                  <p className="text-xs font-medium text-slate-600 px-2">{integrationMessage}</p>
+                  <p className="text-xs font-medium text-slate-300 px-2">{integrationMessage}</p>
                 )}
               </div>
             )}
-            <button onClick={handleSignOut} className="w-full bg-white p-4 rounded-xl border border-slate-100 text-rose-500 font-bold flex items-center gap-3 hover:bg-rose-50 transition-colors"><LogOut size={16} /> {copy.logOut || 'Log out'}</button>
+            <button onClick={handleSignOut} className="w-full glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50 text-rose-500 font-bold flex items-center gap-3 hover:bg-rose-50 transition-colors"><LogOut size={16} /> {copy.logOut || 'Log out'}</button>
           </div>
         )}
       </div>
 
       {/* Mobile bottom nav bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-100 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-slate-700/50 border-t border-slate-700/50 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
         <div className="flex items-center justify-around py-1.5 px-1">
           <FloatingNavItem icon={Home} label={copy.navHome} isActive={activeTab === TABS.OVERVIEW} onClick={() => setActiveTab(TABS.OVERVIEW)} />
           <FloatingNavItem icon={BookOpen} label={copy.navHomework} isActive={activeTab === TABS.HOMEWORK && viewMode !== 'calendar'} onClick={() => { setActiveTab(TABS.HOMEWORK); setViewMode('list'); }} badgeCount={stats.overdue} badgeColor="bg-rose-500" />
@@ -3828,25 +3828,25 @@ export default function App() {
       {isNotifPanelOpen && (
         <>
           <div className="fixed inset-0 z-[100] bg-black/20" onClick={() => setIsNotifPanelOpen(false)} />
-          <div className="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-white shadow-2xl z-[101] animate-in slide-in-from-right flex flex-col">
-            <div className="h-14 flex items-center justify-between px-5 border-b border-slate-100 shrink-0">
-              <h2 className="text-sm font-black text-slate-800 flex items-center gap-2"><Bell size={16} /> Notifications</h2>
-              <button onClick={() => setIsNotifPanelOpen(false)} className="p-1.5 hover:bg-slate-100 rounded-lg"><X size={16} className="text-slate-400" /></button>
+          <div className="fixed top-0 right-0 bottom-0 w-full max-w-sm glass-card border-slate-700/50 shadow-2xl z-[101] animate-in slide-in-from-right flex flex-col">
+            <div className="h-14 flex items-center justify-between px-5 border-b border-slate-700/50 shrink-0">
+              <h2 className="text-sm font-black text-slate-100 drop-shadow-md flex items-center gap-2"><Bell size={16} /> Notifications</h2>
+              <button onClick={() => setIsNotifPanelOpen(false)} className="p-1.5 hover:bg-slate-800/50 rounded-lg"><X size={16} className="text-slate-400" /></button>
             </div>
             <div className="flex-1 overflow-y-auto">
               {alerts.length === 0 ? (
-                <div className="p-8 text-center"><Bell size={32} className="text-slate-200 mx-auto mb-3" /><p className="text-sm font-bold text-slate-500">{copy.statAllCaughtUp}</p><p className="text-xs text-slate-400 mt-1">{copy.allCaughtUp}</p></div>
+                <div className="p-8 text-center"><Bell size={32} className="text-slate-200 mx-auto mb-3" /><p className="text-sm font-bold text-slate-400">{copy.statAllCaughtUp}</p><p className="text-xs text-slate-400 mt-1">{copy.allCaughtUp}</p></div>
               ) : (
                 <div className="divide-y divide-slate-50">
                   {alerts.map(a => (
-                    <div key={a.id} className="p-4 hover:bg-slate-50 transition-colors">
+                    <div key={a.id} className="p-4 hover:bg-slate-900/50 transition-colors">
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0 mt-0.5"><AlertTriangle size={14} className="text-amber-600" /></div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-700">{a.message}</p>
+                          <p className="text-sm font-medium text-slate-200">{a.message}</p>
                           <p className="text-[10px] text-slate-400 mt-0.5">{a.type || 'Alert'} • {a.date || 'Today'}</p>
                           <div className="flex gap-2 mt-2">
-                            <button onClick={() => confirm('Dismiss this alert?', () => { markAlertRead(a.id, profileData.email); setAlerts(getUnreadAlertsForUser(profileData.email, linkedStudents, appUser?.role)); showToast(copy.toastDismissed); })} className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold hover:bg-slate-200 transition-colors">{copy.toastDismissed}</button>
+                            <button onClick={() => confirm('Dismiss this alert?', () => { markAlertRead(a.id, profileData.email); setAlerts(getUnreadAlertsForUser(profileData.email, linkedStudents, appUser?.role)); showToast(copy.toastDismissed); })} className="px-2.5 py-1 bg-slate-800/50 text-slate-300 rounded text-[10px] font-bold hover:bg-slate-200 transition-colors">{copy.toastDismissed}</button>
                             {riskScore != null && riskScore < 60 && assignments.length > 0 && !getActiveRecoveryForStudent(viewingStudentKey) && (
                               <button onClick={() => confirm('Start a 7-day recovery plan?', () => { createRecoveryTarget(viewingStudentKey, 95, 7); showToast(copy.toastRecoveryCreated); })} className="px-2.5 py-1 bg-violet-500 text-white rounded text-[10px] font-bold hover:bg-violet-600 transition-colors">{copy.startRecovery}</button>
                             )}
@@ -3866,22 +3866,22 @@ export default function App() {
       {isActivityLogOpen && (
         <>
           <div className="fixed inset-0 z-[100] bg-black/20" onClick={() => setIsActivityLogOpen(false)} />
-          <div className="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-white shadow-2xl z-[101] animate-in slide-in-from-right flex flex-col">
-            <div className="h-14 flex items-center justify-between px-5 border-b border-slate-100 shrink-0">
-              <h2 className="text-sm font-black text-slate-800 flex items-center gap-2"><Activity size={16} /> Activity Log</h2>
-              <button onClick={() => setIsActivityLogOpen(false)} className="p-1.5 hover:bg-slate-100 rounded-lg"><X size={16} className="text-slate-400" /></button>
+          <div className="fixed top-0 right-0 bottom-0 w-full max-w-sm glass-card border-slate-700/50 shadow-2xl z-[101] animate-in slide-in-from-right flex flex-col">
+            <div className="h-14 flex items-center justify-between px-5 border-b border-slate-700/50 shrink-0">
+              <h2 className="text-sm font-black text-slate-100 drop-shadow-md flex items-center gap-2"><Activity size={16} /> Activity Log</h2>
+              <button onClick={() => setIsActivityLogOpen(false)} className="p-1.5 hover:bg-slate-800/50 rounded-lg"><X size={16} className="text-slate-400" /></button>
             </div>
             <div className="flex-1 overflow-y-auto">
               {recentHistory.length === 0 ? (
-                <div className="p-8 text-center"><Activity size={32} className="text-slate-200 mx-auto mb-3" /><p className="text-sm font-bold text-slate-500">No activity yet</p></div>
+                <div className="p-8 text-center"><Activity size={32} className="text-slate-200 mx-auto mb-3" /><p className="text-sm font-bold text-slate-400">No activity yet</p></div>
               ) : (
                 <div className="divide-y divide-slate-50">
                   {recentHistory.map(item => (
                     <div key={item.id} className="px-5 py-3 flex items-start gap-3">
-                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${item.type === 'success' ? 'bg-emerald-100 text-emerald-600' : item.type === 'error' ? 'bg-rose-100 text-rose-600' : 'bg-slate-100 text-slate-600'}`}>
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${item.type === 'success' ? 'bg-emerald-100 text-emerald-600' : item.type === 'error' ? 'bg-rose-100 text-rose-600' : 'bg-slate-800/50 text-slate-300'}`}>
                         {item.type === 'success' ? <CheckCircle2 size={14} /> : <History size={14} />}
                       </div>
-                      <div><p className="text-xs font-bold text-slate-700">{item.title}</p><p className="text-[10px] text-slate-400">{item.time}</p></div>
+                      <div><p className="text-xs font-bold text-slate-200">{item.title}</p><p className="text-[10px] text-slate-400">{item.time}</p></div>
                     </div>
                   ))}
                 </div>
@@ -3894,11 +3894,11 @@ export default function App() {
       {/* Toast notifications */}
       <div className="fixed top-16 right-4 z-[500] space-y-2 pointer-events-none">
         {toasts.map(t => (
-          <div key={t.id} className="pointer-events-auto animate-in slide-in-from-right fade-in bg-white border border-slate-100 px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 min-w-[200px]">
+          <div key={t.id} className="pointer-events-auto animate-in slide-in-from-right fade-in glass-card border-slate-700/50 border border-slate-700/50 px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 min-w-[200px]">
             {t.type === 'success' && <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />}
             {t.type === 'info' && <AlertTriangle size={14} className="text-amber-500 shrink-0" />}
             {t.type === 'error' && <X size={14} className="text-rose-500 shrink-0" />}
-            <span className="text-xs font-bold text-slate-700">{t.message}</span>
+            <span className="text-xs font-bold text-slate-200">{t.message}</span>
           </div>
         ))}
       </div>
@@ -3915,32 +3915,32 @@ export default function App() {
 
       {isCreateAssignmentModalOpen && !isReadOnly && (
         <div className="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
-          <div className="bg-white w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] p-8 shadow-2xl animate-in slide-in-from-bottom max-h-[90vh] overflow-y-auto no-scrollbar">
+          <div className="glass-card border-slate-700/50 w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] p-8 shadow-2xl animate-in slide-in-from-bottom max-h-[90vh] overflow-y-auto no-scrollbar">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-black text-slate-800">{copy.addHomeworkModal}</h2>
-              <button onClick={() => { setIsCreateAssignmentModalOpen(false); setNewAssignmentAttachment({ file: null, preview: null }); }} className="p-2 bg-slate-100 rounded-full text-slate-500 transition-colors"><X size={20} /></button>
+              <h2 className="text-xl font-black text-slate-100 drop-shadow-md">{copy.addHomeworkModal}</h2>
+              <button onClick={() => { setIsCreateAssignmentModalOpen(false); setNewAssignmentAttachment({ file: null, preview: null }); }} className="p-2 bg-slate-800/50 rounded-full text-slate-400 transition-colors"><X size={20} /></button>
             </div>
             <form onSubmit={handleCreateAssignment} className="space-y-6">
-              <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.assignmentLabel}</label><input type="text" required value={newAssignment.title} onChange={(e) => setNewAssignment({ ...newAssignment, title: e.target.value })} placeholder={copy.assignmentPlaceholder} className="w-full bg-slate-50 p-4 rounded-2xl font-bold text-slate-700 outline-none" /></div>
-              <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.colSubject}</label><select value={newAssignment.subject} onChange={(e) => setNewAssignment({ ...newAssignment, subject: e.target.value })} className="w-full bg-slate-50 p-4 rounded-2xl font-bold text-slate-700 outline-none">{subjects.map(s => <option key={s} value={s}>{s}</option>)}</select></div>
-              <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.notesLabel}</label><textarea value={newAssignment.description} onChange={(e) => setNewAssignment({ ...newAssignment, description: e.target.value })} placeholder={copy.notesPlaceholder} className="w-full bg-slate-50 p-4 rounded-2xl font-medium text-slate-700 outline-none h-24 placeholder:text-slate-400" /></div>
+              <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.assignmentLabel}</label><input type="text" required value={newAssignment.title} onChange={(e) => setNewAssignment({ ...newAssignment, title: e.target.value })} placeholder={copy.assignmentPlaceholder} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold text-slate-200 outline-none" /></div>
+              <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.colSubject}</label><select value={newAssignment.subject} onChange={(e) => setNewAssignment({ ...newAssignment, subject: e.target.value })} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold text-slate-200 outline-none">{subjects.map(s => <option key={s} value={s}>{s}</option>)}</select></div>
+              <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.notesLabel}</label><textarea value={newAssignment.description} onChange={(e) => setNewAssignment({ ...newAssignment, description: e.target.value })} placeholder={copy.notesPlaceholder} className="w-full bg-slate-900/50 p-4 rounded-2xl font-medium text-slate-200 outline-none h-24 placeholder:text-slate-400" /></div>
               <div>
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.uploadDoc || 'Upload document'}</label>
                 <input type="file" ref={createAssignFileInputRef} style={{ display: 'none' }} accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.xls,.xlsx,.ppt,.pptx" onChange={handleCreateAssignFileChange} />
                 {newAssignmentAttachment.file ? (
                   <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-100 p-3 rounded-xl">
                     <Upload size={16} className="text-emerald-600 shrink-0" />
-                    <span className="text-sm font-medium text-slate-700 truncate flex-1">{newAssignmentAttachment.file.name}</span>
-                    <button type="button" onClick={() => setNewAssignmentAttachment({ file: null, preview: null })} className="text-xs font-bold text-slate-500 hover:text-rose-500">Remove</button>
+                    <span className="text-sm font-medium text-slate-200 truncate flex-1">{newAssignmentAttachment.file.name}</span>
+                    <button type="button" onClick={() => setNewAssignmentAttachment({ file: null, preview: null })} className="text-xs font-bold text-slate-400 hover:text-rose-500">Remove</button>
                   </div>
                 ) : (
-                  <button type="button" onClick={() => createAssignFileInputRef.current?.click()} className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl font-medium text-slate-500 text-sm flex items-center justify-center gap-2 hover:border-violet-300 hover:bg-violet-50/50 transition-colors">
+                  <button type="button" onClick={() => createAssignFileInputRef.current?.click()} className="w-full py-3 border-2 border-dashed border-slate-600/50 rounded-xl font-medium text-slate-400 text-sm flex items-center justify-center gap-2 hover:border-violet-300 hover:bg-violet-900/30/50 transition-colors">
                     <Upload size={16} /> {copy.uploadDocMax || 'Upload document (max 20MB)'}
                   </button>
                 )}
               </div>
               <div className="flex gap-3">
-                <button type="button" onClick={() => { setIsCreateAssignmentModalOpen(false); setNewAssignmentAttachment({ file: null, preview: null }); }} className="flex-1 py-4 text-slate-500 font-bold rounded-2xl">{copy.cancelBtn}</button>
+                <button type="button" onClick={() => { setIsCreateAssignmentModalOpen(false); setNewAssignmentAttachment({ file: null, preview: null }); }} className="flex-1 py-4 text-slate-400 font-bold rounded-2xl">{copy.cancelBtn}</button>
                 <button type="submit" className="flex-[2] py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold rounded-2xl">{copy.addBtn}</button>
               </div>
             </form>
@@ -3956,34 +3956,34 @@ export default function App() {
         const daysLeft = Math.ceil((dueDate - new Date()) / 86400000);
         return (
         <div className="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
-            <div className="bg-white w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom no-scrollbar">
+            <div className="glass-card border-slate-700/50 w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom no-scrollbar">
 
             {/* Header with colored status band */}
-            <div className={`px-6 pt-5 pb-4 ${isDone ? 'bg-emerald-50' : isOverdue ? 'bg-rose-50' : 'bg-violet-50'}`}>
+            <div className={`px-6 pt-5 pb-4 ${isDone ? 'bg-emerald-50' : isOverdue ? 'bg-rose-50' : 'bg-violet-900/30'}`}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className={`p-2.5 rounded-xl text-white shadow-sm ${isDone ? 'bg-emerald-500' : isOverdue ? 'bg-rose-500' : 'bg-violet-500'}`}>
                     <BookOpen size={20} />
                   </div>
                   <div>
-                    <h2 className="text-lg font-black text-slate-800 leading-tight">{selectedAssignment.title}</h2>
+                    <h2 className="text-lg font-black text-slate-100 drop-shadow-md leading-tight">{selectedAssignment.title}</h2>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs font-bold text-slate-500">{selectedAssignment.subject}</span>
+                      <span className="text-xs font-bold text-slate-400">{selectedAssignment.subject}</span>
                       <span className="text-slate-300">·</span>
                       <span className={`text-xs font-bold ${selectedAssignment.priority === 'High' ? 'text-rose-500' : selectedAssignment.priority === 'Medium' ? 'text-amber-500' : 'text-slate-400'}`}>{selectedAssignment.priority === 'High' ? copy.priorityHigh : selectedAssignment.priority === 'Medium' ? copy.priorityMedium : copy.priorityLow}</span>
                     </div>
                   </div>
                 </div>
-                <button onClick={() => setIsUploadModalOpen(false)} className="p-1.5 rounded-lg hover:bg-white/60 text-slate-400 transition-colors"><X size={18} /></button>
+                <button onClick={() => setIsUploadModalOpen(false)} className="p-1.5 rounded-lg hover:glass-card border-slate-700/50/60 text-slate-400 transition-colors"><X size={18} /></button>
               </div>
 
               {/* Status + due date row */}
               <div className="flex items-center gap-2 flex-wrap">
-                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold ${isDone ? 'bg-emerald-100 text-emerald-700' : isOverdue ? 'bg-rose-100 text-rose-600' : 'bg-white text-slate-600'}`}>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold ${isDone ? 'bg-emerald-100 text-emerald-700' : isOverdue ? 'bg-rose-100 text-rose-600' : 'glass-card border-slate-700/50 text-slate-300'}`}>
                   {isDone ? <CheckCircle2 size={12} /> : isOverdue ? <AlertTriangle size={12} /> : <Calendar size={12} />}
                   {isDone ? copy.statusCompleted : isOverdue ? copy.statusOverdue : copy.statusInProgress}
                 </span>
-                <span className={`text-[11px] font-bold ${isOverdue ? 'text-rose-500' : 'text-slate-500'}`}>
+                <span className={`text-[11px] font-bold ${isOverdue ? 'text-rose-500' : 'text-slate-400'}`}>
                   {isDone ? `Submitted ${selectedAssignment.submittedAt || ''}` : isOverdue ? `${Math.abs(daysLeft)} ${Math.abs(daysLeft) !== 1 ? copy.daysLate : copy.dayLate}` : daysLeft === 0 ? copy.dueToday : daysLeft === 1 ? copy.dueTomorrow : `${copy.dueInDays} ${daysLeft} ${copy.statDays}`}
                 </span>
                 <span className="text-[11px] text-slate-400 ml-auto">{dueDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
@@ -3996,9 +3996,9 @@ export default function App() {
               <div>
                 <div className="flex justify-between items-center mb-1.5">
                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">{copy.progressLabel}</span>
-                  <span className={`text-xs font-black ${prog === 100 ? 'text-emerald-600' : 'text-slate-600'}`}>{prog}%</span>
+                  <span className={`text-xs font-black ${prog === 100 ? 'text-emerald-600' : 'text-slate-300'}`}>{prog}%</span>
                 </div>
-                <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-2.5 bg-slate-800/50 rounded-full overflow-hidden">
                   <div className={`h-full rounded-full transition-all ${prog === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-violet-500 to-fuchsia-500'}`} style={{ width: `${prog}%` }} />
                 </div>
               </div>
@@ -4006,8 +4006,8 @@ export default function App() {
               {/* Notes */}
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">{copy.notesSection}</p>
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                  <p className="text-sm text-slate-600 leading-relaxed">{selectedAssignment.description || copy.notesPlaceholder}</p>
+                <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                  <p className="text-sm text-slate-300 leading-relaxed">{selectedAssignment.description || copy.notesPlaceholder}</p>
                 </div>
               </div>
 
@@ -4017,17 +4017,17 @@ export default function App() {
                 {selectedAssignment.submittedFile ? (
                   <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-100 p-3 rounded-xl">
                     <div className="p-2 bg-emerald-100 rounded-lg"><Upload size={14} className="text-emerald-600" /></div>
-                    <span className="text-sm font-medium text-slate-700 truncate flex-1">{selectedAssignment.submittedFile}</span>
+                    <span className="text-sm font-medium text-slate-200 truncate flex-1">{selectedAssignment.submittedFile}</span>
                     {!isReadOnly && (
                       <div className="flex gap-1.5 shrink-0">
                         <button onClick={() => { if (!selectedAssignment.submittedPreview) return; const a = document.createElement('a'); a.href = selectedAssignment.submittedPreview; a.download = selectedAssignment.submittedFile || 'document'; a.click(); }} className="px-3 py-1.5 bg-violet-500 text-white font-bold rounded-lg text-xs hover:bg-violet-600 transition-colors">Download</button>
-                        <button onClick={() => confirm('Replace the uploaded document? The current file will be removed and the assignment will revert to Pending.', () => { const u = { ...selectedAssignment, submittedFile: null, submittedFileType: null, submittedPreview: null, status: 'Pending' }; setSelectedAssignment(u); setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? u : a)); }, 'danger')} className="px-3 py-1.5 text-slate-500 font-bold rounded-lg text-xs hover:bg-slate-100 transition-colors">Replace</button>
+                        <button onClick={() => confirm('Replace the uploaded document? The current file will be removed and the assignment will revert to Pending.', () => { const u = { ...selectedAssignment, submittedFile: null, submittedFileType: null, submittedPreview: null, status: 'Pending' }; setSelectedAssignment(u); setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? u : a)); }, 'danger')} className="px-3 py-1.5 text-slate-400 font-bold rounded-lg text-xs hover:bg-slate-800/50 transition-colors">Replace</button>
                       </div>
                     )}
                   </div>
                 ) : (
-                  isReadOnly ? <p className="text-sm text-slate-400 bg-slate-50 p-3 rounded-xl border border-slate-100">{copy.noDocUploaded}</p> :
-                  <button onClick={() => assignmentFileInputRef.current?.click()} className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl font-medium text-slate-500 text-sm flex items-center justify-center gap-2 hover:border-violet-300 hover:bg-violet-50/50 transition-colors">
+                  isReadOnly ? <p className="text-sm text-slate-400 bg-slate-900/50 p-3 rounded-xl border border-slate-700/50">{copy.noDocUploaded}</p> :
+                  <button onClick={() => assignmentFileInputRef.current?.click()} className="w-full py-3 border-2 border-dashed border-slate-600/50 rounded-xl font-medium text-slate-400 text-sm flex items-center justify-center gap-2 hover:border-violet-300 hover:bg-violet-900/30/50 transition-colors">
                     <Upload size={16} /> {copy.uploadDocMax}
                   </button>
                 )}
@@ -4036,13 +4036,13 @@ export default function App() {
               {/* Assignment Timer & Checklist */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Timer Card */}
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-between">
+                <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-4 flex flex-col justify-between">
                   <div className="flex items-center justify-between mb-2 text-slate-400">
                     <span className="text-[10px] font-black uppercase tracking-wider">Session Timer</span>
                     <Clock size={14} />
                   </div>
                   <div className="text-center py-2">
-                    <span className="text-3xl font-black text-slate-800 tabular-nums">{formatDuration(selectedAssignment.timeSpent || 0)}</span>
+                    <span className="text-3xl font-black text-slate-100 drop-shadow-md tabular-nums">{formatDuration(selectedAssignment.timeSpent || 0)}</span>
                   </div>
                   <div className="flex gap-2 mt-4">
                     <button 
@@ -4057,7 +4057,7 @@ export default function App() {
                         setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, timeSpent: 0 } : a)); 
                         setSelectedAssignment(prev => prev ? { ...prev, timeSpent: 0 } : prev);
                       }}
-                      className="px-3 py-2 bg-slate-200 text-slate-600 rounded-xl font-bold text-xs hover:bg-slate-300 transition-colors"
+                      className="px-3 py-2 bg-slate-200 text-slate-300 rounded-xl font-bold text-xs hover:bg-slate-300 transition-colors"
                     >
                       Reset
                     </button>
@@ -4065,7 +4065,7 @@ export default function App() {
                 </div>
 
                 {/* Quick Checklist */}
-                <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+                <div className="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-4">
                   <div className="flex items-center justify-between mb-3 text-slate-400">
                     <span className="text-[10px] font-black uppercase tracking-wider">Sub-tasks</span>
                     <CheckCircle2 size={14} />
@@ -4080,11 +4080,11 @@ export default function App() {
                             setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, checklist: newChecklist } : a));
                             setSelectedAssignment(prev => ({ ...prev, checklist: newChecklist }));
                           }}
-                          className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${item.completed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 bg-white'}`}
+                          className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${item.completed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 glass-card border-slate-700/50'}`}
                         >
                           {item.completed && <Check size={10} strokeWidth={4} />}
                         </button>
-                        <span className={`text-xs font-medium truncate flex-1 ${item.completed ? 'text-slate-400 line-through' : 'text-slate-700'}`}>{item.text}</span>
+                        <span className={`text-xs font-medium truncate flex-1 ${item.completed ? 'text-slate-400 line-through' : 'text-slate-200'}`}>{item.text}</span>
                         <button 
                           onClick={() => {
                             const newChecklist = (selectedAssignment.checklist || []).filter((_, i) => i !== idx);
@@ -4116,7 +4116,7 @@ export default function App() {
                             e.currentTarget.value = '';
                           }
                         }}
-                        className="w-full bg-white border border-slate-200 rounded-lg pl-3 pr-10 py-1.5 text-xs font-medium focus:ring-2 focus:ring-violet-300 outline-none"
+                        className="w-full glass-card border-slate-700/50 border border-slate-600/50 rounded-lg pl-3 pr-10 py-1.5 text-xs font-medium focus:ring-2 focus:ring-violet-300 outline-none"
                       />
                       <button 
                         onClick={() => {
@@ -4129,7 +4129,7 @@ export default function App() {
                             input.value = '';
                           }
                         }}
-                        className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-violet-500 hover:bg-violet-50 rounded-md transition-colors"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-violet-300 hover:bg-violet-900/30 rounded-md transition-colors"
                       >
                         <Plus size={14} strokeWidth={3} />
                       </button>
@@ -4139,7 +4139,7 @@ export default function App() {
                         const input = document.getElementById('new-subtask-input');
                         input.value = '';
                       }}
-                      className="px-2 py-1.5 text-[10px] font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase"
+                      className="px-2 py-1.5 text-[10px] font-bold text-slate-400 hover:text-slate-300 transition-colors uppercase"
                     >
                       Clear
                     </button>
@@ -4153,10 +4153,10 @@ export default function App() {
                 {appUser?.role === ROLES.TEACHER ? (
                   <div className="space-y-2">
                     <div>
-                      <label className="text-xs font-bold text-slate-500 mb-1 block">Grade (optional)</label>
-                      <input type="number" min="0" max="100" value={selectedAssignment.grade ?? ''} onChange={(e) => { const v = e.target.value; setSelectedAssignment(prev => ({ ...prev, grade: v === '' ? null : Number(v) })); setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, grade: v === '' ? null : Number(v) } : a)); }} placeholder="0–100" className="w-full bg-slate-50 p-3 rounded-xl text-sm font-medium border border-slate-200" />
+                      <label className="text-xs font-bold text-slate-400 mb-1 block">Grade (optional)</label>
+                      <input type="number" min="0" max="100" value={selectedAssignment.grade ?? ''} onChange={(e) => { const v = e.target.value; setSelectedAssignment(prev => ({ ...prev, grade: v === '' ? null : Number(v) })); setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, grade: v === '' ? null : Number(v) } : a)); }} placeholder="0–100" className="w-full bg-slate-900/50 p-3 rounded-xl text-sm font-medium border border-slate-600/50" />
                     </div>
-                    <textarea value={teacherCommentDraft} onChange={(e) => setTeacherCommentDraft(e.target.value)} placeholder="Write a note for the student..." className="w-full bg-slate-50 p-3 rounded-xl text-sm text-slate-700 outline-none resize-none h-20 placeholder:text-slate-400 border border-slate-200 focus:border-violet-400" />
+                    <textarea value={teacherCommentDraft} onChange={(e) => setTeacherCommentDraft(e.target.value)} placeholder="Write a note for the student..." className="w-full bg-slate-900/50 p-3 rounded-xl text-sm text-slate-200 outline-none resize-none h-20 placeholder:text-slate-400 border border-slate-600/50 focus:border-violet-400" />
                     <div className="flex gap-2">
                       <button onClick={handleSaveTeacherComment} className="flex-1 py-2.5 bg-violet-600 text-white font-bold rounded-xl text-xs hover:bg-violet-700 transition-colors">Save note</button>
                       <button onClick={() => { if (!teacherCommentDraft.trim()) { showToast('Nothing to log — write a note first', 'info'); return; } confirm('Log this as a formal intervention?', () => { logTeacherIntervention(viewingStudentKey, profileData.email, 'Comment/feedback', teacherCommentDraft); showToast('Intervention logged'); addToHistory('Intervention logged', 'success'); }); }} className="flex-1 py-2.5 bg-amber-100 text-amber-800 font-bold rounded-xl text-xs hover:bg-amber-200 transition-colors">Log intervention</button>
@@ -4165,7 +4165,7 @@ export default function App() {
                 ) : (
                   <div className="bg-amber-50/60 border border-amber-100 p-3 rounded-xl">
                     {selectedAssignment.teacherComments ? (
-                      <p className="text-sm text-slate-700 leading-relaxed">{selectedAssignment.teacherComments}</p>
+                      <p className="text-sm text-slate-200 leading-relaxed">{selectedAssignment.teacherComments}</p>
                     ) : (
                       <p className="text-sm text-slate-400 italic">{copy.noFeedback}</p>
                     )}
@@ -4182,12 +4182,12 @@ export default function App() {
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><Activity size={12} /> Intervention log</p>
                     <div className="space-y-2 max-h-40 overflow-y-auto no-scrollbar">
                       {logs.slice(0, 10).map(log => (
-                        <div key={log.id} className="bg-slate-50 border border-slate-100 p-2.5 rounded-xl">
+                        <div key={log.id} className="bg-slate-900/50 border border-slate-700/50 p-2.5 rounded-xl">
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-[10px] font-bold text-violet-600">{log.action}</span>
+                            <span className="text-[10px] font-bold text-violet-400">{log.action}</span>
                             <span className="text-[10px] text-slate-400">{log.date}</span>
                           </div>
-                          {log.notes && <p className="text-xs text-slate-600 leading-relaxed">{log.notes}</p>}
+                          {log.notes && <p className="text-xs text-slate-300 leading-relaxed">{log.notes}</p>}
                         </div>
                       ))}
                     </div>
@@ -4198,7 +4198,7 @@ export default function App() {
 
             {/* Sticky footer actions */}
             {!isReadOnly && (
-              <div className="px-6 pb-6 pt-2 border-t border-slate-100 flex items-center gap-3">
+              <div className="px-6 pb-6 pt-2 border-t border-slate-700/50 flex items-center gap-3">
                 {!isDone && (
                   <button onClick={() => confirm(`Mark "${selectedAssignment.title}" as complete?`, () => { const now = getDate(0); setAssignments(prev => prev.map(x => x.id === selectedAssignment.id ? { ...x, status: 'Completed', submittedAt: now } : x)); handleLogCompletion(selectedAssignment, viewingStudentKey); updateRecoveryProgress(viewingStudentKey, 1); setIsUploadModalOpen(false); addToHistory(`Completed: ${selectedAssignment.title}`, 'success'); })} className="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-xl text-sm shadow-md hover:shadow-lg transition-all">{copy.completeBtn}</button>
                 )}
@@ -4212,15 +4212,15 @@ export default function App() {
       })()}
 
       {isProfileSettingsOpen && (
-        <div className="fixed inset-0 z-[400] bg-white flex flex-col animate-in slide-in-from-right duration-300">
+        <div className="fixed inset-0 z-[400] glass-card border-slate-700/50 flex flex-col animate-in slide-in-from-right duration-300">
           {/* Dashboard Header & Tabs */}
-          <div className="bg-white border-b border-slate-100 pt-safe">
+          <div className="glass-card border-slate-700/50 border-b border-slate-700/50 pt-safe">
             <div className="p-4 flex items-center gap-4">
-              <button onClick={() => setIsProfileSettingsOpen(false)} className="p-2 hover:bg-slate-50 rounded-full transition-colors"><ArrowLeft size={24} className="text-slate-800" /></button>
-              <h2 className="text-xl font-black text-slate-800">Account Dashboard</h2>
+              <button onClick={() => setIsProfileSettingsOpen(false)} className="p-2 hover:bg-slate-900/50 rounded-full transition-colors"><ArrowLeft size={24} className="text-slate-100 drop-shadow-md" /></button>
+              <h2 className="text-xl font-black text-slate-100 drop-shadow-md">Account Dashboard</h2>
             </div>
             <div className="px-4 pb-4">
-              <div className="flex bg-slate-100 p-1 rounded-2xl gap-1">
+              <div className="flex bg-slate-800/50 p-1 rounded-2xl gap-1">
                 {[
                   { id: 'profile', label: 'Profile', icon: User },
                   { id: 'premium', label: 'Premium', icon: Sparkles },
@@ -4229,7 +4229,7 @@ export default function App() {
                   <button
                     key={tab.id}
                     onClick={() => setProfileModalTab(tab.id)}
-                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${profileModalTab === tab.id ? 'bg-white text-violet-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${profileModalTab === tab.id ? 'glass-card border-slate-700/50 text-violet-400 shadow-sm' : 'text-slate-400 hover:text-slate-300'}`}
                   >
                     <tab.icon size={14} />
                     <span className="hidden sm:inline">{tab.label}</span>
@@ -4244,7 +4244,7 @@ export default function App() {
               <div className="p-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
                 <div className="flex flex-col items-center">
                   <div className="relative group cursor-pointer" onClick={() => profileImageInputRef.current?.click()}>
-                    <div className="w-32 h-32 rounded-full bg-violet-100 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">
+                    <div className="w-32 h-32 rounded-full bg-violet-900/50 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">
                       {profileImage ? <img src={profileImage} className="w-full h-full object-cover" alt="Profile" /> : <User size={56} className="text-violet-300" />}
                     </div>
                     <div className="absolute bottom-0 right-0 bg-slate-800 text-white p-2.5 rounded-full shadow-md hover:scale-110 transition-transform"><Camera size={18} /></div>
@@ -4256,11 +4256,11 @@ export default function App() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
-                      <input type="text" value={profileData.name} onChange={(e) => setProfileData(p => ({ ...p, name: e.target.value }))} className="w-full bg-slate-50 p-4 rounded-2xl font-bold border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none transition-all" />
+                      <input type="text" value={profileData.name} onChange={(e) => setProfileData(p => ({ ...p, name: e.target.value }))} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold border border-slate-700/50 focus:ring-2 focus:ring-violet-300 outline-none transition-all" />
                     </div>
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
-                      <input type="email" value={profileData.email} onChange={(e) => setProfileData(p => ({ ...p, email: e.target.value }))} className="w-full bg-slate-50 p-4 rounded-2xl font-bold border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none transition-all" />
+                      <input type="email" value={profileData.email} onChange={(e) => setProfileData(p => ({ ...p, email: e.target.value }))} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold border border-slate-700/50 focus:ring-2 focus:ring-violet-300 outline-none transition-all" />
                     </div>
                   </div>
 
@@ -4268,7 +4268,7 @@ export default function App() {
                     {appUser?.role === ROLES.STUDENT && (
                       <div className="space-y-1.5">
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Grade / Year</label>
-                        <select value={profileData.grade} onChange={(e) => setProfileData(p => ({ ...p, grade: e.target.value }))} className="w-full bg-slate-50 p-4 rounded-2xl font-bold border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none appearance-none cursor-pointer">
+                        <select value={profileData.grade} onChange={(e) => setProfileData(p => ({ ...p, grade: e.target.value }))} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold border border-slate-700/50 focus:ring-2 focus:ring-violet-300 outline-none appearance-none cursor-pointer">
                           <option value="">Select grade</option>
                           {[1,2,3,4,5,6,7,8,9,10,11,12].map(g => <option key={g} value={String(g)}>Grade {g}</option>)}
                         </select>
@@ -4276,13 +4276,13 @@ export default function App() {
                     )}
                     <div className="space-y-1.5">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">School / Institution</label>
-                      <input type="text" value={profileData.school} onChange={(e) => setProfileData(p => ({ ...p, school: e.target.value }))} className="w-full bg-slate-50 p-4 rounded-2xl font-bold border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none transition-all" />
+                      <input type="text" value={profileData.school} onChange={(e) => setProfileData(p => ({ ...p, school: e.target.value }))} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold border border-slate-700/50 focus:ring-2 focus:ring-violet-300 outline-none transition-all" />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Gamification Level</label>
-                    <select value={profileData.gamificationLevel} onChange={(e) => setProfileData(p => ({ ...p, gamificationLevel: e.target.value }))} disabled={appUser?.role !== ROLES.TEACHER} className={`w-full p-4 rounded-2xl font-bold border border-slate-100 outline-none transition-all ${appUser?.role === ROLES.TEACHER ? 'bg-slate-50 focus:ring-2 focus:ring-violet-300' : 'bg-slate-100 text-slate-500 cursor-not-allowed'}`}>
+                    <select value={profileData.gamificationLevel} onChange={(e) => setProfileData(p => ({ ...p, gamificationLevel: e.target.value }))} disabled={appUser?.role !== ROLES.TEACHER} className={`w-full p-4 rounded-2xl font-bold border border-slate-700/50 outline-none transition-all ${appUser?.role === ROLES.TEACHER ? 'bg-slate-900/50 focus:ring-2 focus:ring-violet-300' : 'bg-slate-800/50 text-slate-400 cursor-not-allowed'}`}>
                       <option value="off">Off</option>
                       <option value="simple">Simple (badges)</option>
                       <option value="full">Full (badges + leaderboard)</option>
@@ -4302,7 +4302,7 @@ export default function App() {
                   <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-2">Current Membership</p>
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
+                      <div className="w-14 h-14 glass-card border-slate-700/50/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
                         {subscriptionPlan === 'pro' ? <Sparkles size={32} /> : <Wallet size={32} />}
                       </div>
                       <div>
@@ -4310,35 +4310,35 @@ export default function App() {
                         <p className="text-xs opacity-90">{subscriptionPlan === 'pro' ? 'Unlimited features active' : 'Basic features limited'}</p>
                       </div>
                     </div>
-                    {subscriptionPlan === 'pro' && <span className="px-3 py-1 bg-white/20 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md border border-white/30">Active</span>}
+                    {subscriptionPlan === 'pro' && <span className="px-3 py-1 glass-card border-slate-700/50/20 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md border border-white/30">Active</span>}
                   </div>
                 </div>
 
                 {subscriptionPlan === 'pro' ? (
-                  <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 border-l-4 border-l-slate-400">
-                    <h4 className="font-bold text-slate-800 mb-1">Manage Subscription</h4>
-                    <p className="text-xs text-slate-500 mb-4">You can cancel or change your plan at the end of the billing period.</p>
-                    <button onClick={() => confirm('Cancel Pro?', handleCancelSubscription, 'danger')} disabled={cancelLoading} className="px-6 py-3 bg-white border border-slate-200 text-rose-500 font-bold rounded-xl text-sm hover:bg-rose-50 hover:border-rose-200 transition-all disabled:opacity-50">
+                  <div className="bg-slate-900/50 p-6 rounded-3xl border border-slate-700/50 border-l-4 border-l-slate-400">
+                    <h4 className="font-bold text-slate-100 drop-shadow-md mb-1">Manage Subscription</h4>
+                    <p className="text-xs text-slate-400 mb-4">You can cancel or change your plan at the end of the billing period.</p>
+                    <button onClick={() => confirm('Cancel Pro?', handleCancelSubscription, 'danger')} disabled={cancelLoading} className="px-6 py-3 glass-card border-slate-700/50 border border-slate-600/50 text-rose-500 font-bold rounded-xl text-sm hover:bg-rose-50 hover:border-rose-200 transition-all disabled:opacity-50">
                       {cancelLoading ? 'Processing...' : 'Cancel Subscription'}
                     </button>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between px-2">
-                        <h4 className="font-bold text-slate-800">Upgrade your experience</h4>
-                        <span className="text-[10px] font-black text-violet-500 uppercase tracking-wider bg-violet-50 px-2 py-1 rounded-lg">Popular</span>
+                        <h4 className="font-bold text-slate-100 drop-shadow-md">Upgrade your experience</h4>
+                        <span className="text-[10px] font-black text-violet-300 uppercase tracking-wider bg-violet-900/30 px-2 py-1 rounded-lg">Popular</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {SUBSCRIPTION_PLANS.map(plan => (
-                        <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={`relative p-5 rounded-3xl border-2 transition-all cursor-pointer ${selectedPlan === plan.id ? 'border-violet-500 bg-violet-50/30' : 'border-slate-100 bg-white hover:border-slate-200'}`}>
+                        <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={`relative p-5 rounded-3xl border-2 transition-all cursor-pointer ${selectedPlan === plan.id ? 'border-violet-500 bg-violet-900/30/30' : 'border-slate-700/50 glass-card border-slate-700/50 hover:border-slate-600/50'}`}>
                           <div className="flex justify-between items-start mb-3">
-                            <h5 className="font-black text-slate-800">{plan.name}</h5>
-                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPlan === plan.id ? 'bg-violet-500 border-violet-500' : 'border-slate-200'}`}>{selectedPlan === plan.id && <Check size={12} className="text-white" strokeWidth={4} />}</div>
+                            <h5 className="font-black text-slate-100 drop-shadow-md">{plan.name}</h5>
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPlan === plan.id ? 'bg-violet-500 border-violet-500' : 'border-slate-600/50'}`}>{selectedPlan === plan.id && <Check size={12} className="text-white" strokeWidth={4} />}</div>
                           </div>
                           <div className="flex items-baseline gap-1 mb-3"><span className="text-3xl font-black">R{plan.price}</span><span className="text-xs text-slate-400 font-bold">/mo</span></div>
                           <div className="space-y-1.5 opacity-80">
                             {plan.features.slice(0, 3).map((f, i) => (
-                              <div key={i} className="flex items-center gap-2 text-[10px] font-bold text-slate-600"><Check size={12} className={f.included ? 'text-emerald-500' : 'text-slate-300'} /> {f.text}</div>
+                              <div key={i} className="flex items-center gap-2 text-[10px] font-bold text-slate-300"><Check size={12} className={f.included ? 'text-emerald-500' : 'text-slate-300'} /> {f.text}</div>
                             ))}
                           </div>
                         </div>
@@ -4350,9 +4350,9 @@ export default function App() {
                   </div>
                 )}
 
-                <div className="bg-white p-6 rounded-3xl border border-slate-100">
-                  <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2"><CreditCard size={18} className="text-violet-500" /> Payment History</h4>
-                  <div className="text-center py-8 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                <div className="glass-card border-slate-700/50 p-6 rounded-3xl border border-slate-700/50">
+                  <h4 className="font-bold text-slate-100 drop-shadow-md mb-4 flex items-center gap-2"><CreditCard size={18} className="text-violet-300" /> Payment History</h4>
+                  <div className="text-center py-8 bg-slate-900/50 rounded-2xl border border-dashed border-slate-600/50">
                     <History size={32} className="mx-auto text-slate-200 mb-2" />
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">No transactions yet</p>
                   </div>
@@ -4363,24 +4363,24 @@ export default function App() {
             {profileModalTab === 'settings' && (
               <div className="p-6 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300 max-w-xl mx-auto">
                 {(appUser?.role === ROLES.STUDENT || appUser?.role === ROLES.TEACHER) && (
-                  <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                  <div className="glass-card border-slate-700/50 p-6 rounded-3xl border border-slate-700/50 shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <h4 className="font-bold text-slate-800 flex items-center gap-2"><BookOpen size={18} className="text-violet-500" /> Academic Subjects</h4>
+                        <h4 className="font-bold text-slate-100 drop-shadow-md flex items-center gap-2"><BookOpen size={18} className="text-violet-300" /> Academic Subjects</h4>
                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Manage your curriculum</p>
                       </div>
-                      <button onClick={() => confirm('Reset to defaults?', () => setSubjects([...DEFAULT_SUBJECTS]))} className="p-2 text-slate-400 hover:text-slate-600 transition-colors"><RefreshCw size={16} /></button>
+                      <button onClick={() => confirm('Reset to defaults?', () => setSubjects([...DEFAULT_SUBJECTS]))} className="p-2 text-slate-400 hover:text-slate-300 transition-colors"><RefreshCw size={16} /></button>
                     </div>
                     <div className="flex flex-wrap gap-2 mb-6">
                       {subjects.map(s => (
-                        <div key={s} className="flex items-center gap-2 pl-4 pr-2 py-2 bg-violet-50 text-violet-700 rounded-xl text-xs font-black shadow-sm ring-1 ring-violet-200/50">
+                        <div key={s} className="flex items-center gap-2 pl-4 pr-2 py-2 bg-violet-900/30 text-violet-700 rounded-xl text-xs font-black shadow-sm ring-1 ring-violet-200/50">
                           {s}
                           <button onClick={() => subjects.length > 1 && setSubjects(prev => prev.filter(x => x !== s))} className="p-1 hover:bg-violet-200 rounded-lg transition-colors"><X size={14} /></button>
                         </div>
                       ))}
                     </div>
                     <div className="flex gap-2">
-                       <input type="text" value={newSubjectInput} onChange={e => setNewSubjectInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), newSubjectInput.trim() && !subjects.includes(newSubjectInput.trim()) && (setSubjects(prev => [...prev, newSubjectInput.trim()]), setNewSubjectInput('')))} placeholder="Add new subject..." className="flex-1 bg-slate-50 p-3.5 rounded-xl font-bold text-slate-700 border border-slate-100 focus:ring-2 focus:ring-violet-300 outline-none" />
+                       <input type="text" value={newSubjectInput} onChange={e => setNewSubjectInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), newSubjectInput.trim() && !subjects.includes(newSubjectInput.trim()) && (setSubjects(prev => [...prev, newSubjectInput.trim()]), setNewSubjectInput('')))} placeholder="Add new subject..." className="flex-1 bg-slate-900/50 p-3.5 rounded-xl font-bold text-slate-200 border border-slate-700/50 focus:ring-2 focus:ring-violet-300 outline-none" />
                        <button onClick={() => { const v = newSubjectInput.trim(); if (v && !subjects.includes(v)) { setSubjects(prev => [...prev, v]); setNewSubjectInput(''); } }} className="px-5 py-3.5 bg-violet-500 text-white font-black rounded-xl text-sm hover:bg-violet-600 transition-all shadow-md active:scale-95">Add</button>
                     </div>
                   </div>
@@ -4390,26 +4390,26 @@ export default function App() {
                   <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-7 rounded-3xl text-white shadow-xl">
                     <h4 className="text-xs font-black uppercase tracking-[0.2em] opacity-60 mb-2">Parent Linking</h4>
                     <p className="text-sm font-medium opacity-80 mb-6">Share this unique code with a parent to connect your accounts.</p>
-                    <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl flex flex-col items-center border border-white/10">
+                    <div className="glass-card border-slate-700/50/10 backdrop-blur-md p-6 rounded-2xl flex flex-col items-center border border-white/10">
                       <p className="text-4xl font-black tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400 select-all">{pairingCode}</p>
                       <p className="mt-3 text-[10px] font-black uppercase tracking-widest opacity-40">Tap to select code</p>
                     </div>
                   </div>
                 )}
 
-                <div className="bg-white p-6 rounded-3xl border border-slate-100 border-l-4 border-l-violet-500">
+                <div className="glass-card border-slate-700/50 p-6 rounded-3xl border border-slate-700/50 border-l-4 border-l-violet-500">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 border border-slate-100"><BookOpen size={24} /></div>
+                    <div className="w-12 h-12 bg-slate-900/50 rounded-2xl flex items-center justify-center text-slate-400 border border-slate-700/50"><BookOpen size={24} /></div>
                     <div>
-                      <h4 className="font-bold text-slate-800">External Integrations</h4>
+                      <h4 className="font-bold text-slate-100 drop-shadow-md">External Integrations</h4>
                       <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">LMS Connectivity</p>
                     </div>
                   </div>
-                  <button onClick={() => confirm('Import from Google Classroom?', handleGoogleClassroomImport)} disabled={isGoogleClassroomImporting} className="w-full p-4 rounded-2xl bg-white border border-slate-200 hover:border-violet-300 hover:bg-violet-50/30 transition-all flex items-center justify-between group disabled:opacity-50">
-                    <span className="font-bold text-slate-600 group-hover:text-violet-600">{isGoogleClassroomImporting ? 'Syncing...' : 'Sync Google Classroom'}</span>
+                  <button onClick={() => confirm('Import from Google Classroom?', handleGoogleClassroomImport)} disabled={isGoogleClassroomImporting} className="w-full p-4 rounded-2xl glass-card border-slate-700/50 border border-slate-600/50 hover:border-violet-300 hover:bg-violet-900/30/30 transition-all flex items-center justify-between group disabled:opacity-50">
+                    <span className="font-bold text-slate-300 group-hover:text-violet-400">{isGoogleClassroomImporting ? 'Syncing...' : 'Sync Google Classroom'}</span>
                     <ChevronRight size={20} className="text-slate-300 group-hover:text-violet-400 group-hover:translate-x-1 transition-all" />
                   </button>
-                  {integrationMessage && <p className="mt-3 px-3 py-2 bg-slate-50 rounded-xl text-[10px] font-bold text-slate-500">{integrationMessage}</p>}
+                  {integrationMessage && <p className="mt-3 px-3 py-2 bg-slate-900/50 rounded-xl text-[10px] font-bold text-slate-400">{integrationMessage}</p>}
                 </div>
 
                 <div className="pt-4">
@@ -4425,16 +4425,16 @@ export default function App() {
 
       {isCsvImportOpen && !isReadOnly && (
         <div className="fixed inset-0 z-[300] bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 animate-in fade-in">
-          <div className="bg-white w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4"><h2 className="text-xl font-black text-slate-800">Import from CSV</h2><button onClick={() => setIsCsvImportOpen(false)} className="p-2 bg-slate-100 rounded-full text-slate-500"><X size={20} /></button></div>
-            <p className="text-xs text-slate-500 mb-2">Columns: title, subject, dueDate, status, grade</p>
-            <button type="button" onClick={() => csvFileInputRef.current?.click()} className="w-full py-3 border-2 border-dashed border-slate-200 rounded-xl font-bold text-slate-600 text-sm flex items-center justify-center gap-2 hover:border-violet-300 hover:bg-violet-50/50 transition-colors mb-3">
+          <div className="glass-card border-slate-700/50 w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4"><h2 className="text-xl font-black text-slate-100 drop-shadow-md">Import from CSV</h2><button onClick={() => setIsCsvImportOpen(false)} className="p-2 bg-slate-800/50 rounded-full text-slate-400"><X size={20} /></button></div>
+            <p className="text-xs text-slate-400 mb-2">Columns: title, subject, dueDate, status, grade</p>
+            <button type="button" onClick={() => csvFileInputRef.current?.click()} className="w-full py-3 border-2 border-dashed border-slate-600/50 rounded-xl font-bold text-slate-300 text-sm flex items-center justify-center gap-2 hover:border-violet-300 hover:bg-violet-900/30/50 transition-colors mb-3">
               <Upload size={18} /> Choose CSV file
             </button>
             <p className="text-[10px] text-slate-400 text-center mb-2">or paste below</p>
-            <textarea value={csvImportText} onChange={(e) => setCsvImportText(e.target.value)} placeholder="title,subject,dueDate,status,grade&#10;Math homework,Math,2025-02-25,Pending,&#10;Read ch 3,English,2025-02-24,Completed,85" className="w-full h-32 p-4 rounded-xl border border-slate-200 text-sm font-mono mb-4" />
+            <textarea value={csvImportText} onChange={(e) => setCsvImportText(e.target.value)} placeholder="title,subject,dueDate,status,grade&#10;Math homework,Math,2025-02-25,Pending,&#10;Read ch 3,English,2025-02-24,Completed,85" className="w-full h-32 p-4 rounded-xl border border-slate-600/50 text-sm font-mono mb-4" />
             <div className="flex gap-2">
-              <button onClick={() => setIsCsvImportOpen(false)} className="flex-1 py-3 text-slate-500 font-bold rounded-xl">Cancel</button>
+              <button onClick={() => setIsCsvImportOpen(false)} className="flex-1 py-3 text-slate-400 font-bold rounded-xl">Cancel</button>
               <button onClick={() => { const r = parseAssignmentsCSV(csvImportText); if (!r.ok) { addToHistory(r.error || 'Import failed', 'error'); return; } if (!r.items.length) { showToast('No items to import', 'info'); return; } confirm(`Import ${r.items.length} assignment${r.items.length > 1 ? 's' : ''}?`, () => { setAssignments(prev => [...r.items, ...prev]); addToHistory(`Imported ${r.items.length} assignments`, 'success'); showToast(`Imported ${r.items.length} items`); setIsCsvImportOpen(false); setCsvImportText(''); }); }} className="flex-1 py-3 bg-violet-500 text-white font-bold rounded-xl">Import</button>
             </div>
           </div>
@@ -4443,12 +4443,12 @@ export default function App() {
 
       {isFilterModalOpen && (
         <div className="fixed inset-0 z-[400] bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4 animate-in fade-in">
-          <div className="bg-white w-full sm:max-w-md h-auto rounded-t-[32px] sm:rounded-[32px] p-6 flex flex-col shadow-2xl duration-300 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-black text-slate-800">{copy.filterBy}</h2><button onClick={() => setIsFilterModalOpen(false)} className="p-2 bg-slate-100 rounded-full text-slate-500"><X size={20} /></button></div>
+          <div className="glass-card border-slate-700/50 w-full sm:max-w-md h-auto rounded-t-[32px] sm:rounded-[32px] p-6 flex flex-col shadow-2xl duration-300 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-black text-slate-100 drop-shadow-md">{copy.filterBy}</h2><button onClick={() => setIsFilterModalOpen(false)} className="p-2 bg-slate-800/50 rounded-full text-slate-400"><X size={20} /></button></div>
             <div className="space-y-6 mb-6">
-              <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 block">{copy.colSubject}</label><div className="flex flex-wrap gap-2"><button onClick={() => setFilterSubject('All')} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors border ${filterSubject === 'All' ? 'bg-violet-500 text-white border-violet-500' : 'bg-white text-slate-600 border-slate-200'}`}>All</button>{subjects.map(sub => (<button key={sub} onClick={() => setFilterSubject(sub)} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors border ${filterSubject === sub ? 'bg-violet-500 text-white border-violet-500' : 'bg-white text-slate-600 border-slate-200'}`}>{sub}</button>))}</div></div>
+              <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 block">{copy.colSubject}</label><div className="flex flex-wrap gap-2"><button onClick={() => setFilterSubject('All')} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors border ${filterSubject === 'All' ? 'bg-violet-500 text-white border-violet-500' : 'glass-card border-slate-700/50 text-slate-300 border-slate-600/50'}`}>All</button>{subjects.map(sub => (<button key={sub} onClick={() => setFilterSubject(sub)} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors border ${filterSubject === sub ? 'bg-violet-500 text-white border-violet-500' : 'glass-card border-slate-700/50 text-slate-300 border-slate-600/50'}`}>{sub}</button>))}</div></div>
             </div>
-            <div className="flex gap-3"><button onClick={() => setFilterSubject('All')} className="flex-1 py-3 font-bold text-slate-500">Reset</button><button onClick={() => setIsFilterModalOpen(false)} className="flex-1 py-3 bg-slate-800 text-white font-bold rounded-xl">Apply</button></div>
+            <div className="flex gap-3"><button onClick={() => setFilterSubject('All')} className="flex-1 py-3 font-bold text-slate-400">Reset</button><button onClick={() => setIsFilterModalOpen(false)} className="flex-1 py-3 bg-slate-800 text-white font-bold rounded-xl">Apply</button></div>
           </div>
         </div>
       )}
@@ -4457,15 +4457,15 @@ export default function App() {
         return (
         <div className="fixed inset-0 z-[500] bg-slate-900/60 backdrop-blur-md overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4">
-            <div className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 relative overflow-hidden">
+            <div className="glass-card border-slate-700/50 rounded-3xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 relative overflow-hidden">
 
               {/* Header */}
-              <div className="px-6 pt-6 pb-4 border-b border-slate-100 flex items-center justify-between">
+              <div className="px-6 pt-6 pb-4 border-b border-slate-700/50 flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-black text-slate-800">Choose your plan</h2>
-                  <p className="text-sm text-slate-500 mt-0.5">Upgrade anytime. Cancel anytime.</p>
+                  <h2 className="text-xl font-black text-slate-100 drop-shadow-md">Choose your plan</h2>
+                  <p className="text-sm text-slate-400 mt-0.5">Upgrade anytime. Cancel anytime.</p>
                 </div>
-                <button onClick={() => setIsSubscriptionOpen(false)} className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 transition-colors"><X size={20} /></button>
+                <button onClick={() => setIsSubscriptionOpen(false)} className="p-2 rounded-xl hover:bg-slate-800/50 text-slate-400 transition-colors"><X size={20} /></button>
               </div>
 
               {/* Plan toggle cards */}
@@ -4477,8 +4477,8 @@ export default function App() {
                       onClick={() => setSelectedPlan(plan.id)}
                       className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all ${
                         selectedPlan === plan.id
-                          ? 'border-violet-500 bg-violet-50/50 shadow-md'
-                          : 'border-slate-200 bg-white hover:border-slate-300'
+                          ? 'border-violet-500 bg-violet-900/30/50 shadow-md'
+                          : 'border-slate-600/50 glass-card border-slate-700/50 hover:border-slate-300'
                       }`}
                     >
                       {plan.badge && (
@@ -4486,8 +4486,8 @@ export default function App() {
                       )}
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <h3 className="font-bold text-slate-800">{plan.name}</h3>
-                          <p className="text-[11px] text-slate-500 mt-0.5">{plan.tagline}</p>
+                          <h3 className="font-bold text-slate-100 drop-shadow-md">{plan.name}</h3>
+                          <p className="text-[11px] text-slate-400 mt-0.5">{plan.tagline}</p>
                         </div>
                         <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${
                           selectedPlan === plan.id ? 'bg-violet-500 border-violet-500' : 'border-slate-300'
@@ -4496,7 +4496,7 @@ export default function App() {
                         </div>
                       </div>
                       <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-black text-slate-800">R{plan.price}</span>
+                        <span className="text-3xl font-black text-slate-100 drop-shadow-md">R{plan.price}</span>
                         <span className="text-sm text-slate-400 font-medium">/mo</span>
                       </div>
                     </div>
@@ -4504,7 +4504,7 @@ export default function App() {
                 </div>
 
                 {/* Feature comparison */}
-                <div className="bg-slate-50 rounded-2xl p-5">
+                <div className="bg-slate-900/50 rounded-2xl p-5">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-3">What's included</p>
                   <div className="space-y-2">
                     {activePlan.features.map((f, i) => (
@@ -4514,9 +4514,9 @@ export default function App() {
                         ) : (
                           <X size={15} className="text-slate-300 shrink-0" />
                         )}
-                        <span className={`text-sm font-medium ${f.included ? 'text-slate-700' : 'text-slate-400'}`}>{f.text}</span>
+                        <span className={`text-sm font-medium ${f.included ? 'text-slate-200' : 'text-slate-400'}`}>{f.text}</span>
                         {!f.included && selectedPlan === 'free' && (
-                          <span className="text-[9px] font-bold text-violet-500 bg-violet-50 px-1.5 py-0.5 rounded ml-auto">PRO</span>
+                          <span className="text-[9px] font-bold text-violet-300 bg-violet-900/30 px-1.5 py-0.5 rounded ml-auto">PRO</span>
                         )}
                       </div>
                     ))}
@@ -4540,7 +4540,7 @@ export default function App() {
                   disabled={checkoutLoading}
                   className={`w-full py-4 font-black rounded-2xl text-base transition-all disabled:opacity-60 ${
                     selectedPlan === 'free'
-                      ? 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      ? 'bg-slate-800/50 text-slate-300 hover:bg-slate-200'
                       : 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-200 hover:shadow-xl hover:shadow-violet-300 hover:scale-[1.01]'
                   }`}
                 >
@@ -4550,7 +4550,7 @@ export default function App() {
                   <p className="text-center text-[11px] text-slate-400 mt-2">You'll be redirected to secure checkout</p>
                 )}
                 {subscriptionPlan === 'pro' && (
-                  <button onClick={() => { setIsSubscriptionOpen(false); setActiveTab(TABS.PAYMENTS); }} className="w-full mt-3 py-2.5 text-slate-500 font-bold rounded-xl text-sm hover:bg-slate-50 transition-colors border border-slate-100">
+                  <button onClick={() => { setIsSubscriptionOpen(false); setActiveTab(TABS.PAYMENTS); }} className="w-full mt-3 py-2.5 text-slate-400 font-bold rounded-xl text-sm hover:bg-slate-900/50 transition-colors border border-slate-700/50">
                     Manage or cancel subscription
                   </button>
                 )}
@@ -4565,14 +4565,14 @@ export default function App() {
       {/* Confirmation dialog */}
       {confirmDialog && (
         <div className="fixed inset-0 z-[600] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in" onClick={() => setConfirmDialog(null)}>
-          <div className="bg-white rounded-2xl w-full max-w-xs shadow-2xl animate-in zoom-in-95 p-6 text-center" onClick={e => e.stopPropagation()}>
-            <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center ${confirmDialog.variant === 'danger' ? 'bg-rose-100' : 'bg-violet-100'}`}>
-              {confirmDialog.variant === 'danger' ? <Trash2 size={22} className="text-rose-500" /> : <CheckCircle2 size={22} className="text-violet-500" />}
+          <div className="glass-card border-slate-700/50 rounded-2xl w-full max-w-xs shadow-2xl animate-in zoom-in-95 p-6 text-center" onClick={e => e.stopPropagation()}>
+            <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center ${confirmDialog.variant === 'danger' ? 'bg-rose-100' : 'bg-violet-900/50'}`}>
+              {confirmDialog.variant === 'danger' ? <Trash2 size={22} className="text-rose-500" /> : <CheckCircle2 size={22} className="text-violet-300" />}
             </div>
-            <p className="text-sm font-bold text-slate-800 mb-1">Are you sure?</p>
-            <p className="text-xs text-slate-500 mb-5 leading-relaxed">{confirmDialog.message}</p>
+            <p className="text-sm font-bold text-slate-100 drop-shadow-md mb-1">Are you sure?</p>
+            <p className="text-xs text-slate-400 mb-5 leading-relaxed">{confirmDialog.message}</p>
             <div className="flex gap-2">
-              <button onClick={() => setConfirmDialog(null)} className="flex-1 py-2.5 text-slate-500 font-bold rounded-xl text-sm hover:bg-slate-50 transition-colors border border-slate-200">{copy.cancelBtn}</button>
+              <button onClick={() => setConfirmDialog(null)} className="flex-1 py-2.5 text-slate-400 font-bold rounded-xl text-sm hover:bg-slate-900/50 transition-colors border border-slate-600/50">{copy.cancelBtn}</button>
               <button onClick={() => { confirmDialog.onConfirm(); setConfirmDialog(null); }} className={`flex-1 py-2.5 text-white font-bold rounded-xl text-sm transition-colors ${confirmDialog.variant === 'danger' ? 'bg-rose-500 hover:bg-rose-600' : 'bg-violet-500 hover:bg-violet-600'}`}>Confirm</button>
             </div>
           </div>
