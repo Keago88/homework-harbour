@@ -796,9 +796,9 @@ const SUBSCRIPTION_PLANS = [
 ];
 
 const proCheckoutButtonLabel = (price, { loading = false, free = false } = {}) => {
-  if (loading) return isSubscriptionApiConfigured() ? 'Redirecting...' : 'Activating...';
+  if (loading) return isSubscriptionApiConfigured() ? 'Redirecting...' : 'Unlocking...';
   if (free) return 'Stay on Free';
-  if (!isSubscriptionApiConfigured()) return 'Activate Pro (demo — no payment)';
+  if (!isSubscriptionApiConfigured()) return 'Demo unlock';
   return `Upgrade to Pro — R${price}/mo`;
 };
 
@@ -1631,7 +1631,7 @@ export default function App() {
         if (result.ok) {
           setSubscriptionPlan('pro');
           setIsSubscriptionOpen(false);
-          showToast(result.demo ? 'Pro activated on this device' : 'Pro activated');
+          showToast(result.demo ? 'Demo unlock complete' : 'Pro activated');
           addToHistory('Upgraded to Pro', 'success');
           return;
         }
@@ -1644,7 +1644,7 @@ export default function App() {
     const price = SUBSCRIPTION_PLANS.find(p => p.id === 'pro')?.price ?? 199;
     const checkoutPrompt = isSubscriptionApiConfigured()
       ? `Proceed to checkout? You will be charged R${price}/month for Pro.`
-      : 'Activate Pro on this device? Payment is not configured — this is a demo upgrade (no Paygate).';
+      : 'Demo unlock on this device? No Paygate — Pro activates locally so Chat can be tested.';
     confirm(checkoutPrompt, doCheckout);
   };
 
@@ -2963,7 +2963,7 @@ export default function App() {
                 </button>
                 {selectedPlan !== 'free' && (
                   <p className="text-center text-[11px] text-slate-400 mt-2">
-                    {isSubscriptionApiConfigured() ? "You'll be redirected to secure checkout" : 'Demo unlock — no Paygate, Chat opens after confirm'}
+                    {isSubscriptionApiConfigured() ? "You'll be redirected to secure checkout" : 'Demo unlock — no Paygate. Chat unlocks after confirm.'}
                   </p>
                 )}
               </div>
@@ -3935,7 +3935,7 @@ export default function App() {
             {subscriptionPlan !== 'pro' && (
               <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50 border-l-4 border-l-violet-500">
                 <h3 className="text-lg font-black text-slate-100 drop-shadow-md mb-1 flex items-center gap-2"><Sparkles size={20} className="text-violet-300" /> Sign up to Premium</h3>
-                <p className="text-xs text-slate-400 mb-4">{isSubscriptionApiConfigured() ? 'Choose your plan and complete checkout. Upgrade anytime. Cancel anytime.' : 'Demo Pro unlocks Chat on this device — no Paygate required.'}</p>
+                <p className="text-xs text-slate-400 mb-4">{isSubscriptionApiConfigured() ? 'Choose your plan and complete checkout. Upgrade anytime. Cancel anytime.' : 'Demo unlock — no Paygate. Pro and Chat activate on this device.'}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                   {SUBSCRIPTION_PLANS.map(plan => (
                     <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedPlan === plan.id ? 'border-violet-500 bg-violet-900/30/50 shadow-md' : 'border-slate-600/50 glass-card border-slate-700/50 hover:border-slate-300'}`}>
@@ -4812,7 +4812,7 @@ export default function App() {
                 </button>
                 {selectedPlan !== 'free' && (
                   <p className="text-center text-[11px] text-slate-400 mt-2">
-                    {isSubscriptionApiConfigured() ? "You'll be redirected to secure checkout" : 'Demo unlock — no Paygate, Chat opens after confirm'}
+                    {isSubscriptionApiConfigured() ? "You'll be redirected to secure checkout" : 'Demo unlock — no Paygate. Chat unlocks after confirm.'}
                   </p>
                 )}
                 {subscriptionPlan === 'pro' && (
