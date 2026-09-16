@@ -5,16 +5,24 @@ service cloud.firestore {
     match /parent_links/{docId} {
       allow read, write: if request.auth != null;
     }
+    // Email → uid lookup so parents/teachers can find a student's record
+    match /email_index/{docId} {
+      allow read, write: if request.auth != null;
+    }
+    // Shared homework keyed by student email (create / assign / view / submit / review)
+    match /assignments_by_email/{docId} {
+      allow read, write: if request.auth != null;
+    }
     // User settings (subjects, etc.) - users can only read/write their own doc (userId = auth.uid)
     match /user_settings/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-    // User data (assignments, profile, completion history, risk history)
+    // User data (assignments, profile, completion history, risk history).
+    // Authenticated teachers/parents need to write a linked student's assignments.
     match /user_data/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if request.auth != null;
     }
-    // Platform data (schools, alerts, interventions) - admins only for write; all auth users can read
+    // Platform data (schools, alerts, interventions)
     match /platform/{docId} {
       allow read: if request.auth != null;
       allow write: if request.auth != null;
@@ -23,8 +31,7 @@ service cloud.firestore {
     // Chat system: participants can read/write their own threads (enforced via Queries in UI)
     match /chats/{chatId} {
       allow read, write: if request.auth != null;
-      
-      // Messages within a chat
+
       match /messages/{msgId} {
         allow read, write: if request.auth != null;
       }

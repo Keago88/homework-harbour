@@ -3,6 +3,7 @@ import {
   MessageSquare, Send, ArrowLeft, Plus, X, Search, Users,
   Check, CheckCheck, Clock, Lock, ChevronRight, Eye
 } from 'lucide-react';
+import { storageGet } from '../lib/storage';
 import {
   createChat, getChatsForUser, getParentViewableChats, sendMessage,
   getMessages, markChatRead, getChatDisplayName, getUnreadCount, deleteChat
@@ -152,11 +153,11 @@ const ChatThread = ({ chat, currentEmail, currentName, onBack, viewOnly = false 
 
   return (
     <div className="flex flex-col h-full">
-      <div className="h-14 bg-white border-b border-slate-100 flex items-center gap-3 px-4 shrink-0">
-        <button onClick={onBack} className="p-1.5 hover:bg-slate-100 rounded-lg md:hidden"><ArrowLeft size={18} className="text-slate-600" /></button>
+      <div className="h-14 bg-slate-900/80 border-b border-slate-700/50 flex items-center gap-3 px-4 shrink-0">
+        <button onClick={onBack} className="p-1.5 hover:bg-slate-800 rounded-lg md:hidden"><ArrowLeft size={18} className="text-slate-200" /></button>
         <Avatar name={displayName} size={34} />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-bold text-slate-800 truncate">{displayName}</p>
+          <p className="text-sm font-bold text-slate-100 truncate">{displayName}</p>
           <p className="text-[10px] text-slate-400">
             {viewOnly ? (
               <span className="flex items-center gap-1"><Eye size={10} /> View only</span>
@@ -170,11 +171,11 @@ const ChatThread = ({ chat, currentEmail, currentName, onBack, viewOnly = false 
         )}
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 bg-[#f0f2f5] space-y-0.5" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }}>
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 bg-slate-950/40 space-y-0.5">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center mb-3"><MessageSquare size={28} className="text-violet-400" /></div>
-            <p className="text-sm font-bold text-slate-500">{viewOnly ? 'No messages to view' : 'Start the conversation'}</p>
+            <div className="w-16 h-16 bg-violet-900/40 rounded-full flex items-center justify-center mb-3"><MessageSquare size={28} className="text-violet-300" /></div>
+            <p className="text-sm font-bold text-slate-300">{viewOnly ? 'No messages to view' : 'Start the conversation'}</p>
             <p className="text-xs text-slate-400 mt-1">{viewOnly ? 'Messages between the teacher and student will appear here' : 'Send a message to begin chatting'}</p>
           </div>
         )}
@@ -204,12 +205,12 @@ const ChatThread = ({ chat, currentEmail, currentName, onBack, viewOnly = false 
       </div>
 
       {viewOnly ? (
-        <div className="h-12 bg-slate-100 border-t border-slate-200 flex items-center justify-center gap-2 text-slate-500 shrink-0">
+        <div className="h-12 bg-slate-900/80 border-t border-slate-700/50 flex items-center justify-center gap-2 text-slate-400 shrink-0">
           <Lock size={14} />
           <span className="text-xs font-bold">View-only mode — you cannot send messages</span>
         </div>
       ) : (
-        <div className="bg-white border-t border-slate-100 px-4 py-3 flex items-end gap-2 shrink-0">
+        <div className="bg-slate-900/80 border-t border-slate-700/50 px-4 py-3 flex items-end gap-2 shrink-0">
           <textarea
             ref={inputRef}
             value={text}
@@ -217,7 +218,7 @@ const ChatThread = ({ chat, currentEmail, currentName, onBack, viewOnly = false 
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
             placeholder="Type a message..."
             rows={1}
-            className="flex-1 resize-none bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-violet-300 max-h-32"
+            className="flex-1 resize-none bg-slate-800/70 border border-slate-600/50 rounded-2xl px-4 py-2.5 text-sm text-slate-100 outline-none focus:ring-2 focus:ring-violet-300 max-h-32 placeholder:text-slate-400"
             style={{ minHeight: 40 }}
           />
           <button onClick={handleSend} disabled={!text.trim() || sending} className="w-10 h-10 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-full flex items-center justify-center text-white disabled:opacity-40 hover:scale-105 active:scale-95 transition-transform shrink-0 shadow-sm">
@@ -286,7 +287,7 @@ export default function Chat({ userEmail, userName, userRole, isPremium, linkedS
 
       // 2. Fallback to Local Storage (Demo Mode)
       try {
-        const raw = localStorage.getItem('homework_companion_users');
+        const raw = storageGet('homework_companion_users');
         if (raw) {
           const users = JSON.parse(raw);
           const list = users
@@ -351,16 +352,16 @@ export default function Chat({ userEmail, userName, userRole, isPremium, linkedS
   if (!isPremium) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center px-6">
-        <div className="w-20 h-20 bg-violet-100 rounded-full flex items-center justify-center mb-4">
-          <Lock size={32} className="text-violet-400" />
+        <div className="w-20 h-20 bg-violet-900/40 rounded-full flex items-center justify-center mb-4">
+          <Lock size={32} className="text-violet-300" />
         </div>
-        <h2 className="text-xl font-black text-slate-800 mb-2">Chat is a Premium feature</h2>
-        <p className="text-sm text-slate-500 max-w-sm mb-6">Upgrade to Pro to message teachers, students, and parents directly within Homework Harbour.</p>
-        <div className="bg-white rounded-xl p-4 border border-slate-100 max-w-sm w-full space-y-2 text-left">
-          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-600">Direct messaging with teachers</span></div>
-          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-600">Group conversations</span></div>
-          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-600">Parent monitoring of student chats</span></div>
-          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-600">Real-time message delivery</span></div>
+        <h2 className="text-xl font-black text-slate-100 mb-2">Chat is a Premium feature</h2>
+        <p className="text-sm text-slate-400 max-w-sm mb-6">Upgrade to Pro to message teachers, students, and parents directly within Homework Harbour.</p>
+        <div className="glass-card rounded-xl p-4 border border-slate-700/50 max-w-sm w-full space-y-2 text-left">
+          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-200">Direct messaging with teachers</span></div>
+          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-200">Group conversations</span></div>
+          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-200">Parent monitoring of student chats</span></div>
+          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-200">Real-time message delivery</span></div>
         </div>
       </div>
     );
@@ -382,7 +383,7 @@ export default function Chat({ userEmail, userName, userRole, isPremium, linkedS
     <div className="flex flex-col h-full">
       <div className="px-4 pt-4 pb-2 shrink-0">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-black text-slate-800 flex items-center gap-2"><MessageSquare size={20} className="text-violet-500" /> Chats</h2>
+          <h2 className="text-lg font-black text-slate-100 flex items-center gap-2"><MessageSquare size={20} className="text-violet-400" /> Chats</h2>
           <button onClick={() => setShowNewChat(true)} className="w-8 h-8 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-full flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-transform shadow-sm">
             <Plus size={16} />
           </button>
@@ -390,13 +391,13 @@ export default function Chat({ userEmail, userName, userRole, isPremium, linkedS
 
         <div className="relative mb-3">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search conversations..." className="w-full pl-9 pr-4 py-2 text-xs font-medium bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-violet-300" />
+          <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Search conversations..." className="w-full pl-9 pr-4 py-2 text-xs font-medium bg-slate-900/50 border border-slate-600/50 rounded-lg outline-none focus:ring-2 focus:ring-violet-300 text-slate-200 placeholder:text-slate-400" />
         </div>
 
         {userRole === 'Parent' && parentViewChats.length > 0 && (
           <div className="flex gap-1 mb-2">
             {['all', 'my', 'monitoring'].map(f => (
-              <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1.5 text-[10px] font-bold rounded-md transition-colors ${filter === f ? 'bg-violet-500 text-white' : 'text-slate-500 hover:bg-slate-100'}`}>
+              <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1.5 text-[10px] font-bold rounded-md transition-colors ${filter === f ? 'bg-violet-500 text-white' : 'text-slate-400 hover:bg-slate-800/60'}`}>
                 {f === 'all' ? 'All' : f === 'my' ? 'My chats' : (
                   <span className="flex items-center gap-1"><Eye size={10} /> Monitoring</span>
                 )}
@@ -409,31 +410,31 @@ export default function Chat({ userEmail, userName, userRole, isPremium, linkedS
       <div className="flex-1 overflow-y-auto">
         {allChats.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-6">
-            <MessageSquare size={40} className="text-slate-200 mb-3" />
-            <p className="text-sm font-bold text-slate-500">No conversations yet</p>
+            <MessageSquare size={40} className="text-slate-600 mb-3" />
+            <p className="text-sm font-bold text-slate-300">No conversations yet</p>
             <p className="text-xs text-slate-400 mt-1">Start a new chat to begin messaging</p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-50">
+          <div className="divide-y divide-slate-700/40">
             {allChats.map(chat => {
               const name = getChatDisplayName(chat, userEmail);
               const isUnread = (chat.unreadBy || []).includes(userEmail);
               const isMonitoring = chat._viewOnly;
               return (
-                <button key={chat.id} onClick={() => handleOpenChat(chat, isMonitoring)} className={`w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 transition-colors text-left ${isUnread ? 'bg-violet-50/50' : ''}`}>
+                <button key={chat.id} onClick={() => handleOpenChat(chat, isMonitoring)} className={`w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-800/50 transition-colors text-left ${isUnread ? 'bg-violet-950/40' : ''}`}>
                   <div className="relative">
                     <Avatar name={name} size={44} />
                     {isMonitoring && (
-                      <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-amber-100 rounded-full flex items-center justify-center border-2 border-white"><Eye size={10} className="text-amber-600" /></div>
+                      <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-amber-100 rounded-full flex items-center justify-center border-2 border-slate-900"><Eye size={10} className="text-amber-600" /></div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <p className={`text-sm truncate ${isUnread ? 'font-black text-slate-800' : 'font-bold text-slate-700'}`}>{name}</p>
-                      <span className={`text-[10px] shrink-0 ${isUnread ? 'font-bold text-violet-600' : 'text-slate-400'}`}>{formatTime(chat.lastMessageAt)}</span>
+                      <p className={`text-sm truncate ${isUnread ? 'font-black text-slate-100' : 'font-bold text-slate-200'}`}>{name}</p>
+                      <span className={`text-[10px] shrink-0 ${isUnread ? 'font-bold text-violet-300' : 'text-slate-400'}`}>{formatTime(chat.lastMessageAt)}</span>
                     </div>
                     <div className="flex items-center justify-between gap-2 mt-0.5">
-                      <p className={`text-xs truncate ${isUnread ? 'font-bold text-slate-700' : 'text-slate-400'}`}>
+                      <p className={`text-xs truncate ${isUnread ? 'font-bold text-slate-200' : 'text-slate-400'}`}>
                         {isMonitoring && <Eye size={10} className="inline mr-1 text-amber-500" />}
                         {chat.lastMessage ? (chat.lastMessageSender ? `${chat.lastMessageSender.split(' ')[0]}: ${chat.lastMessage}` : chat.lastMessage) : 'No messages yet'}
                       </p>

@@ -1,11 +1,22 @@
 /**
- * Storage abstraction. In production (built for deploy), localStorage is disabled
- * so users cannot persist data to their machine. All data must go through Firebase/Firestore.
+ * Storage abstraction.
+ *
+ * Production builds with Firebase configured do not persist to localStorage —
+ * data must go through Firestore. When Firebase is not configured (local demo
+ * or a hosted build missing env secrets), localStorage stays available so
+ * sign-in, roles, and homework still function on a single device.
  */
-const isProduction = import.meta.env.PROD;
+const firebaseConfigured = Boolean(
+  import.meta.env.VITE_FIREBASE_API_KEY &&
+  import.meta.env.VITE_FIREBASE_API_KEY !== 'demo-api-key'
+);
+
+export const isFirebaseConfigured = () => firebaseConfigured;
+
+export const canUseLocalPersistence = () => !import.meta.env.PROD || !firebaseConfigured;
 
 export const storageGet = (key) => {
-  if (isProduction) return null;
+  if (!canUseLocalPersistence()) return null;
   try {
     return localStorage.getItem(key);
   } catch {
@@ -14,7 +25,7 @@ export const storageGet = (key) => {
 };
 
 export const storageSet = (key, value) => {
-  if (isProduction) return;
+  if (!canUseLocalPersistence()) return;
   try {
     localStorage.setItem(key, value);
   } catch {}

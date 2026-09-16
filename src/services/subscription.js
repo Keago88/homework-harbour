@@ -1,8 +1,9 @@
 /**
  * Subscription service – works with your backend API (Paygate + DB).
- * In demo mode (no API URL), uses storage for testing (dev only; production blocks local persistence).
+ * In demo mode (no API URL), uses storage so Pro / paywalls can be exercised
+ * on a single device. Production with Firebase and no API stays locked.
  */
-import { storageGet } from '../lib/storage';
+import { storageGet, storageSet, canUseLocalPersistence } from '../lib/storage';
 
 const API_BASE = typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUBSCRIPTION_API_URL
   ? import.meta.env.VITE_SUBSCRIPTION_API_URL.replace(/\/$/, '')
@@ -12,10 +13,25 @@ const DEMO_SUB_KEY = 'homework_companion_subscription';
 
 export const isSubscriptionApiConfigured = () => !!API_BASE;
 
+function demoPlans() {
+  try {
+    const raw = storageGet(DEMO_SUB_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveDemoPlans(map) {
+  storageSet(DEMO_SUB_KEY, JSON.stringify(map));
+}
+
 export async function getSubscriptionStatus(userId) {
   if (!userId) return { plan: 'free' };
   if (!API_BASE) {
-    return { plan: 'free' };
+    if (!canUseLocalPersistence()) return { plan: 'free' };
+    const store = demoPlans();
+    return { plan: store[userId] === 'pro' ? 'pro' : 'free' };
   }
   try {
     const res = await fetch(`${API_BASE}/subscription/status?userId=${encodeURIComponent(userId)}`);
@@ -30,8 +46,13 @@ export async function getSubscriptionStatus(userId) {
 
 export async function initiateProCheckout(userId, email) {
   if (!API_BASE) {
-    // Demo mode: payment not configured — do not auto-activate
-    return { ok: false, error: 'Payment integration coming soon. Connect a payment provider to enable Pro subscriptions.' };
+    if (!canUseLocalPersistence() || !userId) {
+      return { ok: false, error: 'Payment integration coming soon. Connect a payment provider to enable Pro subscriptions.' };
+    }
+    const store = demoPlans();
+    store[userId] = 'pro';
+    saveDemoPlans(store);
+    return { ok: true, demo: true, email: email || null };
   }
   try {
     const res = await fetch(`${API_BASE}/subscription/checkout`, {
@@ -67,7 +88,13 @@ export async function verifyPayment(transactionId, userId) {
 
 export async function cancelSubscription(userId) {
   if (!API_BASE) {
-    return { ok: false, error: 'Payment integration not configured. Contact support to cancel.' };
+    if (!canUseLocalPersistence() || !userId) {
+      return { ok: false, error: 'Payment integration not configured. Contact support to cancel.' };
+    }
+    const store = demoPlans();
+    store[userId] = 'free';
+    saveDemoPlans(store);
+    return { ok: true, demo: true };
   }
   try {
     const res = await fetch(`${API_BASE}/subscription/cancel`, {

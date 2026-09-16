@@ -114,8 +114,20 @@ export function getAlertsForParent(parentEmail, linkedStudents) {
   return getAlerts().filter(a => linkedStudents.includes(a.studentEmail));
 }
 
-export function getUnreadAlertsForUser(userEmail, linkedStudents, role) {
-  const all = role === 'Parent' ? getAlertsForParent(userEmail, linkedStudents) : getAlerts().filter(a => a.studentEmail === userEmail || a.recipients?.includes(userEmail));
+export function getUnreadAlertsForUser(userEmail, linkedStudents = [], role) {
+  const linked = linkedStudents || [];
+  let all;
+  if (role === 'Parent') {
+    all = getAlertsForParent(userEmail, linked);
+  } else if (role === 'Teacher') {
+    all = getAlerts().filter(a =>
+      linked.includes(a.studentEmail) ||
+      a.studentEmail === userEmail ||
+      a.recipients?.includes(userEmail)
+    );
+  } else {
+    all = getAlerts().filter(a => a.studentEmail === userEmail || a.recipients?.includes(userEmail));
+  }
   return all.filter(a => !a.readBy?.includes(userEmail));
 }
 
