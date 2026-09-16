@@ -23,6 +23,7 @@ describe('subscription demo store', () => {
     expect(checkout.ok).toBe(true);
     expect(checkout.demo).toBe(true);
     expect(await getSubscriptionStatus(userId)).toEqual({ plan: 'pro' });
+    expect(JSON.parse(localStorage.getItem('homework_companion_subscription'))[userId]).toBe('pro');
 
     const cancel = await cancelSubscription(userId);
     expect(cancel.ok).toBe(true);

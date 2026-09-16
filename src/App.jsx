@@ -795,6 +795,19 @@ const SUBSCRIPTION_PLANS = [
   }
 ];
 
+const proCheckoutButtonLabel = (price, { loading = false, free = false } = {}) => {
+  if (loading) return isSubscriptionApiConfigured() ? 'Redirecting...' : 'Unlocking...';
+  if (free) return 'Stay on Free';
+  if (!isSubscriptionApiConfigured()) return 'Demo unlock';
+  return `Upgrade to Pro — R${price}/mo`;
+};
+
+const formatAssignmentGrade = (assignment) => {
+  const g = assignment?.grade;
+  if (g == null || g === '') return null;
+  return `${g}%`;
+};
+
 // --- Helper Components ---
 const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -1493,7 +1506,7 @@ export default function App() {
       } else if (firebaseUserId) {
         const byUid = await platformData.getAssignments(firebaseUserId);
         const byEmail = persistKey ? await platformData.getAssignmentsByEmail(persistKey) : null;
-        remote = mergeAssignmentLists(byUid || [], byEmail || []);
+        remote = mergeAssignmentLists(byEmail || [], byUid || []);
       }
       if (cancelled) return;
       const merged = removeMockAssignments(mergeAssignmentLists(remote || [], local || []));
@@ -1527,6 +1540,12 @@ export default function App() {
       platformData.saveAssignmentsByEmail(persistKey, assignments).catch(() => {});
     }
   }, [assignments, assignmentsReady, currentUserKey, appUser?.role, selectedChildEmail, firebaseUserId]);
+
+  useEffect(() => {
+    if (!hwDetailDrawer?.id) return;
+    const live = assignments.find(x => x.id === hwDetailDrawer.id);
+    if (live) setHwDetailDrawer(live);
+  }, [assignments]);
 
   useEffect(() => {
     const userKey = appUser?.role === ROLES.PARENT ? selectedChildEmail : currentUserKey;
@@ -1612,7 +1631,7 @@ export default function App() {
         if (result.ok) {
           setSubscriptionPlan('pro');
           setIsSubscriptionOpen(false);
-          showToast(result.demo ? 'Pro activated on this device' : 'Pro activated');
+          showToast(result.demo ? 'Demo unlock complete' : 'Pro activated');
           addToHistory('Upgraded to Pro', 'success');
           return;
         }
@@ -1625,7 +1644,7 @@ export default function App() {
     const price = SUBSCRIPTION_PLANS.find(p => p.id === 'pro')?.price ?? 199;
     const checkoutPrompt = isSubscriptionApiConfigured()
       ? `Proceed to checkout? You will be charged R${price}/month for Pro.`
-      : 'Activate Pro on this device? Payment is not configured — this is a local demo upgrade.';
+      : 'Demo unlock on this device? No Paygate — Pro activates locally so Chat can be tested.';
     confirm(checkoutPrompt, doCheckout);
   };
 
@@ -1858,6 +1877,7 @@ export default function App() {
   useEffect(() => {
     const handler = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.isContentEditable) return;
+      if (e.key === 'Escape') { setIsQuickAddOpen(false); return; }
       if ((e.key === 'n' || e.key === 'N') && !e.metaKey && !e.ctrlKey && !isReadOnly) { e.preventDefault(); setIsCreateAssignmentModalOpen(true); }
       if (e.key === 'z' && (e.metaKey || e.ctrlKey) && !e.shiftKey) {
         setUndoStack(prev => {
@@ -2010,13 +2030,16 @@ export default function App() {
 
   const handleSaveTeacherComment = () => {
     if (!selectedAssignment || appUser?.role !== ROLES.TEACHER) return;
-    if (!teacherCommentDraft.trim()) { showToast('Nothing to save — write a note first', 'info'); return; }
-    confirm('Save this note? The student will be able to see it.', () => {
-      const updated = { ...selectedAssignment, teacherComments: teacherCommentDraft.trim() };
+    const note = teacherCommentDraft.trim();
+    const grade = selectedAssignment.grade;
+    const hasGrade = grade != null && grade !== '';
+    if (!note && !hasGrade) { showToast('Add a grade or a note first', 'info'); return; }
+    confirm('Save grade and note? The student will be able to see them.', () => {
+      const updated = { ...selectedAssignment, teacherComments: note, grade: hasGrade ? Number(grade) : null };
       setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? updated : a));
       setSelectedAssignment(updated);
-      showToast('Note saved');
-      addToHistory('Comment saved', 'success');
+      showToast(hasGrade && note ? 'Grade and note saved' : hasGrade ? 'Grade saved' : 'Note saved');
+      addToHistory('Grade and note saved', 'success');
     });
   };
 
@@ -2936,9 +2959,13 @@ export default function App() {
               </div>
               <div className="px-6 pb-6 pt-2">
                 <button onClick={handleConfirmPlan} disabled={checkoutLoading} className={`w-full py-4 font-black rounded-2xl text-base transition-all disabled:opacity-60 ${selectedPlan === 'free' ? 'bg-slate-800/50 text-slate-300 hover:bg-slate-200' : 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-200 hover:shadow-xl hover:shadow-violet-300 hover:scale-[1.01]'}`}>
-                  {checkoutLoading ? 'Redirecting...' : selectedPlan === 'free' ? 'Stay on Free' : `Upgrade to Pro — R${activePlan.price}/mo`}
+                  {proCheckoutButtonLabel(activePlan.price, { loading: checkoutLoading, free: selectedPlan === 'free' })}
                 </button>
-                {selectedPlan !== 'free' && <p className="text-center text-[11px] text-slate-400 mt-2">You'll be redirected to secure checkout</p>}
+                {selectedPlan !== 'free' && (
+                  <p className="text-center text-[11px] text-slate-400 mt-2">
+                    {isSubscriptionApiConfigured() ? "You'll be redirected to secure checkout" : 'Demo unlock — no Paygate. Chat unlocks after confirm.'}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -3473,7 +3500,7 @@ export default function App() {
                             <input type="checkbox" checked={selectedHwIds.has(a.id)} onChange={() => setSelectedHwIds(prev => { const next = new Set(prev); if (next.has(a.id)) next.delete(a.id); else next.add(a.id); return next; })} className="accent-violet-500" />
                           </div>}
                           <div className="min-w-0">
-                            <h4 className={`font-bold text-sm truncate ${isDone ? 'text-slate-400 line-through' : 'text-slate-100 drop-shadow-md'}`}>{a.title}</h4>
+                            <h4 className={`font-bold text-sm truncate ${isDone ? 'text-slate-400 line-through' : 'text-slate-100 drop-shadow-md'}`}>{a.title}{formatAssignmentGrade(a) ? <span className="ml-2 text-[10px] font-black text-emerald-400 no-underline">{formatAssignmentGrade(a)}</span> : null}</h4>
                             <p className="text-[10px] text-slate-400 truncate sm:hidden">{a.subject} • Due {a.dueDate}</p>
                           </div>
                           <div className="hidden sm:block"><span className="px-2 py-0.5 bg-violet-900/30 text-violet-400 rounded text-[10px] font-bold">{a.subject}</span></div>
@@ -3501,7 +3528,10 @@ export default function App() {
                         <button onClick={() => setHwDetailDrawer(null)} className="p-1.5 hover:bg-slate-800/50 rounded-lg transition-colors"><X size={16} className="text-slate-400" /></button>
                       </div>
                       <h3 className="font-black text-lg text-slate-100 drop-shadow-md mb-1">{hwDetailDrawer.title}</h3>
-                      <p className="text-xs text-slate-400 mb-4">Due {new Date(hwDetailDrawer.dueDate + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</p>
+                      <p className={`text-xs text-slate-400 ${formatAssignmentGrade(hwDetailDrawer) ? 'mb-1' : 'mb-4'}`}>Due {new Date(hwDetailDrawer.dueDate + 'T12:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</p>
+                      {formatAssignmentGrade(hwDetailDrawer) && (
+                        <p className="text-sm font-black text-emerald-400 mb-4">{copy.gradeLabel}: {formatAssignmentGrade(hwDetailDrawer)}</p>
+                      )}
 
                       {/* Progress */}
                       <div className="mb-4">
@@ -3528,7 +3558,12 @@ export default function App() {
                       {/* Teacher comments */}
                       <div className="mb-4">
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1">{copy.comments}</p>
-                        <div className="bg-amber-50/60 p-3 rounded-xl"><p className="text-xs text-slate-300">{hwDetailDrawer.teacherComments || copy.noFeedback}</p></div>
+                        <div className="bg-amber-50/60 p-3 rounded-xl space-y-1">
+                          {formatAssignmentGrade(hwDetailDrawer) && (
+                            <p className="text-xs font-black text-emerald-700">{copy.gradeLabel}: {formatAssignmentGrade(hwDetailDrawer)}</p>
+                          )}
+                          <p className="text-xs text-slate-300">{hwDetailDrawer.teacherComments || copy.noFeedback}</p>
+                        </div>
                       </div>
 
                       {/* Actions */}
@@ -3900,7 +3935,7 @@ export default function App() {
             {subscriptionPlan !== 'pro' && (
               <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50 border-l-4 border-l-violet-500">
                 <h3 className="text-lg font-black text-slate-100 drop-shadow-md mb-1 flex items-center gap-2"><Sparkles size={20} className="text-violet-300" /> Sign up to Premium</h3>
-                <p className="text-xs text-slate-400 mb-4">Choose your plan and complete checkout. Upgrade anytime. Cancel anytime.</p>
+                <p className="text-xs text-slate-400 mb-4">{isSubscriptionApiConfigured() ? 'Choose your plan and complete checkout. Upgrade anytime. Cancel anytime.' : 'Demo unlock — no Paygate. Pro and Chat activate on this device.'}</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                   {SUBSCRIPTION_PLANS.map(plan => (
                     <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedPlan === plan.id ? 'border-violet-500 bg-violet-900/30/50 shadow-md' : 'border-slate-600/50 glass-card border-slate-700/50 hover:border-slate-300'}`}>
@@ -3923,7 +3958,7 @@ export default function App() {
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
                   <button onClick={handleConfirmPlan} disabled={checkoutLoading} className={`px-6 py-3 font-black rounded-xl text-sm transition-all disabled:opacity-60 ${selectedPlan === 'free' ? 'bg-slate-800/50 text-slate-300' : 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg hover:scale-[1.02]'}`}>
-                    {checkoutLoading ? 'Redirecting...' : selectedPlan === 'free' ? 'Stay on Free' : `Subscribe to Pro — R${SUBSCRIPTION_PLANS.find(p => p.id === 'pro')?.price || 199}/mo`}
+                    {proCheckoutButtonLabel(SUBSCRIPTION_PLANS.find(p => p.id === 'pro')?.price || 199, { loading: checkoutLoading, free: selectedPlan === 'free' })}
                   </button>
                   <div className="flex items-center gap-4 text-[11px] text-slate-400">
                     <span className="flex items-center gap-1"><Lock size={12} /> Secure</span>
@@ -4384,12 +4419,15 @@ export default function App() {
                     </div>
                     <textarea value={teacherCommentDraft} onChange={(e) => setTeacherCommentDraft(e.target.value)} placeholder="Write a note for the student..." className="w-full bg-slate-900/50 p-3 rounded-xl text-sm text-slate-200 outline-none resize-none h-20 placeholder:text-slate-400 border border-slate-600/50 focus:border-violet-400" />
                     <div className="flex gap-2">
-                      <button onClick={handleSaveTeacherComment} className="flex-1 py-2.5 bg-violet-600 text-white font-bold rounded-xl text-xs hover:bg-violet-700 transition-colors">Save note</button>
+                      <button onClick={handleSaveTeacherComment} className="flex-1 py-2.5 bg-violet-600 text-white font-bold rounded-xl text-xs hover:bg-violet-700 transition-colors">Save grade & note</button>
                       <button onClick={() => { if (!teacherCommentDraft.trim()) { showToast('Nothing to log — write a note first', 'info'); return; } confirm('Log this as a formal intervention?', () => { logTeacherIntervention(viewingStudentKey, profileData.email, 'Comment/feedback', teacherCommentDraft); showToast('Intervention logged'); addToHistory('Intervention logged', 'success'); }); }} className="flex-1 py-2.5 bg-amber-100 text-amber-800 font-bold rounded-xl text-xs hover:bg-amber-200 transition-colors">Log intervention</button>
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-amber-50/60 border border-amber-100 p-3 rounded-xl">
+                  <div className="bg-amber-50/60 border border-amber-100 p-3 rounded-xl space-y-2">
+                    {formatAssignmentGrade(selectedAssignment) && (
+                      <p className="text-sm font-black text-emerald-700">{copy.gradeLabel}: {formatAssignmentGrade(selectedAssignment)}</p>
+                    )}
                     {selectedAssignment.teacherComments ? (
                       <p className="text-sm text-slate-200 leading-relaxed">{selectedAssignment.teacherComments}</p>
                     ) : (
@@ -4571,7 +4609,7 @@ export default function App() {
                       ))}
                     </div>
                     <button onClick={handleConfirmPlan} disabled={checkoutLoading} className="w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-black rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all text-sm uppercase tracking-widest">
-                       {checkoutLoading ? 'Redirecting...' : selectedPlan === 'free' ? 'Stay on Free' : 'Secure Checkout'}
+                       {proCheckoutButtonLabel(SUBSCRIPTION_PLANS.find(p => p.id === 'pro')?.price || 199, { loading: checkoutLoading, free: selectedPlan === 'free' })}
                     </button>
                   </div>
                 )}
@@ -4770,10 +4808,12 @@ export default function App() {
                       : 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-200 hover:shadow-xl hover:shadow-violet-300 hover:scale-[1.01]'
                   }`}
                 >
-                  {checkoutLoading ? 'Redirecting...' : selectedPlan === 'free' ? 'Stay on Free' : `Upgrade to Pro — R${activePlan.price}/mo`}
+                  {proCheckoutButtonLabel(activePlan.price, { loading: checkoutLoading, free: selectedPlan === 'free' })}
                 </button>
                 {selectedPlan !== 'free' && (
-                  <p className="text-center text-[11px] text-slate-400 mt-2">You'll be redirected to secure checkout</p>
+                  <p className="text-center text-[11px] text-slate-400 mt-2">
+                    {isSubscriptionApiConfigured() ? "You'll be redirected to secure checkout" : 'Demo unlock — no Paygate. Chat unlocks after confirm.'}
+                  </p>
                 )}
                 {subscriptionPlan === 'pro' && (
                   <button onClick={() => { setIsSubscriptionOpen(false); setActiveTab(TABS.PAYMENTS); }} className="w-full mt-3 py-2.5 text-slate-400 font-bold rounded-xl text-sm hover:bg-slate-900/50 transition-colors border border-slate-700/50">

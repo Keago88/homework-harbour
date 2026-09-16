@@ -1,9 +1,10 @@
 /**
  * Subscription service – works with your backend API (Paygate + DB).
- * In demo mode (no API URL), uses storage so Pro / paywalls can be exercised
- * on a single device. Production with Firebase and no API stays locked.
+ * When Paygate is not configured, Pro is stored on-device in
+ * `homework_companion_subscription` so Chat / analytics can be demoed
+ * without a payment redirect — including hosted builds that have Firebase.
  */
-import { storageGet, storageSet, canUseLocalPersistence } from '../lib/storage';
+import { deviceStorageGet, deviceStorageSet } from '../lib/storage';
 
 const API_BASE = typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUBSCRIPTION_API_URL
   ? import.meta.env.VITE_SUBSCRIPTION_API_URL.replace(/\/$/, '')
@@ -15,7 +16,7 @@ export const isSubscriptionApiConfigured = () => !!API_BASE;
 
 function demoPlans() {
   try {
-    const raw = storageGet(DEMO_SUB_KEY);
+    const raw = deviceStorageGet(DEMO_SUB_KEY);
     return raw ? JSON.parse(raw) : {};
   } catch {
     return {};
@@ -23,13 +24,12 @@ function demoPlans() {
 }
 
 function saveDemoPlans(map) {
-  storageSet(DEMO_SUB_KEY, JSON.stringify(map));
+  deviceStorageSet(DEMO_SUB_KEY, JSON.stringify(map));
 }
 
 export async function getSubscriptionStatus(userId) {
   if (!userId) return { plan: 'free' };
   if (!API_BASE) {
-    if (!canUseLocalPersistence()) return { plan: 'free' };
     const store = demoPlans();
     return { plan: store[userId] === 'pro' ? 'pro' : 'free' };
   }
@@ -46,8 +46,8 @@ export async function getSubscriptionStatus(userId) {
 
 export async function initiateProCheckout(userId, email) {
   if (!API_BASE) {
-    if (!canUseLocalPersistence() || !userId) {
-      return { ok: false, error: 'Payment integration coming soon. Connect a payment provider to enable Pro subscriptions.' };
+    if (!userId) {
+      return { ok: false, error: 'Sign in to activate Pro on this device.' };
     }
     const store = demoPlans();
     store[userId] = 'pro';
@@ -88,8 +88,8 @@ export async function verifyPayment(transactionId, userId) {
 
 export async function cancelSubscription(userId) {
   if (!API_BASE) {
-    if (!canUseLocalPersistence() || !userId) {
-      return { ok: false, error: 'Payment integration not configured. Contact support to cancel.' };
+    if (!userId) {
+      return { ok: false, error: 'Sign in to cancel Pro on this device.' };
     }
     const store = demoPlans();
     store[userId] = 'free';
