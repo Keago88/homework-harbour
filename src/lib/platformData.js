@@ -15,13 +15,17 @@ const KEYS = {
   INTERVENTIONS: 'hwc_interventions',
 };
 
+const memory = {};
+
 const get = (key) => {
+  if (Object.prototype.hasOwnProperty.call(memory, key)) return memory[key];
   try {
     return JSON.parse(storageGet(key) || 'null');
   } catch { return null; }
 };
 
 const set = (key, value) => {
+  memory[key] = value;
   try {
     storageSet(key, JSON.stringify(value));
   } catch {}
@@ -43,10 +47,16 @@ export const getRiskHistory = () => get(KEYS.RISK_HISTORY) || [];
 export const saveRiskHistory = (history) => set(KEYS.RISK_HISTORY, history);
 
 export const getAlerts = () => get(KEYS.ALERTS) || [];
-export const saveAlerts = (alerts) => set(KEYS.ALERTS, alerts);
+export const saveAlerts = (alerts) => {
+  set(KEYS.ALERTS, alerts);
+  if (useFirestore()) saveAlertsToFirestore(alerts).catch(() => {});
+};
 
 export const getInterventions = () => get(KEYS.INTERVENTIONS) || [];
-export const saveInterventions = (interventions) => set(KEYS.INTERVENTIONS, interventions);
+export const saveInterventions = (interventions) => {
+  set(KEYS.INTERVENTIONS, interventions);
+  if (useFirestore()) saveInterventionsToFirestore(interventions).catch(() => {});
+};
 
 // --- Schools & roster ---
 export const createSchool = (name, adminEmail, currentSchools) => {
@@ -222,6 +232,119 @@ export const getPairingCodeForStudent = async (studentEmail) => {
   return getPairingCodeForStudentLocal(studentEmail);
 };
 
+// --- Email index + shared assignments (parent/teacher access by student email) ---
+const EMAIL_INDEX_COLLECTION = 'email_index';
+const ASSIGNMENTS_BY_EMAIL_COLLECTION = 'assignments_by_email';
+const USER_DATA_COLLECTION = 'user_data';
+const PLATFORM_COLLECTION = 'platform';
+
+export const upsertAccount = async (uid, { email, name, role, profile } = {}) => {
+  if (!uid || !useFirestore()) return;
+  const emailNorm = (email || profile?.email || '').trim().toLowerCase();
+  try {
+    const docRef = doc(db, USER_DATA_COLLECTION, uid);
+    const snap = await getDoc(docRef);
+    const existing = snap.exists() ? snap.data() : {};
+    const nextProfile = {
+      ...(existing.profile || {}),
+      ...(profile || {}),
+      email: emailNorm || existing.profile?.email || '',
+      name: name || profile?.name || existing.profile?.name || '',
+      role: role || profile?.role || existing.profile?.role || existing.role,
+    };
+    await setDoc(docRef, {
+      ...existing,
+      email: emailNorm || existing.email || '',
+      role: nextProfile.role,
+      profile: nextProfile,
+    });
+    if (emailNorm) {
+      await setDoc(doc(db, EMAIL_INDEX_COLLECTION, toDocId(emailNorm)), {
+        uid,
+        email: emailNorm,
+        role: nextProfile.role,
+        name: nextProfile.name,
+      });
+    }
+  } catch (e) {
+    console.warn('upsertAccount failed:', e);
+  }
+};
+
+export const getUidForEmail = async (email) => {
+  if (!email || !useFirestore()) return null;
+  try {
+    const snap = await getDoc(doc(db, EMAIL_INDEX_COLLECTION, toDocId(email)));
+    return snap.exists() ? snap.data()?.uid || null : null;
+  } catch {
+    return null;
+  }
+};
+
+export const getUserDataByEmail = async (email) => {
+  if (!email) return null;
+  const uid = await getUidForEmail(email);
+  if (uid) return getUserData(uid);
+  if (!useFirestore()) return null;
+  try {
+    const q = query(collection(db, USER_DATA_COLLECTION), where('email', '==', (email || '').trim().toLowerCase()));
+    const snapshot = await getDocs(q);
+    return snapshot.empty ? null : snapshot.docs[0].data();
+  } catch {
+    return null;
+  }
+};
+
+export const getAssignmentsByEmail = async (email) => {
+  if (!email) return null;
+  if (useFirestore()) {
+    try {
+      const snap = await getDoc(doc(db, ASSIGNMENTS_BY_EMAIL_COLLECTION, toDocId(email)));
+      if (snap.exists() && Array.isArray(snap.data()?.assignments)) return snap.data().assignments;
+    } catch (e) {
+      console.warn('getAssignmentsByEmail failed:', e);
+    }
+  }
+  const data = await getUserDataByEmail(email);
+  return data?.assignments && Array.isArray(data.assignments) ? data.assignments : null;
+};
+
+export const saveAssignmentsByEmail = async (email, assignments) => {
+  if (!email || !Array.isArray(assignments) || !useFirestore()) return;
+  try {
+    await setDoc(doc(db, ASSIGNMENTS_BY_EMAIL_COLLECTION, toDocId(email)), {
+      email: (email || '').trim().toLowerCase(),
+      assignments,
+      updatedAt: new Date().toISOString(),
+    });
+    const uid = await getUidForEmail(email);
+    if (uid && uid !== auth?.currentUser?.uid) {
+      const docRef = doc(db, USER_DATA_COLLECTION, uid);
+      const snap = await getDoc(docRef);
+      const existing = snap.exists() ? snap.data() : {};
+      await setDoc(docRef, { ...existing, email: (email || '').trim().toLowerCase(), assignments });
+    }
+  } catch (e) {
+    console.warn('saveAssignmentsByEmail failed:', e);
+  }
+};
+
+export const hydratePlatformCaches = async () => {
+  if (!useFirestore()) return;
+  try {
+    const [alerts, interventions, schools] = await Promise.all([
+      getAlertsFromFirestore(),
+      getInterventionsFromFirestore(),
+      getSchoolsFromFirestore(),
+    ]);
+    if (Array.isArray(alerts)) set(KEYS.ALERTS, alerts);
+    if (Array.isArray(interventions)) set(KEYS.INTERVENTIONS, interventions);
+    if (Array.isArray(schools)) set(KEYS.SCHOOLS, schools);
+  } catch (e) {
+    console.warn('hydratePlatformCaches failed:', e);
+  }
+};
+
 // --- User subjects (Firestore when db available, else localStorage per user) ---
 const USER_SETTINGS_COLLECTION = 'user_settings';
 const SUBJECTS_LOCAL_PREFIX = 'hwc_subjects_';
@@ -255,8 +378,6 @@ export const saveSubjects = async (userId, subjects) => {
 };
 
 // --- User data (assignments, profile, completion history, risk history) ---
-const USER_DATA_COLLECTION = 'user_data';
-const PLATFORM_COLLECTION = 'platform';
 
 export const getUserData = async (userId) => {
   if (!userId || !useFirestore() || userId.includes('@')) return null;

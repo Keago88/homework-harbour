@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   onAuthStateChanged,
-  signInAnonymously,
   signInWithCustomToken,
   signInWithPopup,
   signInWithRedirect,
@@ -67,6 +66,7 @@ import {
 import { getSubscriptionStatus, initiateProCheckout, verifyPayment, cancelSubscription } from './services/subscription';
 import * as platformData from './lib/platformData';
 import { storageGet, storageSet } from './lib/storage';
+import { resolveSessionUser, canMutateAssignments, assignmentPersistKey, isViewingStudent, mergeAssignmentLists, studentsFromSchools } from './lib/account';
 import { computeRiskScore, getRiskBand } from './lib/riskEngine';
 import { computeForecast } from './lib/forecastEngine';
 import { checkAlertTriggers, getUnreadAlertsForUser, markAlertRead } from './lib/alerts';
@@ -900,9 +900,14 @@ const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
         }
         if (useFirebase && auth) {
           await setAuthPersistence();
-          await signInWithEmailAndPassword(auth, formData.email.trim(), formData.password);
-          const stored = getStoredUsers().find(u => u.email?.toLowerCase() === formData.email.trim().toLowerCase());
-          onLogin({ name: stored?.name || "User", role: stored?.role || ROLES.STUDENT, email: stored?.email });
+          const { user } = await signInWithEmailAndPassword(auth, formData.email.trim(), formData.password);
+          const email = user.email || formData.email.trim();
+          const stored = getStoredUsers().find(u => u.email?.toLowerCase() === email.toLowerCase());
+          onLogin({
+            name: stored?.name || user.displayName || email.split('@')[0] || 'User',
+            role: stored?.role || ROLES.STUDENT,
+            email,
+          });
         } else {
           const found = findUserByCredentials(formData.email.trim(), formData.password);
           if (!found) {
@@ -1205,6 +1210,31 @@ const SchoolDashboard = ({ schools, search = '', onRefresh, confirm }) => {
   );
 };
 
+const StudentFollowInput = ({ onFollow }) => {
+  const [email, setEmail] = useState('');
+  const [err, setErr] = useState('');
+  const handle = () => {
+    const value = email.trim().toLowerCase();
+    if (!value || !value.includes('@')) {
+      setErr('Enter a student email');
+      return;
+    }
+    setErr('');
+    onFollow(value);
+    setEmail('');
+  };
+  return (
+    <div className="w-full">
+      <p className="text-[10px] font-black text-slate-400 uppercase w-full mb-2">Open a student</p>
+      <div className="flex gap-2">
+        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="student@school.com" className="flex-1 px-4 py-2 rounded-xl border border-slate-600/50 text-sm font-medium bg-transparent" />
+        <button type="button" onClick={handle} className="px-4 py-2 bg-violet-500 text-white font-bold rounded-xl text-sm">View</button>
+      </div>
+      {err && <p className="text-rose-400 text-xs mt-1">{err}</p>}
+    </div>
+  );
+};
+
 const ParentLinkInput = ({ onLink, confirm }) => {
   const [code, setCode] = useState('');
   const [err, setErr] = useState('');
@@ -1300,6 +1330,8 @@ export default function App() {
   const [pairingCode, setPairingCode] = useState("");
   const [linkedStudents, setLinkedStudents] = useState([]);
   const [selectedChildEmail, setSelectedChildEmail] = useState(null);
+  const [assignmentsReady, setAssignmentsReady] = useState(false);
+  const hydratedAssignmentsKeyRef = useRef(null);
   const [riskScore, setRiskScore] = useState(null);
   const [forecast, setForecast] = useState(null);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -1393,27 +1425,27 @@ export default function App() {
     (list || []).filter(a => !(MOCK_ASSIGNMENT_IDS.has(a.id) && MOCK_ASSIGNMENT_TITLES.has(a.title)));
 
   useEffect(() => {
-    if (!firebaseUserId || !appUser || appUser.role === ROLES.PARENT) return;
+    if (!appUser || !firebaseUserId) return;
     let cancelled = false;
     (async () => {
-      const [profile, assignments, completions] = await Promise.all([
+      const [profile, completions] = await Promise.all([
         platformData.getProfile(firebaseUserId),
-        platformData.getAssignments(firebaseUserId),
-        platformData.getCompletionHistoryFromFirestore(firebaseUserId),
+        appUser.role === ROLES.PARENT
+          ? Promise.resolve([])
+          : platformData.getCompletionHistoryFromFirestore(firebaseUserId),
       ]);
       if (cancelled) return;
-      if (profile && typeof profile === 'object') setProfileData(prev => ({ ...prev, ...profile }));
-      if (assignments !== null && Array.isArray(assignments)) {
-        const cleaned = removeMockAssignments(assignments);
-        setAssignments(cleaned);
-        if (cleaned.length !== assignments.length) {
-          platformData.saveAssignments(firebaseUserId, cleaned).catch(() => {});
-        }
+      if (profile && typeof profile === 'object') {
+        setProfileData(prev => ({
+          ...prev,
+          ...profile,
+          email: profile.email || prev.email,
+        }));
       }
-      if (Array.isArray(completions)) setCompletionHistoryFromFirestore(completions);
+      if (Array.isArray(completions) && completions.length) setCompletionHistoryFromFirestore(completions);
     })();
     return () => { cancelled = true; };
-  }, [firebaseUserId, appUser?.role]);
+  }, [firebaseUserId, appUser?.role, appUser?.email]);
 
   const getBackgroundClass = () => {
     switch(activeTab) {
@@ -1427,30 +1459,69 @@ export default function App() {
     }
   };
 
-  const subscriptionUserId = profileData.email || appUser?.name || 'anonymous';
-  const currentUserKey = profileData.email || appUser?.name || 'anonymous';
-  const viewingStudentKey = appUser?.role === ROLES.PARENT ? selectedChildEmail : currentUserKey;
+  const subscriptionUserId = profileData.email || appUser?.email || appUser?.name || 'anonymous';
+  const currentUserKey = profileData.email || appUser?.email || appUser?.name || 'anonymous';
+  const viewingStudentKey = assignmentPersistKey({
+    role: appUser?.role,
+    ownKey: currentUserKey,
+    selectedStudentEmail: selectedChildEmail,
+  });
   const copy = getCopy(appUser?.role || ROLES.STUDENT, profileData.grade);
   const isReadOnly = appUser?.role === ROLES.PARENT;
-  useEffect(() => {
-    if (appUser?.role === ROLES.PARENT && selectedChildEmail) {
-      saveStoredAssignments(selectedChildEmail, assignments);
-    } else if (currentUserKey && appUser?.role !== ROLES.PARENT) {
-      saveStoredAssignments(currentUserKey, assignments);
-      if (firebaseUserId) platformData.saveAssignments(firebaseUserId, assignments).catch(() => {});
-    }
-  }, [assignments, currentUserKey, appUser?.role, selectedChildEmail, firebaseUserId]);
 
   useEffect(() => {
-    if (appUser?.role === ROLES.PARENT) {
-      if (selectedChildEmail) {
-        const stored = getStoredAssignments(selectedChildEmail);
-        setAssignments(stored && stored.length > 0 ? stored : []);
-      } else {
-        setAssignments([]);
+    if (!appUser) return;
+    let cancelled = false;
+    setAssignmentsReady(false);
+    hydratedAssignmentsKeyRef.current = null;
+    (async () => {
+      const viewingOther = isViewingStudent(appUser.role, selectedChildEmail);
+      const persistKey = assignmentPersistKey({
+        role: appUser.role,
+        ownKey: currentUserKey,
+        selectedStudentEmail: selectedChildEmail,
+      });
+      const local = persistKey ? getStoredAssignments(persistKey) : null;
+      let remote = null;
+      if (viewingOther && selectedChildEmail) {
+        remote = await platformData.getAssignmentsByEmail(selectedChildEmail);
+      } else if (firebaseUserId) {
+        const byUid = await platformData.getAssignments(firebaseUserId);
+        const byEmail = persistKey ? await platformData.getAssignmentsByEmail(persistKey) : null;
+        remote = mergeAssignmentLists(byUid || [], byEmail || []);
       }
+      if (cancelled) return;
+      const merged = removeMockAssignments(mergeAssignmentLists(remote || [], local || []));
+      hydratedAssignmentsKeyRef.current = persistKey || null;
+      setAssignments(merged);
+      setAssignmentsReady(true);
+    })();
+    return () => { cancelled = true; };
+  }, [appUser?.role, appUser?.email, selectedChildEmail, firebaseUserId, currentUserKey]);
+
+  useEffect(() => {
+    if (!appUser || !assignmentsReady) return;
+    if (!canMutateAssignments(appUser.role)) return;
+    const persistKey = assignmentPersistKey({
+      role: appUser.role,
+      ownKey: currentUserKey,
+      selectedStudentEmail: selectedChildEmail,
+    });
+    if (!persistKey) return;
+    if (hydratedAssignmentsKeyRef.current !== persistKey) return;
+    saveStoredAssignments(persistKey, assignments);
+    const viewingOther = isViewingStudent(appUser.role, selectedChildEmail);
+    if (viewingOther) {
+      platformData.saveAssignmentsByEmail(persistKey, assignments).catch(() => {});
+    } else if (firebaseUserId) {
+      platformData.saveAssignments(firebaseUserId, assignments).catch(() => {});
+      if (persistKey && String(persistKey).includes('@')) {
+        platformData.saveAssignmentsByEmail(persistKey, assignments).catch(() => {});
+      }
+    } else if (persistKey && String(persistKey).includes('@')) {
+      platformData.saveAssignmentsByEmail(persistKey, assignments).catch(() => {});
     }
-  }, [selectedChildEmail, appUser?.role]);
+  }, [assignments, assignmentsReady, currentUserKey, appUser?.role, selectedChildEmail, firebaseUserId]);
 
   useEffect(() => {
     const userKey = appUser?.role === ROLES.PARENT ? selectedChildEmail : currentUserKey;
@@ -1588,14 +1659,29 @@ export default function App() {
 
   useEffect(() => {
     let isMounted = true;
-    const restoreFromFirebaseUser = (firebaseUser) => {
+    const restoreFromFirebaseUser = async (firebaseUser, fallbackRole) => {
       const email = firebaseUser.email || firebaseUser.providerData?.[0]?.email;
       if (!email) return;
       const stored = getStoredUsers().find(u => u.email?.toLowerCase() === email.toLowerCase());
-      let role = stored?.role || ROLES.STUDENT;
-      const name = firebaseUser.displayName || stored?.name || email?.split('@')[0] || 'User';
-      if (!stored) storeUser({ email, name, role, uid: firebaseUser.uid });
-      handleB2CLogin({ name, role, email });
+      let remote = null;
+      try { remote = await platformData.getUserData(firebaseUser.uid); } catch {}
+      let roleFallback = fallbackRole;
+      if (!stored?.role && !remote?.role && !remote?.profile?.role) {
+        try {
+          roleFallback = sessionStorage.getItem('hwc_google_signup_role') || fallbackRole || ROLES.STUDENT;
+          sessionStorage.removeItem('hwc_google_signup_role');
+        } catch {
+          roleFallback = fallbackRole || ROLES.STUDENT;
+        }
+      }
+      const resolved = resolveSessionUser({
+        firebaseUser,
+        storedUser: stored,
+        remoteAccount: remote,
+        fallbackRole: roleFallback || ROLES.STUDENT,
+      });
+      if (!stored) storeUser({ email: resolved.email, name: resolved.name, role: resolved.role, uid: firebaseUser.uid });
+      handleB2CLogin(resolved);
     };
     let unsubAuth = null;
     const init = async () => {
@@ -1603,21 +1689,14 @@ export default function App() {
         if (auth) {
           const redirectResult = await getRedirectResult(auth);
           if (redirectResult?.user && isMounted) {
-            const user = redirectResult.user;
-            const stored = getStoredUsers().find(u => u.email?.toLowerCase() === user.email?.toLowerCase());
-            let role = stored?.role;
-            if (!role) {
-              try { role = sessionStorage.getItem('hwc_google_signup_role') || ROLES.STUDENT; sessionStorage.removeItem('hwc_google_signup_role'); } catch { role = ROLES.STUDENT; }
-            }
-            if (!stored) storeUser({ email: user.email, name: user.displayName || user.email?.split('@')[0] || 'User', role });
-            handleB2CLogin({ name: user.displayName || user.email?.split('@')[0] || 'User', role, email: user.email });
+            await restoreFromFirebaseUser(redirectResult.user);
             setAuthLoading(false);
             return;
           }
           const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
             if (!isMounted) return;
             if (firebaseUser && (firebaseUser.email || firebaseUser.providerData?.[0]?.email)) {
-              restoreFromFirebaseUser(firebaseUser);
+              await restoreFromFirebaseUser(firebaseUser);
               setAuthLoading(false);
               return;
             }
@@ -1626,13 +1705,8 @@ export default function App() {
                 const userCred = await signInWithCustomToken(auth, __initial_auth_token);
                 if (isMounted) setUser(userCred.user);
               } catch {}
-            } else if (!firebaseUser) {
-              try {
-                const userCred = await signInAnonymously(auth);
-                if (isMounted) setUser(userCred.user);
-              } catch (e) {
-                if (isMounted) setUser(null);
-              }
+            } else if (isMounted) {
+              setUser(null);
             }
             setAuthLoading(false);
           });
@@ -1650,35 +1724,52 @@ export default function App() {
 
   const handleB2CLogin = (userData) => {
     if (!userData) return;
-    const newAppUser = {
-      name: userData.name || "Student",
-      role: userData.role || ROLES.STUDENT,
-    };
-    setAppUser(newAppUser);
     const email = userData.email || '';
+    const newAppUser = {
+      name: userData.name || 'Student',
+      role: userData.role || ROLES.STUDENT,
+      email,
+    };
+    setAssignmentsReady(false);
+    setAppUser(newAppUser);
     try {
       const stored = storageGet(PROFILE_STORAGE_KEY);
-      const parsed = stored ? JSON.parse(stored) : null;
-      setProfileData({
+      const parsedRaw = stored ? JSON.parse(stored) : null;
+      const parsed = parsedRaw && (!email || !parsedRaw.email || parsedRaw.email.toLowerCase() === email.toLowerCase()) ? parsedRaw : null;
+      const nextProfile = {
         name: parsed?.name ?? newAppUser.name,
         grade: parsed?.grade ?? '',
         school: parsed?.school ?? '',
         favoriteSubject: parsed?.favoriteSubject ?? '',
         email: parsed?.email ?? email,
         gamificationLevel: parsed?.gamificationLevel ?? 'simple',
-      });
-        const userKey = (parsed?.email ?? email) || newAppUser.name;
-      const storedAssignments = getStoredAssignments(userKey);
-      if (storedAssignments && Array.isArray(storedAssignments) && storedAssignments.length > 0) {
-        const cleaned = removeMockAssignments(storedAssignments);
-        if (cleaned.length !== storedAssignments.length) saveStoredAssignments(userKey, cleaned);
-        setAssignments(cleaned);
+      };
+      setProfileData(nextProfile);
+      const userKey = nextProfile.email || newAppUser.name;
+      const uid = auth?.currentUser?.uid;
+      if (uid) {
+        platformData.upsertAccount(uid, {
+          email: userKey,
+          name: nextProfile.name,
+          role: newAppUser.role,
+          profile: { ...nextProfile, role: newAppUser.role },
+        }).catch(() => {});
       }
+      platformData.hydratePlatformCaches().then(() => {
+        setAlerts(getUnreadAlertsForUser(userKey, [], newAppUser.role));
+      }).catch(() => {});
       if (newAppUser.role === ROLES.PARENT) {
         platformData.getLinkedStudentsForParent(userKey).then((students) => {
           setLinkedStudents(students);
           setSelectedChildEmail(students[0] || null);
         });
+      }
+      if (newAppUser.role === ROLES.TEACHER) {
+        (async () => {
+          const fromFs = await platformData.getSchoolsFromFirestore();
+          const schools = Array.isArray(fromFs) ? fromFs : platformData.getSchools();
+          setLinkedStudents(studentsFromSchools(userKey, schools));
+        })();
       }
       if (newAppUser.role === ROLES.STUDENT && userKey) {
         platformData.getPairingCodeForStudent(userKey).then((code) => {
@@ -1693,11 +1784,19 @@ export default function App() {
 
   const saveProfile = () => {
     if (!profileData.name?.trim()) return;
-    setAppUser(prev => prev ? { ...prev, name: profileData.name.trim() } : null);
+    setAppUser(prev => prev ? { ...prev, name: profileData.name.trim(), email: profileData.email || prev.email } : null);
     try {
       storageSet(PROFILE_STORAGE_KEY, JSON.stringify(profileData));
     } catch {}
-    if (firebaseUserId) platformData.saveProfile(firebaseUserId, profileData).catch(() => {});
+    if (firebaseUserId) {
+      platformData.saveProfile(firebaseUserId, { ...profileData, role: appUser?.role }).catch(() => {});
+      platformData.upsertAccount(firebaseUserId, {
+        email: profileData.email,
+        name: profileData.name.trim(),
+        role: appUser?.role,
+        profile: { ...profileData, role: appUser?.role },
+      }).catch(() => {});
+    }
     setIsProfileSettingsOpen(false);
   };
 
@@ -1707,6 +1806,10 @@ export default function App() {
         try { await signOut(auth); } catch {}
       }
       setAppUser(null);
+      setAssignments([]);
+      setAssignmentsReady(false);
+      setLinkedStudents([]);
+      setSelectedChildEmail(null);
       setActiveTab(TABS.OVERVIEW);
     }, 'danger');
   };
@@ -1802,16 +1905,19 @@ export default function App() {
   const handleCreateAssignment = (e) => {
     e.preventDefault();
     if (!newAssignment.title) return;
-    confirm(`Add "${newAssignment.title}" to your homework?`, () => {
+    confirm(`Add "${newAssignment.title}"${appUser?.role === ROLES.TEACHER && selectedChildEmail ? ` for ${selectedChildEmail}` : ''}?`, () => {
       const effectiveDueDate = newAssignment.dueDate || getDate(0);
       const base = { id: Date.now(), category: 'Homework', status: 'Pending', progress: 0, ...newAssignment, dueDate: effectiveDueDate };
+      const isTeacherCreate = appUser?.role === ROLES.TEACHER;
       const assignment = newAssignmentAttachment.file
-        ? { ...base, status: 'Submitted', submittedFile: newAssignmentAttachment.file.name, submittedFileType: newAssignmentAttachment.file.type || 'application/octet-stream', submittedPreview: newAssignmentAttachment.preview, submittedAt: getDate(0) }
+        ? (isTeacherCreate
+          ? { ...base, assignedFile: newAssignmentAttachment.file.name, assignedFileType: newAssignmentAttachment.file.type || 'application/octet-stream', assignedPreview: newAssignmentAttachment.preview }
+          : { ...base, status: 'Submitted', submittedFile: newAssignmentAttachment.file.name, submittedFileType: newAssignmentAttachment.file.type || 'application/octet-stream', submittedPreview: newAssignmentAttachment.preview, submittedAt: getDate(0) })
         : base;
       setAssignments(prev => [assignment, ...prev]);
       setIsCreateAssignmentModalOpen(false);
       showToast(copy.toastAdded);
-      addToHistory(`Submitted: ${newAssignment.title}`, 'success');
+      addToHistory(isTeacherCreate ? `Created: ${newAssignment.title}` : `Added: ${newAssignment.title}`, 'success');
       setNewAssignment({ title: '', subject: 'Math', dueDate: '', priority: 'Medium', description: '' });
       setNewAssignmentAttachment({ file: null, preview: null });
     });
@@ -3091,18 +3197,33 @@ export default function App() {
               </div>
             )}
 
-            {/* Parent: Child selector */}
-            {appUser.role === ROLES.PARENT && (
+            {/* Parent / Teacher: student selector */}
+            {(appUser.role === ROLES.PARENT || appUser.role === ROLES.TEACHER) && (
               <div className="glass-card border-slate-700/50 p-4 rounded-xl border border-slate-700/50">
-                {linkedStudents.length > 0 ? (
+                {appUser.role === ROLES.TEACHER && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <button onClick={() => setSelectedChildEmail(null)} className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${!selectedChildEmail ? 'bg-violet-500 text-white' : 'bg-slate-800/50 text-slate-300'}`}>My assignments</button>
+                    {linkedStudents.map(em => (
+                      <button key={em} onClick={() => setSelectedChildEmail(em)} className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${selectedChildEmail === em ? 'bg-violet-500 text-white' : 'bg-slate-800/50 text-slate-300'}`}>{em}</button>
+                    ))}
+                  </div>
+                )}
+                {appUser.role === ROLES.PARENT && linkedStudents.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     <p className="text-[10px] font-black text-slate-400 uppercase w-full mb-2">Viewing</p>
                     {linkedStudents.map(em => (
                       <button key={em} onClick={() => setSelectedChildEmail(em)} className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors ${selectedChildEmail === em ? 'bg-violet-500 text-white' : 'bg-slate-800/50 text-slate-300'}`}>{em}</button>
                     ))}
                   </div>
-                ) : (
+                )}
+                {appUser.role === ROLES.PARENT && linkedStudents.length === 0 && (
                   <ParentLinkInput confirm={confirm} onLink={async (code) => { const r = await platformData.linkParentToStudent(code, profileData.email); if (r.ok) { const students = await platformData.getLinkedStudentsForParent(profileData.email); setLinkedStudents(students); setSelectedChildEmail(r.studentEmail); } return r; }} />
+                )}
+                {appUser.role === ROLES.TEACHER && (
+                  <StudentFollowInput onFollow={(email) => {
+                    setLinkedStudents(prev => prev.includes(email) ? prev : [...prev, email]);
+                    setSelectedChildEmail(email);
+                  }} />
                 )}
               </div>
             )}
@@ -4014,6 +4135,15 @@ export default function App() {
               {/* Document */}
               <div>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5">{copy.document}</p>
+                {selectedAssignment.assignedFile && (
+                  <div className="flex items-center gap-3 bg-violet-950/40 border border-violet-500/20 p-3 rounded-xl mb-2">
+                    <div className="p-2 bg-violet-900/50 rounded-lg"><Upload size={14} className="text-violet-300" /></div>
+                    <span className="text-sm font-medium text-slate-200 truncate flex-1">{selectedAssignment.assignedFile}</span>
+                    {selectedAssignment.assignedPreview && (
+                      <button onClick={() => { const a = document.createElement('a'); a.href = selectedAssignment.assignedPreview; a.download = selectedAssignment.assignedFile || 'assignment'; a.click(); }} className="px-3 py-1.5 bg-violet-500 text-white font-bold rounded-lg text-xs hover:bg-violet-600 transition-colors">Download</button>
+                    )}
+                  </div>
+                )}
                 {selectedAssignment.submittedFile ? (
                   <div className="flex items-center gap-3 bg-emerald-50 border border-emerald-100 p-3 rounded-xl">
                     <div className="p-2 bg-emerald-100 rounded-lg"><Upload size={14} className="text-emerald-600" /></div>

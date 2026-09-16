@@ -3,6 +3,7 @@ import {
   MessageSquare, Send, ArrowLeft, Plus, X, Search, Users,
   Check, CheckCheck, Clock, Lock, ChevronRight, Eye
 } from 'lucide-react';
+import { storageGet } from '../lib/storage';
 import {
   createChat, getChatsForUser, getParentViewableChats, sendMessage,
   getMessages, markChatRead, getChatDisplayName, getUnreadCount, deleteChat
@@ -286,7 +287,7 @@ export default function Chat({ userEmail, userName, userRole, isPremium, linkedS
 
       // 2. Fallback to Local Storage (Demo Mode)
       try {
-        const raw = localStorage.getItem('homework_companion_users');
+        const raw = storageGet('homework_companion_users');
         if (raw) {
           const users = JSON.parse(raw);
           const list = users
