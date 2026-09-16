@@ -90,6 +90,26 @@ describe('mergeAssignmentLists', () => {
     expect(merged.find(a => a.id === 1).title).toBe('New');
     expect(merged.find(a => a.id === 2).title).toBe('Other');
   });
+
+  it('keeps teacher grade and note when the student copy omitted them', () => {
+    const merged = mergeAssignmentLists(
+      [{ id: 1, title: 'Fractions', status: 'Submitted', grade: null, teacherComments: '' }],
+      [{ id: 1, title: 'Fractions', status: 'Submitted', grade: 88, teacherComments: 'Solid work — check Q4.' }]
+    );
+    const item = merged.find(a => a.id === 1);
+    expect(item.grade).toBe(88);
+    expect(item.teacherComments).toBe('Solid work — check Q4.');
+    expect(item.title).toBe('Fractions');
+  });
+
+  it('lets a newer primary grade replace an older one', () => {
+    const merged = mergeAssignmentLists(
+      [{ id: 1, grade: 95, teacherComments: 'Updated note' }],
+      [{ id: 1, grade: 70, teacherComments: 'First note' }]
+    );
+    expect(merged[0].grade).toBe(95);
+    expect(merged[0].teacherComments).toBe('Updated note');
+  });
 });
 
 describe('studentsFromSchools', () => {

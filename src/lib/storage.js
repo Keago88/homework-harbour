@@ -30,3 +30,18 @@ export const storageSet = (key, value) => {
     localStorage.setItem(key, value);
   } catch {}
 };
+
+/** Always-on device storage for demo-only keys (e.g. Pro unlock when Paygate is not configured). */
+export const deviceStorageGet = (key) => {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+
+export const deviceStorageSet = (key, value) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch {}
+};

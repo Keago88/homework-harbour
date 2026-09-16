@@ -65,13 +65,30 @@ export function isViewingStudent(role, selectedStudentEmail) {
   return false;
 }
 
+function hasGrade(value) {
+  return value != null && value !== '';
+}
+
+/** Overlay wins, but keep teacher grade/note when overlay left them empty. */
+export function mergeAssignmentRecord(base = {}, overlay = {}) {
+  const merged = { ...base, ...overlay };
+  merged.grade = hasGrade(overlay.grade) ? overlay.grade : base.grade;
+  const overlayNote = typeof overlay.teacherComments === 'string' ? overlay.teacherComments.trim() : overlay.teacherComments;
+  const baseNote = typeof base.teacherComments === 'string' ? base.teacherComments.trim() : base.teacherComments;
+  merged.teacherComments = overlayNote || baseNote || overlay.teacherComments || base.teacherComments || '';
+  return merged;
+}
+
 export function mergeAssignmentLists(primary = [], secondary = []) {
   const map = new Map();
   for (const item of secondary || []) {
-    if (item && item.id != null) map.set(String(item.id), item);
+    if (item && item.id != null) map.set(String(item.id), { ...item });
   }
   for (const item of primary || []) {
-    if (item && item.id != null) map.set(String(item.id), item);
+    if (item && item.id == null) continue;
+    const id = String(item.id);
+    const existing = map.get(id);
+    map.set(id, existing ? mergeAssignmentRecord(existing, item) : { ...item });
   }
   return [...map.values()];
 }
