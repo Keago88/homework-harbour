@@ -63,7 +63,7 @@ import {
   CreditCard,
   Wallet
 } from 'lucide-react';
-import { getSubscriptionStatus, initiateProCheckout, verifyPayment, cancelSubscription } from './services/subscription';
+import { getSubscriptionStatus, initiateProCheckout, verifyPayment, cancelSubscription, isSubscriptionApiConfigured } from './services/subscription';
 import * as platformData from './lib/platformData';
 import { storageGet, storageSet } from './lib/storage';
 import { resolveSessionUser, canMutateAssignments, assignmentPersistKey, isViewingStudent, mergeAssignmentLists, studentsFromSchools } from './lib/account';
@@ -1335,6 +1335,7 @@ export default function App() {
   const [riskScore, setRiskScore] = useState(null);
   const [forecast, setForecast] = useState(null);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [adminSideTab, setAdminSideTab] = useState('schools');
   const timerIntervalRef = useRef(null);
 
   useEffect(() => {
@@ -1349,6 +1350,10 @@ export default function App() {
     }
     return () => clearInterval(timerIntervalRef.current);
   }, [isTimerRunning, selectedAssignment?.id]);
+
+  useEffect(() => {
+    if (!isUploadModalOpen) setIsTimerRunning(false);
+  }, [isUploadModalOpen]);
 
   const formatDuration = (s) => {
     if (!s) return '00:00';
@@ -1604,16 +1609,24 @@ export default function App() {
           window.location.href = result.capture_url;
           return;
         }
-        if (!result.ok) {
-          addToHistory(result.error || 'Checkout failed', 'error');
-          showToast(result.error || 'Checkout failed', 'info');
+        if (result.ok) {
+          setSubscriptionPlan('pro');
+          setIsSubscriptionOpen(false);
+          showToast(result.demo ? 'Pro activated on this device' : 'Pro activated');
+          addToHistory('Upgraded to Pro', 'success');
+          return;
         }
+        addToHistory(result.error || 'Checkout failed', 'error');
+        showToast(result.error || 'Checkout failed', 'info');
       } finally {
         setCheckoutLoading(false);
       }
     };
     const price = SUBSCRIPTION_PLANS.find(p => p.id === 'pro')?.price ?? 199;
-    confirm(`Proceed to checkout? You will be charged R${price}/month for Pro.`, doCheckout);
+    const checkoutPrompt = isSubscriptionApiConfigured()
+      ? `Proceed to checkout? You will be charged R${price}/month for Pro.`
+      : 'Activate Pro on this device? Payment is not configured — this is a local demo upgrade.';
+    confirm(checkoutPrompt, doCheckout);
   };
 
   const handleCancelSubscription = async () => {
@@ -1882,15 +1895,16 @@ export default function App() {
   useEffect(() => { try { storageSet('hw_viewmode', viewMode); } catch {} }, [viewMode]);
 
   useEffect(() => {
-    if (!profileData.email) return;
+    const chatEmail = profileData.email || appUser?.email;
+    if (!chatEmail) return;
     let unsub;
     import('./lib/chatService').then(({ getChatsForUser, getUnreadCount }) => {
-      unsub = getChatsForUser(profileData.email, (chats) => {
-        setChatUnreadCount(getUnreadCount(chats, profileData.email));
+      unsub = getChatsForUser(chatEmail, (chats) => {
+        setChatUnreadCount(getUnreadCount(chats, chatEmail));
       });
     }).catch(() => {});
     return () => { if (unsub) unsub(); };
-  }, [profileData.email]);
+  }, [profileData.email, appUser?.email]);
 
   const handleCreateAssignFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -2235,9 +2249,30 @@ export default function App() {
               <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
                 type="text"
+                value={dashboardSearch}
+                onChange={(e) => { setDashboardSearch(e.target.value); setSearchOpen(!!e.target.value); }}
+                onFocus={() => { if (dashboardSearch) setSearchOpen(true); }}
+                onBlur={() => setTimeout(() => setSearchOpen(false), 180)}
                 placeholder="Search"
                 className="w-full pl-12 pr-4 py-3.5 text-sm font-medium glass-card border-slate-700/50 border-none rounded-2xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.03)] outline-none focus:ring-2 focus:ring-violet-200 transition-all placeholder:text-slate-400 text-slate-200"
               />
+              {searchOpen && dashboardSearch.trim() && (
+                <div className="absolute top-full left-0 right-0 mt-2 glass-card border border-slate-700/50 rounded-2xl shadow-xl z-40 overflow-hidden">
+                  {adminNavItems.filter(n => n.label.toLowerCase().includes(dashboardSearch.toLowerCase().trim())).map(n => (
+                    <button key={n.key} onMouseDown={(e) => e.preventDefault()} onClick={() => { setActiveTab(n.key); setDashboardSearch(''); setSearchOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-800/50 text-slate-200 text-sm font-semibold">
+                      <n.icon size={16} className="text-violet-300" /> {n.label}
+                    </button>
+                  ))}
+                  {adminSchools.filter(s => s.name.toLowerCase().includes(dashboardSearch.toLowerCase().trim())).map(s => (
+                    <button key={s.id} onMouseDown={(e) => e.preventDefault()} onClick={() => { setActiveTab(TABS.SCHOOL); setSearchOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-800/50 text-slate-200 text-sm font-semibold">
+                      <Building2 size={16} className="text-violet-300" /> {s.name}
+                    </button>
+                  ))}
+                  {adminNavItems.every(n => !n.label.toLowerCase().includes(dashboardSearch.toLowerCase().trim())) && adminSchools.every(s => !s.name.toLowerCase().includes(dashboardSearch.toLowerCase().trim())) && (
+                    <p className="px-4 py-3 text-xs text-slate-400">No matches</p>
+                  )}
+                </div>
+              )}
             </div>
             
             {/* Utilities */}
@@ -2248,11 +2283,13 @@ export default function App() {
               <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-300 glass-card border-slate-700/50 rounded-full shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] transition-colors">
                 <span className="text-lg">🌙</span>
               </button>
-              <button className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-300 glass-card border-slate-700/50 rounded-full shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative transition-colors">
+              <button onClick={() => setIsNotifPanelOpen(true)} className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-300 glass-card border-slate-700/50 rounded-full shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative transition-colors">
                 <Bell size={18} />
-                <span className="absolute top-2.5 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-[2px] border-white focus:outline-none focus:border-white m-0 p-0 before:absolute before:inset-0 before:rounded-full before:bg-rose-500 before:animate-ping opacity-100"></span>
+                {alerts.length > 0 && (
+                  <span className="absolute top-2.5 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-[2px] border-white"></span>
+                )}
               </button>
-              <div className="flex items-center gap-3 pl-4 ml-2 cursor-pointer hover:opacity-80 transition-opacity">
+              <div onClick={() => setIsProfileSettingsOpen(true)} className="flex items-center gap-3 pl-4 ml-2 cursor-pointer hover:opacity-80 transition-opacity">
                 <div className="w-10 h-10 rounded-full bg-violet-900/50 flex items-center justify-center overflow-hidden shadow-base border border-slate-700/50">
                   {profileImage ? <img src={profileImage} alt="" className="w-full h-full object-cover" /> : <User size={16} className="text-violet-300" />}
                 </div>
@@ -2281,9 +2318,9 @@ export default function App() {
                   
                   {/* Segmented Control like the Sales/Reps/Data toggle */}
                   <div className="glass-card border-slate-700/50 p-1 rounded-xl shadow-[0_2px_15px_-3px_rgba(0,0,0,0.03)] border border-slate-700/50 flex items-center w-[400px]">
-                    <button className="flex-1 py-2 text-sm font-bold text-white bg-violet-500 rounded-lg shadow-sm transition-all text-center tracking-wide">Overview</button>
-                    <button className="flex-1 py-2 text-sm font-semibold text-slate-400 hover:text-slate-100 drop-shadow-md transition-colors text-center tracking-wide">Schools</button>
-                    <button className="flex-1 py-2 text-sm font-semibold text-slate-400 hover:text-slate-100 drop-shadow-md transition-colors text-center tracking-wide">Analytics</button>
+                    <button onClick={() => setActiveTab(TABS.OVERVIEW)} className={`flex-1 py-2 text-sm rounded-lg shadow-sm transition-all text-center tracking-wide ${activeTab === TABS.OVERVIEW ? 'font-bold text-white bg-violet-500' : 'font-semibold text-slate-400 hover:text-slate-100'}`}>Overview</button>
+                    <button onClick={() => setActiveTab(TABS.SCHOOL)} className={`flex-1 py-2 text-sm rounded-lg transition-colors text-center tracking-wide ${activeTab === TABS.SCHOOL ? 'font-bold text-white bg-violet-500 shadow-sm' : 'font-semibold text-slate-400 hover:text-slate-100 drop-shadow-md'}`}>Schools</button>
+                    <button onClick={() => setActiveTab(TABS.ANALYTICS)} className={`flex-1 py-2 text-sm rounded-lg transition-colors text-center tracking-wide ${activeTab === TABS.ANALYTICS ? 'font-bold text-white bg-violet-500 shadow-sm' : 'font-semibold text-slate-400 hover:text-slate-100 drop-shadow-md'}`}>Analytics</button>
                   </div>
                 </div>
 
@@ -2496,11 +2533,29 @@ export default function App() {
                   {/* Right Side Panel */}
                   <div className="w-full xl:w-[320px] glass-card border-slate-700/50 rounded-2xl border border-slate-700/50 shadow-sm overflow-hidden flex flex-col shrink-0">
                     <div className="flex border-b border-slate-700/50">
-                      <button className="flex-1 py-4 text-[13px] font-bold text-violet-300 border-b-2 border-violet-500 transition-colors">Top Schools</button>
-                      <button className="flex-1 py-4 text-[13px] font-bold text-slate-400 hover:text-slate-300 border-b-2 border-transparent transition-colors">Recent Activity</button>
+                      <button onClick={() => setAdminSideTab('schools')} className={`flex-1 py-4 text-[13px] font-bold transition-colors ${adminSideTab === 'schools' ? 'text-violet-300 border-b-2 border-violet-500' : 'text-slate-400 hover:text-slate-300 border-b-2 border-transparent'}`}>Top Schools</button>
+                      <button onClick={() => setAdminSideTab('activity')} className={`flex-1 py-4 text-[13px] font-bold transition-colors ${adminSideTab === 'activity' ? 'text-violet-300 border-b-2 border-violet-500' : 'text-slate-400 hover:text-slate-300 border-b-2 border-transparent'}`}>Recent Activity</button>
                     </div>
                     
                     <div className="flex-1 overflow-y-auto w-full p-0">
+                       {adminSideTab === 'activity' ? (
+                         <ul className="divide-y divide-slate-700/40 w-full">
+                           {recentHistory.length === 0 && (
+                             <li className="p-8 text-center text-slate-400 text-sm font-medium">No activity yet</li>
+                           )}
+                           {recentHistory.map(item => (
+                             <li key={item.id} className="p-4 flex items-start gap-3">
+                               <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${item.type === 'success' ? 'bg-emerald-100 text-emerald-600' : item.type === 'error' ? 'bg-rose-100 text-rose-600' : 'bg-slate-800/50 text-slate-300'}`}>
+                                 {item.type === 'success' ? <CheckCircle2 size={14} /> : <History size={14} />}
+                               </div>
+                               <div>
+                                 <p className="text-[13px] font-bold text-slate-100">{item.title}</p>
+                                 <p className="text-[10px] text-slate-400">{item.time}</p>
+                               </div>
+                             </li>
+                           ))}
+                         </ul>
+                       ) : (
                        <ul className="divide-y divide-slate-50 w-full">
                          {adminSchools.slice(0, 7).map((s, idx) => {
                            const tCount = s.teachers?.length || 0;
@@ -2508,7 +2563,7 @@ export default function App() {
                            const score = (tCount * 5) + cCount;
                            const isUp = idx % 2 === 0;
                            return (
-                             <li key={s.id || idx} className="p-4 hover:bg-slate-900/50 cursor-pointer transition-colors flex items-center w-full gap-4 group">
+                             <li key={s.id || idx} onClick={() => setActiveTab(TABS.SCHOOL)} className="p-4 hover:bg-slate-900/50 cursor-pointer transition-colors flex items-center w-full gap-4 group">
                                <div className="w-12 h-12 rounded-xl bg-slate-800/50 flex items-center justify-center border border-slate-600/50 shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
                                  <Building2 size={22} className="text-slate-400" />
                                </div>
@@ -2529,6 +2584,7 @@ export default function App() {
                            <li className="p-8 text-center text-slate-400 text-sm font-medium">No schools yet. Add a school to see the leaderboard.</li>
                          )}
                        </ul>
+                       )}
                     </div>
                     
                     <div className="p-4 border-t border-slate-700/50 text-center bg-slate-900/50/50 mt-auto">
@@ -2700,6 +2756,32 @@ export default function App() {
             </div>
           </div>
         </div>
+
+        {isNotifPanelOpen && (
+          <>
+            <div className="fixed inset-0 z-[100] bg-black/20" onClick={() => setIsNotifPanelOpen(false)} />
+            <div className="fixed top-0 right-0 bottom-0 w-full max-w-sm glass-card border-slate-700/50 shadow-2xl z-[101] animate-in slide-in-from-right flex flex-col">
+              <div className="h-14 flex items-center justify-between px-5 border-b border-slate-700/50 shrink-0">
+                <h2 className="text-sm font-black text-slate-100 drop-shadow-md flex items-center gap-2"><Bell size={16} /> Notifications</h2>
+                <button onClick={() => setIsNotifPanelOpen(false)} className="p-1.5 hover:bg-slate-800/50 rounded-lg"><X size={16} className="text-slate-400" /></button>
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                {alerts.length === 0 ? (
+                  <div className="p-8 text-center"><Bell size={32} className="text-slate-200 mx-auto mb-3" /><p className="text-sm font-bold text-slate-400">{copy.statAllCaughtUp}</p><p className="text-xs text-slate-400 mt-1">{copy.allCaughtUp}</p></div>
+                ) : (
+                  <div className="divide-y divide-slate-700/40">
+                    {alerts.map(a => (
+                      <div key={a.id} className="p-4 hover:bg-slate-900/50 transition-colors">
+                        <p className="text-sm font-medium text-slate-200">{a.message}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">{a.type || 'Alert'} • {a.date || 'Today'}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
 
         {confirmDialog && (
           <div className="fixed inset-0 z-[600] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setConfirmDialog(null)}>
@@ -2983,7 +3065,7 @@ export default function App() {
                 { label: 'Add homework', keywords: 'add homework create assignment new task', icon: Plus, action: () => setIsCreateAssignmentModalOpen(true) },
                 { label: 'Import CSV', keywords: 'import csv spreadsheet upload', icon: Upload, action: () => setIsCsvImportOpen(true) },
                 { label: 'Edit profile', keywords: 'edit profile picture name grade school avatar photo', icon: User, action: () => setIsProfileSettingsOpen(true) },
-                { label: 'Log out', keywords: 'log out sign out logout signout', icon: LogOut, action: () => signOut(auth) },
+                { label: 'Log out', keywords: 'log out sign out logout signout', icon: LogOut, action: () => handleSignOut() },
                 { label: 'Notifications', keywords: 'notifications alerts bell reminders', icon: Bell, action: () => setIsNotifPanelOpen(true) },
                 { label: 'Chat', keywords: 'chat message messaging conversation talk communicate whatsapp', icon: MessageSquare, action: () => setActiveTab(TABS.CHAT) },
                 { label: 'Overdue tasks', keywords: 'overdue late missing behind', icon: AlertTriangle, action: () => { setActiveTab(TABS.HOMEWORK); setHwFilter(HW_FILTERS.OVERDUE); setViewMode('list'); } },
@@ -3534,7 +3616,7 @@ export default function App() {
 
         {activeTab === TABS.ANALYTICS && (
           <div className="space-y-6 text-slate-100 drop-shadow-md animate-in fade-in">
-            {subscriptionPlan !== 'pro' ? (
+            {!hasPremiumAccess ? (
               <div className="glass-card border-slate-700/50 p-10 rounded-2xl border border-slate-700/50 flex flex-col items-center text-center">
                 <div className="w-16 h-16 rounded-full bg-violet-900/50 flex items-center justify-center mb-4"><Lock size={28} className="text-violet-300" /></div>
                 <h3 className="text-xl font-black text-slate-100 drop-shadow-md mb-2">Advanced Stats</h3>
@@ -3767,7 +3849,7 @@ export default function App() {
         {activeTab === TABS.CHAT && (
           <div className="animate-in fade-in h-[calc(100dvh-128px)] md:h-[calc(100dvh-72px)]">
             <Chat
-              userEmail={profileData.email}
+              userEmail={profileData.email || appUser?.email}
               userName={profileData.name || appUser.name}
               userRole={appUser.role}
               isPremium={hasPremiumAccess}
@@ -4044,6 +4126,20 @@ export default function App() {
             <form onSubmit={handleCreateAssignment} className="space-y-6">
               <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.assignmentLabel}</label><input type="text" required value={newAssignment.title} onChange={(e) => setNewAssignment({ ...newAssignment, title: e.target.value })} placeholder={copy.assignmentPlaceholder} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold text-slate-200 outline-none" /></div>
               <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.colSubject}</label><select value={newAssignment.subject} onChange={(e) => setNewAssignment({ ...newAssignment, subject: e.target.value })} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold text-slate-200 outline-none">{subjects.map(s => <option key={s} value={s}>{s}</option>)}</select></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.colDueDate}</label>
+                  <input type="date" value={newAssignment.dueDate || getDate(0)} onChange={(e) => setNewAssignment({ ...newAssignment, dueDate: e.target.value })} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold text-slate-200 outline-none" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.colPriority}</label>
+                  <select value={newAssignment.priority} onChange={(e) => setNewAssignment({ ...newAssignment, priority: e.target.value })} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold text-slate-200 outline-none">
+                    <option value="High">{copy.priorityHigh}</option>
+                    <option value="Medium">{copy.priorityMedium}</option>
+                    <option value="Low">{copy.priorityLow}</option>
+                  </select>
+                </div>
+              </div>
               <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.notesLabel}</label><textarea value={newAssignment.description} onChange={(e) => setNewAssignment({ ...newAssignment, description: e.target.value })} placeholder={copy.notesPlaceholder} className="w-full bg-slate-900/50 p-4 rounded-2xl font-medium text-slate-200 outline-none h-24 placeholder:text-slate-400" /></div>
               <div>
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.uploadDoc || 'Upload document'}</label>
@@ -4187,7 +4283,7 @@ export default function App() {
                         setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, timeSpent: 0 } : a)); 
                         setSelectedAssignment(prev => prev ? { ...prev, timeSpent: 0 } : prev);
                       }}
-                      className="px-3 py-2 bg-slate-200 text-slate-300 rounded-xl font-bold text-xs hover:bg-slate-300 transition-colors"
+                      className="px-3 py-2 bg-slate-700 text-slate-100 rounded-xl font-bold text-xs hover:bg-slate-600 transition-colors"
                     >
                       Reset
                     </button>
