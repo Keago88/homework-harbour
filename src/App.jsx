@@ -972,11 +972,9 @@ const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
               {submitting ? (isSignUp ? 'Creating...' : 'Signing in...') : 'Continue'}
             </NbButton>
             <div className="nb-or-row py-2">OR</div>
-            {useFirebase && auth && (
-              <NbButton variant="butter" onClick={handleGoogleSignIn} disabled={isLoading || submitting} className="gap-2">
-                {googleSvg} Continue with Google
-              </NbButton>
-            )}
+            <NbButton variant="butter" onClick={handleGoogleSignIn} disabled={isLoading || submitting || !useFirebase || !auth} className="gap-2">
+              {googleSvg} Continue with Google
+            </NbButton>
             <NbButton variant="lilac" disabled title="Apple sign-in is not available yet">Continue with Apple</NbButton>
             <NbButton variant="ink" onClick={handleEmailLink}>Continue with email link</NbButton>
             <button
@@ -1145,7 +1143,7 @@ const StudentFollowInput = ({ onFollow }) => {
         <div className="nb-input-wrap flex-1 py-2">
           <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="student@school.com" />
         </div>
-        <button type="button" onClick={handle} className="nb-btn nb-btn-butter w-auto px-4 min-h-0">View</button>
+        <button type="button" onClick={handle} className="nb-btn nb-btn-butter nb-btn-inline px-4">View</button>
       </div>
       {err && <p className="text-rose-600 text-xs font-bold mt-1">{err}</p>}
     </div>
@@ -1176,11 +1174,14 @@ const ParentLinkInput = ({ onLink, confirm }) => {
   };
   return (
     <div className="space-y-2">
-      <div className="flex gap-2">
-        <div className="nb-input-wrap flex-1 py-2">
-          <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="e.g. TEST-1234" />
-        </div>
-        <button type="button" onClick={handle} disabled={loading} className="nb-btn nb-btn-butter w-auto px-4 min-h-0 disabled:opacity-60">{loading ? '...' : 'Link'}</button>
+      <div className="flex gap-2 items-stretch">
+        <input
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="e.g. TEST-1234"
+          className="flex-1 min-w-0 px-4 py-3 bg-white border-[2.5px] border-ink rounded-nb font-bold text-sm outline-none"
+        />
+        <button type="button" onClick={handle} disabled={loading} className="nb-btn nb-btn-butter nb-btn-inline px-4 disabled:opacity-60">{loading ? '...' : 'Link'}</button>
       </div>
       {err && <p className="text-rose-600 text-xs font-bold">{err}</p>}
     </div>
@@ -4203,14 +4204,17 @@ export default function App() {
       )}
 
       {isCreateAssignmentModalOpen && !isReadOnly && (
-        <div className="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
-          <div className="glass-card border-slate-700/50 w-full sm:max-w-md rounded-t-[32px] sm:rounded-[32px] p-8 shadow-2xl animate-in slide-in-from-bottom max-h-[90vh] overflow-y-auto no-scrollbar">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-black text-slate-100 drop-shadow-md">{copy.addHomeworkModal}</h2>
-              <button onClick={() => { setIsCreateAssignmentModalOpen(false); setNewAssignmentAttachment({ file: null, preview: null }); }} className="p-2 bg-slate-800/50 rounded-full text-slate-400 transition-colors"><X size={20} /></button>
+        <div className="fixed inset-0 z-[200] bg-ink/30 flex items-end sm:items-center justify-center sm:p-4">
+          <div className="bg-cream border-[2.5px] border-ink w-full sm:max-w-md rounded-t-[28px] sm:rounded-[28px] p-6 shadow-none animate-in slide-in-from-bottom max-h-[90vh] overflow-y-auto no-scrollbar">
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-xl font-black">{copy.addHomeworkModal}</h2>
+              <button type="button" onClick={() => { setIsCreateAssignmentModalOpen(false); setNewAssignmentAttachment({ file: null, preview: null }); }} className="nb-rail-btn is-active" aria-label="Close"><X size={18} /></button>
             </div>
-            <form onSubmit={handleCreateAssignment} className="space-y-6">
-              <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.assignmentLabel}</label><input type="text" required value={newAssignment.title} onChange={(e) => setNewAssignment({ ...newAssignment, title: e.target.value })} placeholder={copy.assignmentPlaceholder} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold text-slate-200 outline-none" /></div>
+            <form onSubmit={handleCreateAssignment} className="space-y-4">
+              <div className="nb-input-wrap">
+                <label htmlFor="new-assignment-title">{copy.assignmentLabel}</label>
+                <input id="new-assignment-title" type="text" required value={newAssignment.title} onChange={(e) => setNewAssignment({ ...newAssignment, title: e.target.value })} placeholder={copy.assignmentPlaceholder} />
+              </div>
               <div><label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">{copy.colSubject}</label><select value={newAssignment.subject} onChange={(e) => setNewAssignment({ ...newAssignment, subject: e.target.value })} className="w-full bg-slate-900/50 p-4 rounded-2xl font-bold text-slate-200 outline-none">{subjects.map(s => <option key={s} value={s}>{s}</option>)}</select></div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -4242,9 +4246,9 @@ export default function App() {
                   </button>
                 )}
               </div>
-              <div className="flex gap-3">
-                <button type="button" onClick={() => { setIsCreateAssignmentModalOpen(false); setNewAssignmentAttachment({ file: null, preview: null }); }} className="flex-1 py-4 text-slate-400 font-bold rounded-2xl">{copy.cancelBtn}</button>
-                <button type="submit" className="flex-[2] py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold rounded-2xl">{copy.addBtn}</button>
+              <div className="space-y-3 pt-2">
+                <NbButton type="submit" variant="butter">{copy.addBtn}</NbButton>
+                <NbButton type="button" variant="lilac" onClick={() => { setIsCreateAssignmentModalOpen(false); setNewAssignmentAttachment({ file: null, preview: null }); }}>{copy.cancelBtn}</NbButton>
               </div>
             </form>
           </div>

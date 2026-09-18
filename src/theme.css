@@ -60,6 +60,8 @@ body {
 .nb-btn:hover:not(:disabled) { filter: brightness(0.98); transform: translateY(-1px); }
 .nb-btn:active:not(:disabled) { transform: translateY(0); }
 .nb-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.nb-btn.w-auto,
+.nb-btn.nb-btn-inline { width: auto; min-width: 5.5rem; }
 .nb-btn-butter { background: var(--nb-butter); }
 .nb-btn-lilac { background: var(--nb-lilac); }
 .nb-btn-sage { background: var(--nb-sage); }
