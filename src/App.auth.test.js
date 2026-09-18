@@ -43,6 +43,7 @@ describe('Google + 14-day trial path', () => {
   it('new Google users share the email-signup trial upsert', () => {
     expect(appSrc).toMatch(/handleGoogleSignIn[\s\S]*onLogin\(/);
     expect(appSrc).toMatch(/const handleB2CLogin = \(userData\) => \{[\s\S]*platformData\.upsertAccount\(uid/);
-    expect(appSrc).toMatch(/if \(acct\?\.trialEndsAt\) setTrialEndsAt\(acct\.trialEndsAt\)/);
+    expect(appSrc).toMatch(/parseTrialInstant\(acct\?\.trialEndsAt\)/);
+    expect(appSrc).toMatch(/if \(ends\) setTrialEndsAt\(ends\)/);
   });
 });

@@ -4669,7 +4669,7 @@ export default function App() {
                       {cancelLoading ? 'Processing...' : 'Cancel Subscription'}
                     </button>
                   </div>
-                ) : (
+                ) : membership.kind === 'trial' ? null : (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between px-2">
                         <h4 className="font-bold text-slate-100 drop-shadow-md">Upgrade your experience</h4>
