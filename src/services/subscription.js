@@ -11,8 +11,66 @@ const API_BASE = typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUB
   : null;
 
 const DEMO_SUB_KEY = 'homework_companion_subscription';
+export const TRIAL_DAYS = 14;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 export const isSubscriptionApiConfigured = () => !!API_BASE;
+
+export function parseTrialInstant(value) {
+  if (!value) return null;
+  if (typeof value.toDate === 'function') {
+    const d = value.toDate();
+    return Number.isNaN(d.getTime()) ? null : d.toISOString();
+  }
+  if (typeof value.seconds === 'number') {
+    return new Date(value.seconds * 1000).toISOString();
+  }
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
+}
+
+export function startTrialWindow(now = new Date()) {
+  const started = new Date(now);
+  const ends = new Date(started.getTime() + TRIAL_DAYS * DAY_MS);
+  return {
+    trialStartedAt: started.toISOString(),
+    trialEndsAt: ends.toISOString(),
+  };
+}
+
+/** First Firebase user_data write starts a 14-day trial. Legacy docs are not backfilled. */
+export function nextAccountTrialFields(existing, now = new Date()) {
+  const started = parseTrialInstant(existing?.trialStartedAt);
+  const ends = parseTrialInstant(existing?.trialEndsAt);
+  if (started && ends) return { trialStartedAt: started, trialEndsAt: ends };
+  const hasDoc = existing && Object.keys(existing).length > 0;
+  if (hasDoc) return {};
+  return startTrialWindow(now);
+}
+
+export function isTrialActive(trialEndsAt, now = new Date()) {
+  const ends = parseTrialInstant(trialEndsAt);
+  if (!ends) return false;
+  return new Date(now).getTime() < new Date(ends).getTime();
+}
+
+export function trialDaysLeft(trialEndsAt, now = new Date()) {
+  if (!isTrialActive(trialEndsAt, now)) return 0;
+  const ms = new Date(parseTrialInstant(trialEndsAt)).getTime() - new Date(now).getTime();
+  return Math.max(1, Math.ceil(ms / DAY_MS));
+}
+
+export function trialBannerCopy(trialEndsAt, now = new Date()) {
+  const days = trialDaysLeft(trialEndsAt, now);
+  if (days <= 0) return null;
+  return `Pro trial — ${days} day${days === 1 ? '' : 's'} left`;
+}
+
+/** Full Pro (Chat, analytics, extras) — not Chat-only. Demo unlock is a separate plan === 'pro' path. */
+export function hasFullProAccess({ plan, trialEndsAt, now = new Date() } = {}) {
+  if (plan === 'pro') return true;
+  return isTrialActive(trialEndsAt, now);
+}
 
 function demoPlans() {
   try {
