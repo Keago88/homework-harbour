@@ -975,7 +975,6 @@ const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
             <NbButton variant="butter" onClick={handleGoogleSignIn} disabled={isLoading || submitting || !useFirebase || !auth} className="gap-2">
               {googleSvg} Continue with Google
             </NbButton>
-            <NbButton variant="lilac" disabled title="Apple sign-in is not available yet">Continue with Apple</NbButton>
             <NbButton variant="ink" onClick={handleEmailLink}>Continue with email link</NbButton>
             <button
               type="button"
