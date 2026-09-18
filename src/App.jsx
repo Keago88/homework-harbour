@@ -1140,12 +1140,14 @@ const StudentFollowInput = ({ onFollow }) => {
   };
   return (
     <div className="w-full">
-      <p className="text-[10px] font-black text-slate-400 uppercase w-full mb-2">Open a student</p>
+      <p className="nb-kicker">Open a student</p>
       <div className="flex gap-2">
-        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="student@school.com" className="flex-1 px-4 py-2 rounded-xl border border-slate-600/50 text-sm font-medium bg-transparent" />
-        <button type="button" onClick={handle} className="px-4 py-2 bg-violet-500 text-white font-bold rounded-xl text-sm">View</button>
+        <div className="nb-input-wrap flex-1 py-2">
+          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="student@school.com" />
+        </div>
+        <button type="button" onClick={handle} className="nb-btn nb-btn-butter w-auto px-4 min-h-0">View</button>
       </div>
-      {err && <p className="text-rose-400 text-xs mt-1">{err}</p>}
+      {err && <p className="text-rose-600 text-xs font-bold mt-1">{err}</p>}
     </div>
   );
 };
@@ -1173,10 +1175,14 @@ const ParentLinkInput = ({ onLink, confirm }) => {
     }
   };
   return (
-    <div className="flex gap-2">
-      <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="e.g. TEST-1234" className="flex-1 px-4 py-2 rounded-xl border border-slate-600/50 text-sm font-medium" />
-      <button onClick={handle} disabled={loading} className="px-4 py-2 bg-violet-500 text-white font-bold rounded-xl text-sm disabled:opacity-60 disabled:cursor-not-allowed">Link</button>
-      {err && <p className="text-rose-600 text-xs">{err}</p>}
+    <div className="space-y-2">
+      <div className="flex gap-2">
+        <div className="nb-input-wrap flex-1 py-2">
+          <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="e.g. TEST-1234" />
+        </div>
+        <button type="button" onClick={handle} disabled={loading} className="nb-btn nb-btn-butter w-auto px-4 min-h-0 disabled:opacity-60">{loading ? '...' : 'Link'}</button>
+      </div>
+      {err && <p className="text-rose-600 text-xs font-bold">{err}</p>}
     </div>
   );
 };
@@ -2976,7 +2982,7 @@ export default function App() {
               {activeTab === TABS.CHAT && (
                 <>
                   <h1 className="text-[2rem] font-black leading-none tracking-tight">Chat</h1>
-                  <p className="text-sm font-bold mt-2">{hasPremiumAccess ? 'Message teachers and classmates' : 'Unlock the demo to message teachers'}</p>
+                  <p className="text-sm font-bold mt-2">{hasPremiumAccess ? 'Message teachers and classmates' : 'Ms. Rivera · Math'}</p>
                 </>
               )}
               {activeTab === TABS.PAYMENTS && (
@@ -2999,8 +3005,8 @@ export default function App() {
               )}
             </div>
           </div>
-        <div className="flex items-center gap-3">
-          <div className="hidden md:block flex-1 max-w-xs relative">
+        <div className="hidden md:flex items-center gap-3">
+          <div className="flex-1 max-w-xs relative">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
             <input
               type="text"
@@ -3210,6 +3216,18 @@ export default function App() {
               <div className="space-y-4">
                 <h1 className="text-[2rem] font-black tracking-tight leading-none">Linked student</h1>
                 <p className="text-ink-muted font-bold">{selectedChildEmail || appUser.name} · {profileData.grade || 'Class'}</p>
+                {linkedStudents.length === 0 && (
+                  <ParentLinkInput confirm={confirm} onLink={async (code) => { const r = await platformData.linkParentToStudent(code, profileData.email); if (r.ok) { const students = await platformData.getLinkedStudentsForParent(profileData.email); setLinkedStudents(students); setSelectedChildEmail(r.studentEmail); } return r; }} />
+                )}
+                {linkedStudents.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {linkedStudents.map(em => (
+                      <button key={em} type="button" onClick={() => setSelectedChildEmail(em)} className={`nb-chip ${selectedChildEmail === em ? 'nb-chip-due' : 'nb-chip-muted'}`}>
+                        {em.split('@')[0]}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 <NbCard className="p-4">
                   <div className="flex items-center gap-3 mb-3">
                     <SubjectMark subject={selectedChildEmail || appUser.name} />
@@ -3249,6 +3267,16 @@ export default function App() {
                 <h1 className="text-[2rem] font-black tracking-tight leading-none">Class dashboard</h1>
                 <p className="text-ink-muted font-bold">Enter grades and notes — students see them on their homework.</p>
                 <div className="flex flex-wrap gap-2">
+                  <button type="button" onClick={() => setSelectedChildEmail(null)} className={`nb-chip ${!selectedChildEmail ? 'nb-chip-due' : 'nb-chip-muted'}`}>My assignments</button>
+                  {linkedStudents.map(em => (
+                    <button key={em} type="button" onClick={() => setSelectedChildEmail(em)} className={`nb-chip ${selectedChildEmail === em ? 'nb-chip-due' : 'nb-chip-muted'}`}>{em.split('@')[0]}</button>
+                  ))}
+                </div>
+                <StudentFollowInput onFollow={(email) => {
+                  setLinkedStudents(prev => prev.includes(email) ? prev : [...prev, email]);
+                  setSelectedChildEmail(email);
+                }} />
+                <div className="flex flex-wrap gap-2">
                   <NbChip tone="due">{stats.dueToday + stats.overdue} due</NbChip>
                   <NbChip tone="graded">{stats.completed} graded</NbChip>
                 </div>
@@ -3270,6 +3298,8 @@ export default function App() {
               </div>
             )}
 
+            {appUser.role === ROLES.ADMIN && (
+            <>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h1 className="text-xl md:text-2xl font-black text-slate-100">{copy.welcome}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">{appUser.name.split(' ')[0]?.toUpperCase() || appUser.name}</span></h1>
@@ -3481,6 +3511,8 @@ export default function App() {
                 </div>
               </div>
             </div>
+            </>
+            )}
           </div>
         )}
 
@@ -3495,10 +3527,11 @@ export default function App() {
             return isDone;
           });
           const allSelected = filteredHw.length > 0 && filteredHw.every(a => selectedHwIds.has(a.id));
+          const weekHw = assignments.filter(a => filterSubject === 'All' || a.subject === filterSubject);
           return (
-          <div className="animate-in slide-in-from-bottom-4 text-slate-100 drop-shadow-md">
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-              <h1 className="text-lg font-black text-slate-100 drop-shadow-md">{copy.homeworkTitle}</h1>
+          <div className="animate-in slide-in-from-bottom-4 text-ink">
+            <div className="hidden md:flex items-center justify-between mb-4 flex-wrap gap-3">
+              <h1 className="text-lg font-black">{copy.homeworkTitle}</h1>
               <div className="flex items-center gap-2">
                 <button onClick={() => setIsFilterModalOpen(true)} className="px-3 py-1.5 glass-card border-slate-700/50/80 rounded-lg text-xs font-bold text-slate-300 hover:glass-card border-slate-700/50 transition-colors flex items-center gap-1.5" title={copy.filterBy}>
                   <Filter size={14} /> {copy.filterBy}
@@ -3513,7 +3546,7 @@ export default function App() {
               <div className="flex gap-6">
                 <div className="flex-1 min-w-0 space-y-4">
                   {/* Filters bar */}
-                  <div className="glass-card border-slate-700/50 p-2 rounded-xl border border-slate-700/50 flex flex-wrap items-center gap-2">
+                  <div className="hidden md:flex glass-card border-slate-700/50 p-2 rounded-xl border border-slate-700/50 flex-wrap items-center gap-2">
                     <div className="flex gap-1 glass-card border-slate-700/50/60 rounded-lg p-0.5">
                       {Object.entries(HW_FILTERS).map(([k, f]) => (
                         <button key={f} onClick={() => { setHwFilter(f); setSelectedHwIds(new Set()); }} className={`px-3 py-1.5 text-[10px] font-bold rounded-md transition-colors ${hwFilter === f ? 'bg-violet-500 text-white' : 'text-slate-400 hover:glass-card border-slate-700/50'}`}>{k === 'OVERDUE' ? copy.filterOverdue : k === 'DUE' ? copy.filterDue : copy.filterCompleted}</button>
@@ -3548,7 +3581,7 @@ export default function App() {
 
                   <p className="nb-kicker">This week</p>
                   <div className="space-y-3">
-                    {filteredHw.map(a => {
+                    {weekHw.map(a => {
                       const chip = assignmentStatusChip(a, today);
                       const due = new Date(a.dueDate + 'T12:00:00');
                       const dueLabel = a.dueDate === today ? 'Due today' : a.dueDate < today ? 'Overdue' : `Due ${due.toLocaleDateString(undefined, { weekday: 'short' })}`;
@@ -3563,14 +3596,14 @@ export default function App() {
                         </button>
                       );
                     })}
-                    {filteredHw.length === 0 && (
+                    {weekHw.length === 0 && (
                       <div className="nb-card p-8 text-center">
                         <p className="font-bold text-ink-muted">{copy.noHomework}</p>
                         {!isReadOnly && <NbButton className="mt-3" variant="butter" onClick={() => setIsCreateAssignmentModalOpen(true)}>{copy.addFirstTask}</NbButton>}
                       </div>
                     )}
                   </div>
-                  <NbButton variant="butter" onClick={() => { const first = filteredHw[0] || assignments[0]; if (first) { setSelectedAssignment(first); setIsUploadModalOpen(true); } }}>Open</NbButton>
+                  <NbButton variant="butter" onClick={() => { const first = weekHw[0] || assignments[0]; if (first) { setSelectedAssignment(first); setIsUploadModalOpen(true); } }}>Open</NbButton>
                   <NbButton variant="lilac" onClick={() => setActiveTab(TABS.OVERVIEW)}>Back to home</NbButton>
                 </div>
 
@@ -4246,6 +4279,7 @@ export default function App() {
 
             <div className="px-6 py-5 space-y-5">
 
+              <div className="hidden lg:block space-y-5">
               {/* Progress bar */}
               <div>
                 <div className="flex justify-between items-center mb-1.5">
@@ -4408,6 +4442,7 @@ export default function App() {
                     </button>
                   </div>
                 </div>
+              </div>
               </div>
 
               {/* Teacher comments */}
