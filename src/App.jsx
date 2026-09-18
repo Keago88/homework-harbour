@@ -76,72 +76,14 @@ import { fetchAllCoursework } from './lib/googleClassroom';
 import { getGoogleClassroomToken } from './lib/oauthIntegration';
 import MobileSplash from './components/MobileSplash';
 import Chat from './components/Chat';
+import {
+  Wordmark, RoleBadge, NbButton, NbChip, NbCard, SubjectMark, TopRail, PageBand,
+  BottomDock, DemoUnlockCard, assignmentStatusChip, dockActiveForTab, bandTintForTab
+} from './components/ui';
 
-// --- Global Styles & Wallpapers ---
 const noScrollbarStyles = `
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-  /* Dynamic Wallpapers */
-  .wallpaper-auth {
-    background-image: url('https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=2000&auto=format&fit=crop');
-    background-size: cover;
-    background-position: center;
-  }
-
-  .wallpaper-overview {
-    background-image: url('https://images.unsplash.com/photo-1523821741446-edb2b68bb7a0?q=80&w=2000&auto=format&fit=crop');
-    background-size: cover;
-    background-position: center;
-  }
-
-  .wallpaper-planner {
-    background-image: url('https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=80&w=2000&auto=format&fit=crop');
-    background-size: cover;
-    background-position: center;
-  }
-  .wallpaper-planner::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px);
-    background-size: 20px 20px;
-    pointer-events: none;
-  }
-
-  .wallpaper-settings {
-    background-image: url('https://images.unsplash.com/photo-1614850523060-8da1d56ae167?q=80&w=2000&auto=format&fit=crop');
-    background-size: cover;
-    background-position: center;
-  }
-
-  /* Glassmorphism Utilities */
-  .glass-panel {
-    background: rgba(15, 23, 42, 0.65);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .glass-card {
-    background: rgba(30, 41, 59, 0.5);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  }
-
-  @keyframes blob {
-    0% { transform: translate(0px, 0px) scale(1); }
-    33% { transform: translate(30px, -50px) scale(1.1); }
-    66% { transform: translate(-20px, 20px) scale(0.9); }
-    100% { transform: translate(0px, 0px) scale(1); }
-  }
-  .animate-blob {
-    animation: blob 7s infinite;
-  }
-  .animation-delay-2000 { animation-delay: 2s; }
-  .animation-delay-4000 { animation-delay: 4s; }
 `;
 
 // --- Local auth helpers (demo mode when Firebase not configured) ---
@@ -940,153 +882,113 @@ const AuthScreen = ({ onLogin, isLoading, useFirebase }) => {
     }
   };
 
+  const handleEmailLink = () => {
+    setShowForgotPassword(true);
+    setError('');
+    setForgotSuccess(false);
+  };
+
+  const googleSvg = (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+    </svg>
+  );
+
   return (
-    <div className="min-h-screen wallpaper-auth flex items-center justify-center p-4 relative overflow-y-auto overflow-x-hidden text-slate-100 drop-shadow-md transition-all duration-700">
+    <div className="min-h-[100dvh] bg-cream text-ink flex flex-col px-6 pt-10 pb-8">
       <style>{noScrollbarStyles}</style>
+      <div className="w-full max-w-md mx-auto flex-1 flex flex-col">
+        <div className="nb-hh-mark mb-8">HH</div>
+        <p className="text-[2.15rem] font-black leading-[1.05] tracking-tight mb-3">
+          Welcome to
+          <Wordmark size="lg" className="mt-1" />
+        </p>
+        <p className="text-ink-muted font-bold mb-8">Homework, grades, and chat — clear for students, teachers, and parents.</p>
 
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-20 left-20 w-32 h-32 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute top-20 right-20 w-32 h-32 bg-yellow-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-1/2 w-48 h-48 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-      </div>
-
-      <div className="glass-panel rounded-[32px] shadow-2xl relative w-full max-w-[800px] min-h-[550px] flex shrink-0 z-10 my-8 overflow-hidden">
-        {/* Sign-up form - slides from left to right when active; on mobile stays centered (no right panel) */}
-        <div className={`absolute inset-y-0 left-0 w-full md:w-1/2 flex flex-col items-center justify-center p-8 transition-all duration-700 ease-in-out z-20 ${isSignUp ? 'translate-x-0 md:translate-x-[100%] opacity-100' : '-translate-x-full opacity-0 pointer-events-none'}`}>
-          <form className="w-full space-y-4" onSubmit={handleSubmit}>
-            {useFirebase && auth && (
+        {showForgotPassword ? (
+          <div className="space-y-4">
+            <h2 className="text-xl font-black">Reset password</h2>
+            {forgotSuccess ? (
               <>
-                <button type="button" onClick={handleGoogleSignIn} disabled={isLoading || submitting} className="w-full py-3.5 border-2 border-slate-600/50 rounded-2xl font-bold text-slate-200 text-sm hover:bg-slate-900/50 transition-colors flex items-center justify-center gap-2 glass-card border-slate-700/50/50">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                  Sign up with Google
-                </button>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 h-px bg-slate-200" /><span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">or</span><div className="flex-1 h-px bg-slate-200" />
+                <p className="text-sm font-bold">Check your email for the reset link.</p>
+                <NbButton variant="butter" onClick={() => { setShowForgotPassword(false); setForgotSuccess(false); setError(''); }}>Back to sign in</NbButton>
+              </>
+            ) : (
+              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleForgotPassword(); }}>
+                <div className="nb-input-wrap">
+                  <label htmlFor="reset-email">Email</label>
+                  <input id="reset-email" type="email" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} required />
+                </div>
+                {error && <p className="text-rose-600 text-xs font-bold">{error}</p>}
+                <NbButton type="submit" variant="butter" disabled={submitting}>{submitting ? 'Sending...' : 'Send reset link'}</NbButton>
+                <NbButton variant="lilac" onClick={() => { setShowForgotPassword(false); setError(''); }}>Back to sign in</NbButton>
+              </form>
+            )}
+          </div>
+        ) : (
+          <form className="space-y-3" onSubmit={handleSubmit}>
+            {isSignUp && (
+              <>
+                <div className="nb-input-wrap">
+                  <label htmlFor="auth-name">Name</label>
+                  <input id="auth-name" type="text" value={formData.name} onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))} required />
+                </div>
+                <div>
+                  <p className="nb-kicker mb-2">I am a</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[ROLES.STUDENT, ROLES.PARENT, ROLES.TEACHER, ROLES.ADMIN].map(r => (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, role: r }))}
+                        className={`nb-chip ${formData.role === r ? 'nb-chip-due' : 'nb-chip-muted'} justify-center w-full py-2.5`}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </>
             )}
-            <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm focus-within:ring-2 focus-within:ring-violet-400 transition-all">
-              <UserIcon size={18} className="text-violet-400" />
-              <input type="text" placeholder="First Name" className="bg-transparent outline-none flex-1 text-sm font-bold text-slate-200 placeholder:text-slate-400" value={formData.name} onChange={(e) => setFormData(prev => ({...prev, name: e.target.value}))} required />
+            <div className="nb-input-wrap">
+              <label htmlFor="auth-email">Email</label>
+              <input id="auth-email" type="email" autoComplete="email" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} required />
             </div>
-            <div className="w-full">
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">I am a</label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {[ROLES.STUDENT, ROLES.PARENT, ROLES.TEACHER, ROLES.ADMIN].map(r => (
-                  <button key={r} type="button" onClick={() => setFormData(prev => ({...prev, role: r}))} className={`flex items-center justify-center min-h-[44px] py-3 px-4 rounded-2xl text-xs font-black uppercase tracking-wider border-2 transition-all shadow-sm w-full ${formData.role === r ? 'border-violet-500 bg-violet-900/30 text-violet-700' : 'border-transparent glass-card border-slate-700/50/50 text-slate-400 hover:glass-card border-slate-700/50'}`}>{r}</button>
-                ))}
-              </div>
-            </div>
-            <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
-              <Mail size={18} className="text-violet-400" />
-              <input type="email" placeholder="Email Address" className="bg-transparent outline-none flex-1 text-sm font-medium" value={formData.email} onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))} required />
-            </div>
-            <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
-              <Lock size={18} className="text-violet-400" />
-              <input type="password" placeholder="Password (at least 6 letters)" className="bg-transparent outline-none flex-1 text-sm font-medium" value={formData.password} onChange={(e) => setFormData(prev => ({...prev, password: e.target.value}))} required minLength={6} />
+            <div className="nb-input-wrap">
+              <label htmlFor="auth-password">Password</label>
+              <input id="auth-password" type="password" autoComplete={isSignUp ? 'new-password' : 'current-password'} value={formData.password} onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))} required minLength={isSignUp ? 6 : undefined} />
             </div>
             {useFirebase && auth && (
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <input type="checkbox" checked={formData.stayLoggedIn} onChange={(e) => setFormData(prev => ({...prev, stayLoggedIn: e.target.checked}))} className="w-4 h-4 rounded border-slate-300 text-violet-300 focus:ring-violet-400 accent-violet-500" />
-                <span className="text-xs font-medium text-slate-300 group-hover:text-slate-100 drop-shadow-md">Stay logged in</span>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={formData.stayLoggedIn} onChange={(e) => setFormData(prev => ({ ...prev, stayLoggedIn: e.target.checked }))} className="accent-ink" />
+                <span className="text-xs font-bold">Stay logged in</span>
               </label>
             )}
             {error && <p className="text-rose-600 text-xs font-bold">{error}</p>}
-            <button type="submit" disabled={isLoading || submitting} className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white py-4 rounded-2xl font-black uppercase tracking-wider text-xs mt-2 disabled:opacity-50 transition-all hover:scale-[1.02] shadow-lg shadow-violet-200">
-              {submitting ? 'Creating...' : 'Create account'}
+            <NbButton type="submit" variant="butter" disabled={isLoading || submitting}>
+              {submitting ? (isSignUp ? 'Creating...' : 'Signing in...') : 'Continue'}
+            </NbButton>
+            <div className="nb-or-row py-2">OR</div>
+            {useFirebase && auth && (
+              <NbButton variant="butter" onClick={handleGoogleSignIn} disabled={isLoading || submitting} className="gap-2">
+                {googleSvg} Continue with Google
+              </NbButton>
+            )}
+            <NbButton variant="lilac" disabled title="Apple sign-in is not available yet">Continue with Apple</NbButton>
+            <NbButton variant="ink" onClick={handleEmailLink}>Continue with email link</NbButton>
+            <button
+              type="button"
+              onClick={() => { setIsSignUp(!isSignUp); setError(''); setShowForgotPassword(false); setForgotSuccess(false); }}
+              className="w-full text-center text-sm font-bold pt-2"
+            >
+              {isSignUp ? 'Already have an account? Sign in' : 'New here? Create account'}
             </button>
           </form>
-          <button type="button" onClick={() => { setIsSignUp(false); setError(""); }} className="text-xs font-bold text-violet-400 hover:text-violet-400 mt-6 transition-colors">Already have an account? Sign in</button>
-        </div>
-
-        {/* Sign-in form - on left when active, slides out when sign-up active */}
-        <div className={`absolute inset-y-0 left-0 w-full md:w-1/2 flex flex-col items-center justify-center p-8 transition-all duration-700 ease-in-out z-20 ${isSignUp ? '-translate-x-full opacity-0 pointer-events-none' : 'translate-x-0 opacity-100'}`}>
-          {showForgotPassword ? (
-            <>
-              <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-600 mb-2">Reset password</h1>
-              <p className="text-xs text-slate-400 mb-6 font-medium">Enter your email and we&apos;ll send a reset link.</p>
-              {forgotSuccess ? (
-                <div className="w-full space-y-4">
-                  <p className="text-emerald-600 text-sm font-bold">Check your email for the reset link.</p>
-                  <button type="button" onClick={() => { setShowForgotPassword(false); setForgotSuccess(false); setError(""); }} className="text-xs font-bold text-violet-400 hover:text-violet-400 transition-colors">Back to sign in</button>
-                </div>
-              ) : (
-                <form className="w-full space-y-4" onSubmit={(e) => { e.preventDefault(); handleForgotPassword(); }}>
-                  <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
-                    <Mail size={18} className="text-violet-400" />
-                    <input type="email" placeholder="Email" className="bg-transparent outline-none flex-1 text-sm font-medium" value={formData.email} onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))} required />
-                  </div>
-                  {error && <p className="text-rose-600 text-xs font-bold">{error}</p>}
-                  <button type="submit" disabled={submitting} className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white py-4 rounded-2xl font-black uppercase tracking-wider text-xs disabled:opacity-50 transition-all hover:scale-[1.02] shadow-lg shadow-violet-200">
-                    {submitting ? 'Sending...' : 'Send reset link'}
-                  </button>
-                  <button type="button" onClick={() => { setShowForgotPassword(false); setError(""); }} className="text-xs font-bold text-violet-400 hover:text-violet-400 transition-colors">Back to sign in</button>
-                </form>
-              )}
-            </>
-          ) : (
-            <>
-              <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-600 mb-2">Welcome back</h1>
-              <p className="text-xs text-slate-400 mb-6 font-medium">Sign in to keep going.</p>
-              <form className="w-full space-y-4" onSubmit={handleSubmit}>
-                {useFirebase && auth && (
-                  <>
-                    <button type="button" onClick={handleGoogleSignIn} disabled={isLoading || submitting} className="w-full py-3.5 border-2 border-slate-600/50 rounded-2xl font-bold text-slate-200 text-sm hover:bg-slate-900/50 transition-colors flex items-center justify-center gap-2 glass-card border-slate-700/50/50">
-                      <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                      Continue with Google
-                    </button>
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-px bg-slate-200" /><span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">or</span><div className="flex-1 h-px bg-slate-200" />
-                    </div>
-                  </>
-                )}
-                <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
-                  <Mail size={18} className="text-violet-400" />
-                  <input type="email" placeholder="Email" className="bg-transparent outline-none flex-1 text-sm font-medium" value={formData.email} onChange={(e) => setFormData(prev => ({...prev, email: e.target.value}))} required />
-                </div>
-                <div>
-                  <div className="glass-card border-slate-700/50/50 border border-white p-3 rounded-2xl flex items-center gap-3 shadow-sm">
-                    <Lock size={18} className="text-violet-400" />
-                    <input type="password" placeholder="Password" className="bg-transparent outline-none flex-1 text-sm font-medium" value={formData.password} onChange={(e) => setFormData(prev => ({...prev, password: e.target.value}))} required />
-                  </div>
-                  <div className="flex items-center justify-between mt-2">
-                    {useFirebase && auth ? (
-                      <label className="flex items-center gap-2 cursor-pointer group">
-                        <input type="checkbox" checked={formData.stayLoggedIn} onChange={(e) => setFormData(prev => ({...prev, stayLoggedIn: e.target.checked}))} className="w-4 h-4 rounded border-slate-300 text-violet-300 focus:ring-violet-400 accent-violet-500" />
-                        <span className="text-xs font-medium text-slate-300 group-hover:text-slate-100 drop-shadow-md">Stay logged in</span>
-                      </label>
-                    ) : <span />}
-                    <button type="button" onClick={() => { setShowForgotPassword(true); setError(""); }} className="text-xs font-medium text-violet-300 hover:text-violet-400 transition-colors">Forgot password?</button>
-                  </div>
-                </div>
-                {error && <p className="text-rose-600 text-xs font-bold">{error}</p>}
-                <button type="submit" disabled={isLoading || submitting} className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white py-4 rounded-2xl font-black uppercase tracking-wider text-xs mt-2 disabled:opacity-50 transition-all hover:scale-[1.02] shadow-lg shadow-violet-200">
-                  {submitting ? 'Signing in...' : 'Sign in'}
-                </button>
-              </form>
-              <p className="text-[10px] text-slate-400 mt-4">Secure login • POPIA-aligned</p>
-              <button type="button" onClick={() => { setIsSignUp(true); setError(""); setShowForgotPassword(false); setForgotSuccess(false); }} className="text-xs font-bold text-violet-400 hover:text-violet-400 mt-4 transition-colors">New here? Create account</button>
-            </>
-          )}
-        </div>
-
-        {/* Gradient overlay - on right when sign-in, slides left when sign-up; hidden on mobile for app-like feel */}
-        <div className={`absolute inset-y-0 right-0 w-1/2 overflow-hidden transition-transform duration-700 ease-in-out z-10 hidden md:block ${isSignUp ? '-translate-x-full' : 'translate-x-0'}`}>
-          <div className={`absolute inset-0 w-[200%] flex transition-transform duration-700 ease-in-out ${isSignUp ? 'translate-x-0' : '-translate-x-1/2'}`}>
-            <div className="w-1/2 h-full bg-gradient-to-br from-violet-600 to-fuchsia-700 flex flex-col items-center justify-center px-12 text-center">
-              <div className="w-20 h-20 glass-card border-slate-700/50/20 rounded-full flex items-center justify-center mb-6 backdrop-blur-sm"><Sparkles size={40} className="text-yellow-300" /></div>
-              <h2 className="text-3xl font-black text-white mb-3">Hello!</h2>
-              <p className="text-white/90 text-sm mb-8 leading-relaxed">Put in your name and make an account to start.</p>
-              <button type="button" onClick={() => { setIsSignUp(false); setError(""); setShowForgotPassword(false); setForgotSuccess(false); }} className="border-2 border-white/50 glass-card border-slate-700/50/10 backdrop-blur-md text-white px-10 py-3 rounded-2xl font-bold uppercase tracking-wider text-xs hover:glass-card border-slate-700/50 hover:text-violet-400 transition-all">Sign in</button>
-            </div>
-            <div className="w-1/2 h-full bg-gradient-to-br from-violet-600 to-fuchsia-700 flex flex-col items-center justify-center px-12 text-center">
-              <div className="w-20 h-20 glass-card border-slate-700/50/20 rounded-full flex items-center justify-center mb-6 backdrop-blur-sm"><Target size={40} className="text-cyan-300" /></div>
-              <h2 className="text-3xl font-black text-white mb-3">Welcome back!</h2>
-              <p className="text-white/90 text-sm mb-8 leading-relaxed">Sign in with your email and password.</p>
-              <button type="button" onClick={() => { setIsSignUp(true); setError(""); setShowForgotPassword(false); setForgotSuccess(false); }} className="border-2 border-white/50 glass-card border-slate-700/50/10 backdrop-blur-md text-white px-10 py-3 rounded-2xl font-bold uppercase tracking-wider text-xs hover:glass-card border-slate-700/50 hover:text-violet-400 transition-all">Sign up</button>
-            </div>
-          </div>
-        </div>
+        )}
+        <p className="mt-auto pt-8 text-center text-xs font-bold text-ink-muted">By continuing you agree to Homework Harbour terms.</p>
       </div>
     </div>
   );
@@ -2194,15 +2096,14 @@ export default function App() {
   if (showSplash) return <MobileSplash onDone={() => setShowSplash(false)} />;
 
   if (authLoading) return (
-    <div className="h-[100dvh] wallpaper-auth flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="h-[100dvh] bg-cream flex flex-col items-center justify-center">
+      <div className="nb-hh-mark mb-6">HH</div>
       <div className="w-full max-w-md px-8 space-y-4">
-        <div className="h-8 w-48 glass-card border-slate-700/50/20 rounded-xl animate-pulse" />
-        <div className="h-4 w-32 glass-card border-slate-700/50/15 rounded-lg animate-pulse" />
+        <div className="h-8 w-48 nb-card animate-pulse" />
+        <div className="h-4 w-32 nb-card animate-pulse" />
         <div className="grid grid-cols-3 gap-3 mt-6">
-          {[1,2,3].map(i => <div key={i} className="h-24 glass-card border-slate-700/50/10 rounded-2xl animate-pulse" style={{ animationDelay: `${i * 150}ms` }} />)}
+          {[1,2,3].map(i => <div key={i} className="h-24 nb-card animate-pulse" style={{ animationDelay: `${i * 150}ms` }} />)}
         </div>
-        <div className="h-32 glass-card border-slate-700/50/10 rounded-2xl animate-pulse mt-4" />
-        <div className="h-20 glass-card border-slate-700/50/10 rounded-2xl animate-pulse" />
       </div>
     </div>
   );
@@ -2224,7 +2125,7 @@ export default function App() {
       <>
       <input type="file" ref={profileImageInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleProfileImageChange} />
       <input type="file" ref={csvFileInputRef} style={{ display: 'none' }} accept=".csv,text/csv,text/plain" onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onloadend = () => { setCsvImportText(r.result || ''); }; r.readAsText(f); e.target.value = ''; }} />
-      <div className="h-[100dvh] w-full bg-slate-900/50 font-sans relative flex overflow-hidden">
+      <div className="h-[100dvh] w-full bg-cream font-sans relative flex overflow-hidden text-ink">
         <style>{noScrollbarStyles}</style>
 
         {/* Desktop left sidebar - matches premium dashboard */}
@@ -2705,7 +2606,7 @@ export default function App() {
             {activeTab === TABS.SCHOOL && <SchoolDashboard schools={adminSchools} search={dashboardSearch} key={schoolsRefresh} onRefresh={() => setSchoolsRefresh(Date.now())} confirm={confirm} />}
             {activeTab === TABS.CHAT && (
               <div className="animate-in fade-in h-[calc(100dvh-128px)] md:h-[calc(100dvh-72px)]">
-                <Chat userEmail={profileData.email || appUser?.email} userName={profileData.name || appUser.name} userRole={appUser.role} isPremium={hasPremiumAccess} linkedStudents={linkedStudents} confirm={confirm} />
+                <Chat userEmail={profileData.email || appUser?.email} userName={profileData.name || appUser.name} userRole={appUser.role} isPremium={hasPremiumAccess} linkedStudents={linkedStudents} confirm={confirm} onUnlockDemo={() => handleConfirmPlan('pro')} unlocking={checkoutLoading} />
               </div>
             )}
             {activeTab === TABS.PAYMENTS && (
@@ -2771,13 +2672,15 @@ export default function App() {
           </div>
 
           {/* Mobile bottom nav - matches main app */}
-          <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-slate-700/50 border-t border-slate-700/50 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-            <div className="flex justify-around py-1.5 px-1">
-              {adminNavItems.map(item => (
-                <FloatingNavItem key={item.key} icon={item.icon} label={item.label} isActive={activeTab === item.key} onClick={() => setActiveTab(item.key)} />
-              ))}
-            </div>
-          </div>
+          <BottomDock
+            active={dockActiveForTab(activeTab)}
+            onHome={() => setActiveTab(TABS.OVERVIEW)}
+            onHomework={() => { setActiveTab(TABS.HOMEWORK); setViewMode('list'); }}
+            onChat={() => setActiveTab(TABS.CHAT)}
+            onMore={() => setActiveTab(TABS.PAYMENTS)}
+            overdue={0}
+            chatUnread={chatUnreadCount}
+          />
         </div>
 
         {isNotifPanelOpen && (
@@ -2997,14 +2900,8 @@ export default function App() {
   ];
 
   return (
-    <div className="h-[100dvh] w-full bg-slate-950 font-sans relative flex overflow-hidden text-slate-100">
+    <div className="h-[100dvh] w-full bg-cream font-sans relative flex overflow-hidden text-ink">
       <style>{noScrollbarStyles}</style>
-      
-      {/* Dynamic Animated Blobs Background */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-violet-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob pointer-events-none z-0"></div>
-      <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-fuchsia-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
-      <div className="absolute bottom-[-10%] left-[20%] w-96 h-96 bg-emerald-600 rounded-full mix-blend-screen filter blur-[100px] opacity-20 animate-blob animation-delay-4000 pointer-events-none z-0"></div>
-
 
       <input type="file" ref={profileImageInputRef} style={{ display: 'none' }} accept="image/*" onChange={handleProfileImageChange} />
       <input type="file" ref={assignmentFileInputRef} style={{ display: 'none' }} accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.xls,.xlsx,.ppt,.pptx" onChange={handleAssignmentFileChange} />
@@ -3013,7 +2910,7 @@ export default function App() {
       {/* Desktop left sidebar */}
       <aside className={`hidden md:flex flex-col shrink-0 glass-panel border-r border-slate-700/50 transition-all duration-300 z-30 ${sidebarCollapsed ? 'w-[68px]' : 'w-56'}`}>
         <div className={`h-14 flex items-center border-b border-slate-700/50 shrink-0 ${sidebarCollapsed ? 'justify-center px-2' : 'px-5'}`}>
-          {!sidebarCollapsed && <span className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400 truncate">Homework Companion</span>}
+          {!sidebarCollapsed && <Wordmark size="md" />}
           <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className={`p-1.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-slate-100 transition-colors ${sidebarCollapsed ? '' : 'ml-auto'}`}>
             {sidebarCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
           </button>
@@ -3022,7 +2919,7 @@ export default function App() {
           {sidebarNavItems.map(item => {
             const isActive = item.key === 'calendar' ? (activeTab === TABS.HOMEWORK && viewMode === 'calendar') : item.key === TABS.HOMEWORK ? (activeTab === TABS.HOMEWORK && viewMode !== 'calendar') : item.key === activeTab;
             return (
-              <button key={item.key} onClick={() => { if (item.action) item.action(); else setActiveTab(item.key); }} className={`w-full flex items-center gap-3 rounded-xl transition-all ${sidebarCollapsed ? 'justify-center p-2.5' : 'px-3 py-2.5'} ${isActive ? 'bg-violet-500/20 text-violet-300' : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200'}`}>
+              <button key={item.key} onClick={() => { if (item.action) item.action(); else setActiveTab(item.key); }} className={`w-full flex items-center gap-3 rounded-xl transition-all border-2 ${sidebarCollapsed ? 'justify-center p-2.5' : 'px-3 py-2.5'} ${isActive ? 'bg-butter border-ink text-ink' : 'border-transparent text-ink-muted hover:bg-cream hover:text-ink'}`}>
                 <div className="relative shrink-0">
                   <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
                   {item.badge > 0 && <span className={`absolute -top-1.5 -right-1.5 ${item.badgeColor} text-white text-[8px] font-bold min-w-[14px] h-[14px] px-0.5 rounded-full flex items-center justify-center`}>{item.badge}</span>}
@@ -3045,9 +2942,66 @@ export default function App() {
       {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="h-14 glass-panel border-b border-slate-700/50 flex items-center gap-3 px-4 md:px-6 shrink-0 z-20">
-          <div className="flex-1 max-w-xs relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+        <PageBand tint={bandTintForTab(activeTab, appUser.role)} className="shrink-0 z-20">
+          <TopRail
+            active={dockActiveForTab(activeTab)}
+            onMenu={() => { setActiveTab(TABS.HOMEWORK); setViewMode('list'); }}
+            onHome={() => setActiveTab(TABS.OVERVIEW)}
+            onChat={() => setActiveTab(TABS.CHAT)}
+            onMore={() => setActiveTab(TABS.PAYMENTS)}
+          />
+          <div className="flex items-start justify-between gap-3 mb-3">
+            <div className="min-w-0">
+              {(activeTab === TABS.OVERVIEW) && (
+                <>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Wordmark />
+                    <RoleBadge role={appUser.role} />
+                  </div>
+                  <p className="text-sm font-bold mt-2">
+                    {appUser.role === ROLES.PARENT
+                      ? 'Stay in the loop without the noise'
+                      : appUser.role === ROLES.TEACHER
+                        ? 'Grade, note, and keep the class moving'
+                        : "Hello — what's due today"}
+                  </p>
+                </>
+              )}
+              {activeTab === TABS.HOMEWORK && (
+                <>
+                  <h1 className="text-[2rem] font-black leading-none tracking-tight">Homework</h1>
+                  <p className="text-sm font-bold mt-2">{assignments.length} assignment{assignments.length === 1 ? '' : 's'} this week</p>
+                </>
+              )}
+              {activeTab === TABS.CHAT && (
+                <>
+                  <h1 className="text-[2rem] font-black leading-none tracking-tight">Chat</h1>
+                  <p className="text-sm font-bold mt-2">{hasPremiumAccess ? 'Message teachers and classmates' : 'Unlock the demo to message teachers'}</p>
+                </>
+              )}
+              {activeTab === TABS.PAYMENTS && (
+                <>
+                  <h1 className="text-[2rem] font-black leading-none tracking-tight">Plans & demo</h1>
+                  <p className="text-sm font-bold mt-2">More · Homework Harbour</p>
+                </>
+              )}
+              {activeTab === TABS.ANALYTICS && (
+                <>
+                  <h1 className="text-[2rem] font-black leading-none tracking-tight">{copy.analyticsTitle}</h1>
+                  <p className="text-sm font-bold mt-2">{copy.status}</p>
+                </>
+              )}
+              {activeTab === TABS.SETTINGS && (
+                <>
+                  <h1 className="text-[2rem] font-black leading-none tracking-tight">Settings</h1>
+                  <p className="text-sm font-bold mt-2">Account · Homework Harbour</p>
+                </>
+              )}
+            </div>
+          </div>
+        <div className="flex items-center gap-3">
+          <div className="hidden md:block flex-1 max-w-xs relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none" />
             <input
               type="text"
               value={dashboardSearch}
@@ -3192,7 +3146,7 @@ export default function App() {
           )}
           {!isReadOnly && (
             <div className="relative">
-              <button onClick={() => setIsQuickAddOpen(!isQuickAddOpen)} className="w-8 h-8 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-lg text-white flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-transform">
+              <button onClick={() => setIsQuickAddOpen(!isQuickAddOpen)} className="w-10 h-10 bg-butter border-[2.5px] border-ink rounded-[14px] text-ink flex items-center justify-center" aria-label="Add">
                 <Plus size={16} strokeWidth={2.5} />
               </button>
               {isQuickAddOpen && (
@@ -3206,13 +3160,116 @@ export default function App() {
               )}
             </div>
           )}
-        </header>
+        </div>
+        </PageBand>
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto no-scrollbar px-4 md:px-8 pb-24 md:pb-8 pt-6">
 
         {activeTab === TABS.OVERVIEW && (
-          <div className="space-y-5 animate-in fade-in text-slate-100 max-w-4xl">
+          <div className="space-y-5 animate-in fade-in text-ink max-w-4xl">
+            {appUser.role === ROLES.STUDENT && (
+              <div className="space-y-4">
+                <div>
+                  <h1 className="text-[2.15rem] font-black tracking-tight leading-none">Hi, {appUser.name.split(' ')[0]}</h1>
+                  <p className="text-ink-muted font-bold mt-2">Here&apos;s what&apos;s on your plate.</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <NbChip tone="due">{stats.dueToday + stats.overdue} due</NbChip>
+                  <NbChip tone="graded">{stats.completed} graded</NbChip>
+                </div>
+                <p className="nb-kicker">Up next</p>
+                <div className="space-y-3">
+                  {(nextUpAssignments.length ? nextUpAssignments : assignments.filter(a => a.status !== 'Completed').slice(0, 3)).map(a => {
+                    const chip = assignmentStatusChip(a, getDate(0));
+                    const due = new Date((a.dueDate || getDate(0)) + 'T12:00:00');
+                    const dueLabel = a.dueDate === getDate(0) ? 'Due today' : a.dueDate < getDate(0) ? 'Overdue' : `Due ${due.toLocaleDateString(undefined, { weekday: 'short' })}`;
+                    return (
+                      <button key={a.id} type="button" onClick={() => { setSelectedAssignment(a); setIsUploadModalOpen(true); }} className="nb-card w-full p-4 text-left flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-black text-lg leading-tight truncate">{a.subject} — {a.title}</p>
+                          <p className="text-sm font-bold text-ink-muted mt-1">{dueLabel}{a.teacherName ? ` · ${a.teacherName}` : ''}</p>
+                        </div>
+                        <NbChip tone={chip.tone}>{chip.label}</NbChip>
+                      </button>
+                    );
+                  })}
+                  {assignments.length === 0 && (
+                    <NbCard className="p-6 text-center">
+                      <p className="font-bold">{copy.allCaughtUp}</p>
+                      <p className="text-sm text-ink-muted mt-1">Add homework to see it here.</p>
+                    </NbCard>
+                  )}
+                </div>
+                <NbButton variant="butter" onClick={() => { setActiveTab(TABS.HOMEWORK); setViewMode('list'); }}>View homework</NbButton>
+                <NbButton variant="lilac" onClick={() => setActiveTab(TABS.CHAT)}>Chat</NbButton>
+              </div>
+            )}
+
+            {appUser.role === ROLES.PARENT && (
+              <div className="space-y-4">
+                <h1 className="text-[2rem] font-black tracking-tight leading-none">Linked student</h1>
+                <p className="text-ink-muted font-bold">{selectedChildEmail || appUser.name} · {profileData.grade || 'Class'}</p>
+                <NbCard className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <SubjectMark subject={selectedChildEmail || appUser.name} />
+                    <div>
+                      <p className="font-black text-lg">{(selectedChildEmail || appUser.name).split('@')[0]}</p>
+                      <p className="text-sm font-bold text-ink-muted">{profileData.grade || 'Student'}</p>
+                    </div>
+                  </div>
+                  <div className="h-3 rounded-full border-[2.5px] border-ink overflow-hidden bg-white">
+                    <div className="h-full bg-sage" style={{ width: `${Math.min(100, analyticsData?.completionRate || (stats.completed && assignments.length ? Math.round((stats.completed / Math.max(1, assignments.length)) * 100) : 0))}%` }} />
+                  </div>
+                  <p className="text-sm font-bold mt-2">This week: {stats.completed} of {Math.max(assignments.length, 1)} done</p>
+                </NbCard>
+                <p className="nb-kicker">Snapshot</p>
+                <div className="flex flex-wrap gap-2">
+                  <NbChip tone="due">{stats.dueToday + stats.overdue} due</NbChip>
+                  <NbChip tone="graded">{stats.completed} graded</NbChip>
+                </div>
+                <div className="space-y-3">
+                  {assignments.slice(0, 3).map(a => {
+                    const chip = assignmentStatusChip(a, getDate(0));
+                    return (
+                      <button key={a.id} type="button" onClick={() => { setSelectedAssignment(a); setIsUploadModalOpen(true); }} className="nb-card w-full p-4 text-left">
+                        <p className="font-black text-lg">{a.subject} — {a.title}</p>
+                        <p className="text-sm font-bold text-ink-muted mt-1">{chip.label}{formatAssignmentGrade(a) ? ` · ${formatAssignmentGrade(a)}` : ''}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+                <NbButton variant="butter" onClick={() => setActiveTab(TABS.ANALYTICS)}>View progress</NbButton>
+                <NbButton variant="lilac" onClick={() => setActiveTab(TABS.CHAT)}>Message teacher</NbButton>
+              </div>
+            )}
+
+            {appUser.role === ROLES.TEACHER && (
+              <div className="space-y-4">
+                <h1 className="text-[2rem] font-black tracking-tight leading-none">Class dashboard</h1>
+                <p className="text-ink-muted font-bold">Enter grades and notes — students see them on their homework.</p>
+                <div className="flex flex-wrap gap-2">
+                  <NbChip tone="due">{stats.dueToday + stats.overdue} due</NbChip>
+                  <NbChip tone="graded">{stats.completed} graded</NbChip>
+                </div>
+                <div className="space-y-3">
+                  {assignments.slice(0, 4).map(a => {
+                    const chip = assignmentStatusChip(a, getDate(0));
+                    return (
+                      <button key={a.id} type="button" onClick={() => { setSelectedAssignment(a); setIsUploadModalOpen(true); }} className="nb-card w-full p-4 text-left flex items-center justify-between gap-3">
+                        <div>
+                          <p className="font-black text-lg">{a.title}</p>
+                          <p className="text-sm font-bold text-ink-muted">{a.subject} · {chip.label}</p>
+                        </div>
+                        <NbChip tone={chip.tone}>{chip.label}</NbChip>
+                      </button>
+                    );
+                  })}
+                </div>
+                <NbButton variant="butter" onClick={() => { setActiveTab(TABS.HOMEWORK); setViewMode('list'); }}>Open assignments</NbButton>
+              </div>
+            )}
+
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h1 className="text-xl md:text-2xl font-black text-slate-100">{copy.welcome}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">{appUser.name.split(' ')[0]?.toUpperCase() || appUser.name}</span></h1>
@@ -3489,34 +3546,32 @@ export default function App() {
                     <div>{copy.colPriority}</div>
                   </div>
 
-                  {/* Task rows */}
-                  <div className="space-y-1.5">
+                  <p className="nb-kicker">This week</p>
+                  <div className="space-y-3">
                     {filteredHw.map(a => {
-                      const isDone = a.status === 'Completed' || a.status === 'Submitted';
-                      const isOverdue = a.dueDate < today && !isDone;
+                      const chip = assignmentStatusChip(a, today);
+                      const due = new Date(a.dueDate + 'T12:00:00');
+                      const dueLabel = a.dueDate === today ? 'Due today' : a.dueDate < today ? 'Overdue' : `Due ${due.toLocaleDateString(undefined, { weekday: 'short' })}`;
                       return (
-                        <div key={a.id} onClick={() => { setHwDetailDrawer(a); setSelectedAssignment(a); }} className={`glass-card border-slate-700/50 rounded-xl px-4 py-3 cursor-pointer hover:shadow-sm transition-all border border-slate-700/50 grid grid-cols-1 ${isReadOnly ? 'sm:grid-cols-[1fr_120px_100px_80px_80px]' : 'sm:grid-cols-[32px_1fr_120px_100px_80px_80px]'} gap-3 items-center ${hwDetailDrawer?.id === a.id ? 'ring-2 ring-violet-400' : ''}`}>
-                          {!isReadOnly && <div className="hidden sm:block" onClick={(e) => e.stopPropagation()}>
-                            <input type="checkbox" checked={selectedHwIds.has(a.id)} onChange={() => setSelectedHwIds(prev => { const next = new Set(prev); if (next.has(a.id)) next.delete(a.id); else next.add(a.id); return next; })} className="accent-violet-500" />
-                          </div>}
-                          <div className="min-w-0">
-                            <h4 className={`font-bold text-sm truncate ${isDone ? 'text-slate-400 line-through' : 'text-slate-100 drop-shadow-md'}`}>{a.title}{formatAssignmentGrade(a) ? <span className="ml-2 text-[10px] font-black text-emerald-400 no-underline">{formatAssignmentGrade(a)}</span> : null}</h4>
-                            <p className="text-[10px] text-slate-400 truncate sm:hidden">{a.subject} • Due {a.dueDate}</p>
+                        <button key={a.id} type="button" onClick={() => { setHwDetailDrawer(a); setSelectedAssignment(a); setIsUploadModalOpen(true); }} className="nb-card w-full p-4 text-left flex items-center gap-3">
+                          <SubjectMark subject={a.subject} />
+                          <div className="min-w-0 flex-1">
+                            <p className="font-black leading-tight truncate">{a.subject} — {a.title}</p>
+                            <p className="text-sm font-bold text-ink-muted mt-0.5">{dueLabel}{a.teacherName ? ` · ${a.teacherName}` : ''}{formatAssignmentGrade(a) ? ` · ${formatAssignmentGrade(a)}` : ''}</p>
                           </div>
-                          <div className="hidden sm:block"><span className="px-2 py-0.5 bg-violet-900/30 text-violet-400 rounded text-[10px] font-bold">{a.subject}</span></div>
-                          <div className={`hidden sm:block text-xs font-medium ${isOverdue ? 'text-rose-500' : 'text-slate-400'}`}>{new Date(a.dueDate + 'T12:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>
-                          <div className="hidden sm:block"><span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${isDone ? 'bg-emerald-100 text-emerald-700' : isOverdue ? 'bg-rose-100 text-rose-600' : 'bg-amber-100 text-amber-700'}`}>{isDone ? copy.statusDone : isOverdue ? copy.statusLate : copy.statusOpen}</span></div>
-                          <div className="hidden sm:block"><span className={`text-[10px] font-bold ${a.priority === 'High' ? 'text-rose-500' : a.priority === 'Medium' ? 'text-amber-500' : 'text-slate-400'}`}>{a.priority === 'High' ? copy.priorityHigh : a.priority === 'Medium' ? copy.priorityMedium : copy.priorityLow}</span></div>
-                        </div>
+                          <NbChip tone={chip.tone}>{chip.label}</NbChip>
+                        </button>
                       );
                     })}
                     {filteredHw.length === 0 && (
-                      <div className="glass-card border-slate-700/50 p-8 rounded-xl text-center border border-slate-700/50">
-                        <p className="font-bold text-slate-400">{copy.noHomework}</p>
-                        {!isReadOnly && <button onClick={() => setIsCreateAssignmentModalOpen(true)} className="mt-3 px-4 py-2 bg-violet-500 text-white text-xs font-bold rounded-lg">{copy.addFirstTask}</button>}
+                      <div className="nb-card p-8 text-center">
+                        <p className="font-bold text-ink-muted">{copy.noHomework}</p>
+                        {!isReadOnly && <NbButton className="mt-3" variant="butter" onClick={() => setIsCreateAssignmentModalOpen(true)}>{copy.addFirstTask}</NbButton>}
                       </div>
                     )}
                   </div>
+                  <NbButton variant="butter" onClick={() => { const first = filteredHw[0] || assignments[0]; if (first) { setSelectedAssignment(first); setIsUploadModalOpen(true); } }}>Open</NbButton>
+                  <NbButton variant="lilac" onClick={() => setActiveTab(TABS.OVERVIEW)}>Back to home</NbButton>
                 </div>
 
                 {/* Right-side detail drawer */}
@@ -3890,6 +3945,8 @@ export default function App() {
               isPremium={hasPremiumAccess}
               linkedStudents={linkedStudents}
               confirm={confirm}
+              onUnlockDemo={() => handleConfirmPlan('pro')}
+              unlocking={checkoutLoading}
             />
           </div>
         )}
@@ -3899,95 +3956,58 @@ export default function App() {
         )}
 
         {activeTab === TABS.PAYMENTS && (
-          <div className="space-y-6 text-slate-100 drop-shadow-md animate-in fade-in max-w-4xl">
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <h2 className="text-2xl font-black text-slate-100 drop-shadow-md flex items-center gap-2"><CreditCard size={28} className="text-violet-300" /> {copy.navPayments}</h2>
-            </div>
-
-            {/* Current plan */}
-            <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">Current plan</p>
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${subscriptionPlan === 'pro' ? 'bg-gradient-to-br from-violet-500 to-fuchsia-500' : 'bg-slate-800/50'}`}>
-                    {subscriptionPlan === 'pro' ? <Sparkles size={28} className="text-white" /> : <Wallet size={28} className="text-slate-400" />}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-black text-slate-100 drop-shadow-md">{subscriptionPlan === 'pro' ? 'Pro' : 'Free'}</h3>
-                    <p className="text-xs text-slate-400">{subscriptionPlan === 'pro' ? 'Advanced stats, 15 GB storage, priority support' : 'Basic features — upgrade for more'}</p>
-                  </div>
+          <div className="space-y-4 animate-in fade-in max-w-xl text-ink">
+            {!hasPremiumAccess && (
+              <DemoUnlockCard variant="payments" onUnlock={() => handleConfirmPlan('pro')} unlocking={checkoutLoading} />
+            )}
+            <p className="nb-kicker">Plans</p>
+            <NbCard className="p-4 bg-butter">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-xl font-black">Starter</h3>
+                  <p className="text-2xl font-black mt-1">Free</p>
                 </div>
+                <NbChip tone="muted">{subscriptionPlan === 'pro' ? 'Included' : 'Current'}</NbChip>
               </div>
-            </div>
-
-            {/* Cancel subscription - visible for Pro users */}
+              <p className="text-sm font-bold mt-3">Homework list, grades, and basic reminders.</p>
+            </NbCard>
+            <NbCard className="p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-xl font-black">Plus</h3>
+                  <p className="text-2xl font-black mt-1">— <span className="text-base font-bold text-ink-muted">/ mo</span></p>
+                </div>
+                <NbChip tone="progress">Coming soon</NbChip>
+              </div>
+              <p className="text-sm font-bold mt-3">Chat, parent alerts, and priority support.</p>
+            </NbCard>
+            {!hasPremiumAccess && (
+              <NbButton variant="butter" onClick={() => handleConfirmPlan('pro')} disabled={checkoutLoading}>
+                {checkoutLoading ? 'Unlocking...' : 'Unlock demo'}
+              </NbButton>
+            )}
             {subscriptionPlan === 'pro' && (
-              <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50 border-l-4 border-l-slate-200">
-                <h3 className="font-bold text-slate-100 drop-shadow-md mb-1">Manage subscription</h3>
-                <p className="text-xs text-slate-400 mb-4">Cancel your Pro subscription anytime. You'll keep access until the end of your billing period.</p>
-                <button onClick={() => confirm('Cancel your Pro subscription? You\'ll keep access until the end of your billing period, then return to Free.', () => handleCancelSubscription(), 'danger')} disabled={cancelLoading} className="px-5 py-2.5 bg-slate-800/50 text-slate-300 font-bold rounded-xl text-sm hover:bg-slate-200 transition-colors disabled:opacity-60 flex items-center gap-2">
+              <NbCard className="p-4">
+                <h3 className="font-black text-lg mb-1">Demo unlocked</h3>
+                <p className="text-sm font-bold text-ink-muted mb-3">Pro features are on for this device. Chat is available.</p>
+                <NbButton variant="white" onClick={() => confirm('Cancel your Pro subscription? You\'ll keep access until the end of your billing period, then return to Free.', () => handleCancelSubscription(), 'danger')} disabled={cancelLoading}>
                   {cancelLoading ? 'Cancelling...' : 'Cancel subscription'}
-                </button>
-              </div>
+                </NbButton>
+              </NbCard>
             )}
+            <NbButton variant="lilac" onClick={() => setActiveTab(TABS.OVERVIEW)}>Back to home</NbButton>
+            <NbButton variant="white" onClick={() => setActiveTab(TABS.SETTINGS)}>Settings</NbButton>
 
-            {/* Sign up to Premium - full checkout portal */}
-            {subscriptionPlan !== 'pro' && (
-              <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50 border-l-4 border-l-violet-500">
-                <h3 className="text-lg font-black text-slate-100 drop-shadow-md mb-1 flex items-center gap-2"><Sparkles size={20} className="text-violet-300" /> Sign up to Premium</h3>
-                <p className="text-xs text-slate-400 mb-4">{isSubscriptionApiConfigured() ? 'Choose your plan and complete checkout. Upgrade anytime. Cancel anytime.' : 'Demo unlock — no Paygate. Pro and Chat activate on this device.'}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                  {SUBSCRIPTION_PLANS.map(plan => (
-                    <div key={plan.id} onClick={() => setSelectedPlan(plan.id)} className={`relative p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedPlan === plan.id ? 'border-violet-500 bg-violet-900/30/50 shadow-md' : 'border-slate-600/50 glass-card border-slate-700/50 hover:border-slate-300'}`}>
-                      {plan.badge && <span className="absolute -top-2.5 left-4 px-2.5 py-0.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-[10px] font-black uppercase tracking-wider rounded-full">{plan.badge}</span>}
-                      <div className="flex items-start justify-between mb-3">
-                        <div><h4 className="font-bold text-slate-100 drop-shadow-md">{plan.name}</h4><p className="text-[11px] text-slate-400 mt-0.5">{plan.tagline}</p></div>
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selectedPlan === plan.id ? 'bg-violet-500 border-violet-500' : 'border-slate-300'}`}>{selectedPlan === plan.id && <Check size={12} className="text-white" strokeWidth={3} />}</div>
-                      </div>
-                      <div className="flex items-baseline gap-1"><span className="text-3xl font-black text-slate-100 drop-shadow-md">R{plan.price}</span><span className="text-sm text-slate-400 font-medium">/mo</span></div>
-                      <div className="mt-3 space-y-1.5">
-                        {plan.features.slice(0, 4).map((f, i) => (
-                          <div key={i} className="flex items-center gap-2 text-xs">
-                            {f.included ? <CheckCircle2 size={14} className="text-emerald-500 shrink-0" /> : <X size={14} className="text-slate-300 shrink-0" />}
-                            <span className={f.included ? 'text-slate-300' : 'text-slate-400'}>{f.text}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex flex-wrap items-center gap-4">
-                  <button onClick={handleConfirmPlan} disabled={checkoutLoading} className={`px-6 py-3 font-black rounded-xl text-sm transition-all disabled:opacity-60 ${selectedPlan === 'free' ? 'bg-slate-800/50 text-slate-300' : 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg hover:scale-[1.02]'}`}>
-                    {proCheckoutButtonLabel(SUBSCRIPTION_PLANS.find(p => p.id === 'pro')?.price || 199, { loading: checkoutLoading, free: selectedPlan === 'free' })}
-                  </button>
-                  <div className="flex items-center gap-4 text-[11px] text-slate-400">
-                    <span className="flex items-center gap-1"><Lock size={12} /> Secure</span>
-                    <span>•</span>
-                    <span>POPIA compliant</span>
-                  </div>
-                </div>
-              </div>
+            {/* Keep checkout for paid Paygate when configured */}
+            {isSubscriptionApiConfigured() && subscriptionPlan !== 'pro' && (
+              <NbCard className="p-4">
+                <p className="nb-kicker">Paid Pro</p>
+                <p className="text-sm font-bold mb-3">When Paygate is configured, checkout charges R{SUBSCRIPTION_PLANS.find(p => p.id === 'pro')?.price || 199}/mo.</p>
+                <NbButton variant="ink" onClick={() => handleConfirmPlan('pro')} disabled={checkoutLoading}>
+                  {proCheckoutButtonLabel(SUBSCRIPTION_PLANS.find(p => p.id === 'pro')?.price || 199, { loading: checkoutLoading })}
+                </NbButton>
+              </NbCard>
             )}
-
-            {/* Trust signals */}
-            <div className="flex flex-wrap items-center justify-center gap-6 text-[11px] text-slate-400 font-medium py-4">
-              <span className="flex items-center gap-1"><Lock size={12} /> Secure payment</span>
-              <span>•</span>
-              <span>Cancel anytime</span>
-              <span>•</span>
-              <span>POPIA compliant</span>
-            </div>
-
-            {/* Payment history placeholder */}
-            <div className="glass-card border-slate-700/50 p-6 rounded-2xl border border-slate-700/50">
-              <h3 className="font-bold text-slate-100 drop-shadow-md mb-2 flex items-center gap-2"><History size={18} className="text-violet-300" /> Payment history</h3>
-              <p className="text-xs text-slate-400 mb-4">View and download past invoices</p>
-              <div className="text-center py-8 rounded-xl bg-slate-900/50">
-                <CreditCard size={32} className="text-slate-200 mx-auto mb-2" />
-                <p className="text-sm font-medium text-slate-400">No payment history yet</p>
-                <p className="text-xs text-slate-400 mt-1">Payments will appear here after upgrade</p>
-              </div>
-            </div>
           </div>
         )}
 
@@ -4049,17 +4069,15 @@ export default function App() {
       </div>
 
       {/* Mobile bottom nav bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-slate-700/50 border-t border-slate-700/50 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-        <div className="flex items-center justify-around py-1.5 px-1">
-          <FloatingNavItem icon={Home} label={copy.navHome} isActive={activeTab === TABS.OVERVIEW} onClick={() => setActiveTab(TABS.OVERVIEW)} />
-          <FloatingNavItem icon={BookOpen} label={copy.navHomework} isActive={activeTab === TABS.HOMEWORK && viewMode !== 'calendar'} onClick={() => { setActiveTab(TABS.HOMEWORK); setViewMode('list'); }} badgeCount={stats.overdue} badgeColor="bg-rose-500" />
-          <FloatingNavItem icon={BarChart2} label={copy.navStats} isActive={activeTab === TABS.ANALYTICS} onClick={() => setActiveTab(TABS.ANALYTICS)} />
-          <FloatingNavItem icon={MessageSquare} label="Chat" isActive={activeTab === TABS.CHAT} onClick={() => setActiveTab(TABS.CHAT)} badgeCount={chatUnreadCount} badgeColor="bg-violet-500" />
-          {appUser?.role === ROLES.ADMIN && <FloatingNavItem icon={Building2} label="School" isActive={activeTab === TABS.SCHOOL} onClick={() => setActiveTab(TABS.SCHOOL)} />}
-          <FloatingNavItem icon={CreditCard} label={copy.navPayments} isActive={activeTab === TABS.PAYMENTS} onClick={() => setActiveTab(TABS.PAYMENTS)} />
-          <FloatingNavItem icon={Settings} label={copy.navSettings} isActive={activeTab === TABS.SETTINGS} onClick={() => setActiveTab(TABS.SETTINGS)} />
-        </div>
-      </div>
+      <BottomDock
+        active={dockActiveForTab(activeTab)}
+        onHome={() => setActiveTab(TABS.OVERVIEW)}
+        onHomework={() => { setActiveTab(TABS.HOMEWORK); setViewMode('list'); }}
+        onChat={() => setActiveTab(TABS.CHAT)}
+        onMore={() => setActiveTab(TABS.PAYMENTS)}
+        overdue={stats.overdue}
+        chatUnread={chatUnreadCount}
+      />
       </div>{/* close main content area */}
 
       {/* Notification center panel */}
@@ -4207,38 +4225,22 @@ export default function App() {
         const isOverdue = !isDone && dueDate < new Date();
         const daysLeft = Math.ceil((dueDate - new Date()) / 86400000);
         return (
-        <div className="fixed inset-0 z-[200] bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center sm:p-4">
-            <div className="glass-card border-slate-700/50 w-full sm:max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom no-scrollbar">
+        <div className="fixed inset-0 z-[200] bg-ink/30 flex items-end sm:items-center justify-center sm:p-4">
+            <div className="bg-cream border-[2.5px] border-ink w-full sm:max-w-lg rounded-t-[28px] sm:rounded-[28px] max-h-[92vh] overflow-y-auto animate-in slide-in-from-bottom no-scrollbar">
 
-            {/* Header with colored status band */}
-            <div className={`px-6 pt-5 pb-4 ${isDone ? 'bg-emerald-50' : isOverdue ? 'bg-rose-50' : 'bg-violet-900/30'}`}>
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2.5 rounded-xl text-white shadow-sm ${isDone ? 'bg-emerald-500' : isOverdue ? 'bg-rose-500' : 'bg-violet-500'}`}>
-                    <BookOpen size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-black text-slate-100 drop-shadow-md leading-tight">{selectedAssignment.title}</h2>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-xs font-bold text-slate-400">{selectedAssignment.subject}</span>
-                      <span className="text-slate-300">·</span>
-                      <span className={`text-xs font-bold ${selectedAssignment.priority === 'High' ? 'text-rose-500' : selectedAssignment.priority === 'Medium' ? 'text-amber-500' : 'text-slate-400'}`}>{selectedAssignment.priority === 'High' ? copy.priorityHigh : selectedAssignment.priority === 'Medium' ? copy.priorityMedium : copy.priorityLow}</span>
-                    </div>
-                  </div>
+            <div className="nb-band nb-band-butter px-5 pt-5 pb-4">
+              <div className="flex items-start gap-3 mb-3">
+                <button onClick={() => setIsUploadModalOpen(false)} className="nb-rail-btn is-active" aria-label="Back">
+                  <ArrowLeft size={18} />
+                </button>
+                <div className="min-w-0">
+                  <h2 className="text-xl font-black leading-tight">{appUser?.role === ROLES.TEACHER ? 'Enter grade' : `${selectedAssignment.subject} — ${selectedAssignment.title}`}</h2>
+                  <p className="text-sm font-bold mt-0.5">{appUser?.role === ROLES.TEACHER ? selectedAssignment.title : `${selectedAssignment.teacherName || selectedAssignment.subject} · ${daysLeft === 0 ? copy.dueToday : isOverdue ? copy.statusOverdue : copy.statusInProgress}`}</p>
                 </div>
-                <button onClick={() => setIsUploadModalOpen(false)} className="p-1.5 rounded-lg hover:glass-card border-slate-700/50/60 text-slate-400 transition-colors"><X size={18} /></button>
               </div>
-
-              {/* Status + due date row */}
               <div className="flex items-center gap-2 flex-wrap">
-                <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold ${isDone ? 'bg-emerald-100 text-emerald-700' : isOverdue ? 'bg-rose-100 text-rose-600' : 'glass-card border-slate-700/50 text-slate-300'}`}>
-                  {isDone ? <CheckCircle2 size={12} /> : isOverdue ? <AlertTriangle size={12} /> : <Calendar size={12} />}
-                  {isDone ? copy.statusCompleted : isOverdue ? copy.statusOverdue : copy.statusInProgress}
-                </span>
-                <span className={`text-[11px] font-bold ${isOverdue ? 'text-rose-500' : 'text-slate-400'}`}>
-                  {isDone ? `Submitted ${selectedAssignment.submittedAt || ''}` : isOverdue ? `${Math.abs(daysLeft)} ${Math.abs(daysLeft) !== 1 ? copy.daysLate : copy.dayLate}` : daysLeft === 0 ? copy.dueToday : daysLeft === 1 ? copy.dueTomorrow : `${copy.dueInDays} ${daysLeft} ${copy.statDays}`}
-                </span>
-                <span className="text-[11px] text-slate-400 ml-auto">{dueDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                <NbChip tone={assignmentStatusChip(selectedAssignment, getDate(0)).tone}>{assignmentStatusChip(selectedAssignment, getDate(0)).label}</NbChip>
+                {!isDone && <NbChip tone="due">{daysLeft === 0 ? copy.dueToday : isOverdue ? copy.statusOverdue : copy.statusInProgress}</NbChip>}
               </div>
             </div>
 
@@ -4410,29 +4412,45 @@ export default function App() {
 
               {/* Teacher comments */}
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><MessageSquare size={12} /> {copy.teacherFeedback}</p>
                 {appUser?.role === ROLES.TEACHER ? (
-                  <div className="space-y-2">
-                    <div>
-                      <label className="text-xs font-bold text-slate-400 mb-1 block">Grade (optional)</label>
-                      <input type="number" min="0" max="100" value={selectedAssignment.grade ?? ''} onChange={(e) => { const v = e.target.value; setSelectedAssignment(prev => ({ ...prev, grade: v === '' ? null : Number(v) })); setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, grade: v === '' ? null : Number(v) } : a)); }} placeholder="0–100" className="w-full bg-slate-900/50 p-3 rounded-xl text-sm font-medium border border-slate-600/50" />
+                  <div className="space-y-3">
+                    <NbCard className="p-4 flex items-center gap-3">
+                      <SubjectMark subject={selectedChildEmail || selectedAssignment.title} />
+                      <div className="min-w-0 flex-1">
+                        <p className="font-black">{selectedChildEmail ? selectedChildEmail.split('@')[0] : 'Student'}</p>
+                        <p className="text-sm font-bold text-ink-muted">{profileData.grade || 'Class'} · {selectedAssignment.status || 'Submitted'}</p>
+                      </div>
+                      <NbChip tone={assignmentStatusChip(selectedAssignment, getDate(0)).tone}>{assignmentStatusChip(selectedAssignment, getDate(0)).label}</NbChip>
+                    </NbCard>
+                    <div className="nb-card p-3 space-y-3">
+                      <div className="nb-input-wrap">
+                        <label htmlFor="grade-input">Grade</label>
+                        <input id="grade-input" type="number" min="0" max="100" value={selectedAssignment.grade ?? ''} onChange={(e) => { const v = e.target.value; setSelectedAssignment(prev => ({ ...prev, grade: v === '' ? null : Number(v) })); setAssignments(prev => prev.map(a => a.id === selectedAssignment.id ? { ...a, grade: v === '' ? null : Number(v) } : a)); }} placeholder="18 / 20" />
+                      </div>
+                      <div className="nb-input-wrap" style={{ background: 'var(--nb-butter)' }}>
+                        <label htmlFor="note-input">Note (optional)</label>
+                        <textarea id="note-input" value={teacherCommentDraft} onChange={(e) => setTeacherCommentDraft(e.target.value)} placeholder="Clear work on equivalent fractions. Watch problem 7." />
+                      </div>
                     </div>
-                    <textarea value={teacherCommentDraft} onChange={(e) => setTeacherCommentDraft(e.target.value)} placeholder="Write a note for the student..." className="w-full bg-slate-900/50 p-3 rounded-xl text-sm text-slate-200 outline-none resize-none h-20 placeholder:text-slate-400 border border-slate-600/50 focus:border-violet-400" />
-                    <div className="flex gap-2">
-                      <button onClick={handleSaveTeacherComment} className="flex-1 py-2.5 bg-violet-600 text-white font-bold rounded-xl text-xs hover:bg-violet-700 transition-colors">Save grade & note</button>
-                      <button onClick={() => { if (!teacherCommentDraft.trim()) { showToast('Nothing to log — write a note first', 'info'); return; } confirm('Log this as a formal intervention?', () => { logTeacherIntervention(viewingStudentKey, profileData.email, 'Comment/feedback', teacherCommentDraft); showToast('Intervention logged'); addToHistory('Intervention logged', 'success'); }); }} className="flex-1 py-2.5 bg-amber-100 text-amber-800 font-bold rounded-xl text-xs hover:bg-amber-200 transition-colors">Log intervention</button>
-                    </div>
+                    <NbButton variant="butter" onClick={handleSaveTeacherComment}>Save grade</NbButton>
+                    <NbButton variant="lilac" onClick={() => setIsUploadModalOpen(false)}>Cancel</NbButton>
+                    <button type="button" className="w-full text-center text-xs font-bold" onClick={() => { if (!teacherCommentDraft.trim()) { showToast('Nothing to log — write a note first', 'info'); return; } confirm('Log this as a formal intervention?', () => { logTeacherIntervention(viewingStudentKey, profileData.email, 'Comment/feedback', teacherCommentDraft); showToast('Intervention logged'); addToHistory('Intervention logged', 'success'); }); }}>Log intervention</button>
                   </div>
                 ) : (
-                  <div className="bg-amber-50/60 border border-amber-100 p-3 rounded-xl space-y-2">
-                    {formatAssignmentGrade(selectedAssignment) && (
-                      <p className="text-sm font-black text-emerald-700">{copy.gradeLabel}: {formatAssignmentGrade(selectedAssignment)}</p>
-                    )}
-                    {selectedAssignment.teacherComments ? (
-                      <p className="text-sm text-slate-200 leading-relaxed">{selectedAssignment.teacherComments}</p>
-                    ) : (
-                      <p className="text-sm text-slate-400 italic">{copy.noFeedback}</p>
-                    )}
+                  <div className="space-y-3">
+                    <NbCard className="p-4">
+                      <p className="nb-kicker">Instructions</p>
+                      <p className="text-sm font-bold leading-relaxed">{selectedAssignment.description || copy.notesPlaceholder}</p>
+                      <p className="nb-kicker mt-4">Teacher note</p>
+                      <div className="rounded-[18px] border-[2.5px] border-ink bg-butter p-3">
+                        <p className="text-sm font-bold">{selectedAssignment.teacherComments || copy.noFeedback}</p>
+                      </div>
+                    </NbCard>
+                    <NbCard className="p-4">
+                      <p className="nb-kicker">Grade</p>
+                      <p className="text-3xl font-black">{formatAssignmentGrade(selectedAssignment) ? formatAssignmentGrade(selectedAssignment).replace('%',' / 100') : '— / 20'}</p>
+                      <p className="text-sm font-bold text-ink-muted mt-1">{formatAssignmentGrade(selectedAssignment) ? 'Graded' : 'Not graded yet'}</p>
+                    </NbCard>
                   </div>
                 )}
               </div>
@@ -4461,12 +4479,15 @@ export default function App() {
             </div>
 
             {/* Sticky footer actions */}
-            {!isReadOnly && (
-              <div className="px-6 pb-6 pt-2 border-t border-slate-700/50 flex items-center gap-3">
-                {!isDone && (
-                  <button onClick={() => confirm(`Mark "${selectedAssignment.title}" as complete?`, () => { const now = getDate(0); setAssignments(prev => prev.map(x => x.id === selectedAssignment.id ? { ...x, status: 'Completed', submittedAt: now } : x)); handleLogCompletion(selectedAssignment, viewingStudentKey); updateRecoveryProgress(viewingStudentKey, 1); setIsUploadModalOpen(false); addToHistory(`Completed: ${selectedAssignment.title}`, 'success'); })} className="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold rounded-xl text-sm shadow-md hover:shadow-lg transition-all">{copy.completeBtn}</button>
+            {appUser?.role !== ROLES.TEACHER && (
+              <div className="px-5 pb-6 pt-2 space-y-3">
+                {!isReadOnly && !isDone && (
+                  <NbButton variant="butter" onClick={() => confirm(`Mark "${selectedAssignment.title}" as complete?`, () => { const now = getDate(0); setAssignments(prev => prev.map(x => x.id === selectedAssignment.id ? { ...x, status: 'Completed', submittedAt: now } : x)); handleLogCompletion(selectedAssignment, viewingStudentKey); updateRecoveryProgress(viewingStudentKey, 1); setIsUploadModalOpen(false); addToHistory(`Completed: ${selectedAssignment.title}`, 'success'); })}>Mark done</NbButton>
                 )}
-                <button onClick={() => handleDeleteTask(selectedAssignment.id)} className="py-3 px-4 text-rose-500 font-bold rounded-xl text-sm hover:bg-rose-50 transition-colors flex items-center gap-1.5"><Trash2 size={14} /> {copy.removeBtn}</button>
+                <NbButton variant="lilac" onClick={() => setIsUploadModalOpen(false)}>Back to list</NbButton>
+                {!isReadOnly && (
+                  <button type="button" onClick={() => handleDeleteTask(selectedAssignment.id)} className="w-full text-center text-sm font-bold text-rose-600">{copy.removeBtn}</button>
+                )}
               </div>
             )}
 
@@ -4831,17 +4852,14 @@ export default function App() {
       {/* Confirmation dialog */}
       {confirmDialog && (
         <div className="fixed inset-0 z-[600] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in" onClick={() => setConfirmDialog(null)}>
-          <div className="glass-card border-slate-700/50 rounded-2xl w-full max-w-xs shadow-2xl animate-in zoom-in-95 p-6 text-center" onClick={e => e.stopPropagation()}>
-            <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center ${confirmDialog.variant === 'danger' ? 'bg-rose-100' : 'bg-violet-900/50'}`}>
-              {confirmDialog.variant === 'danger' ? <Trash2 size={22} className="text-rose-500" /> : <CheckCircle2 size={22} className="text-violet-300" />}
+            <div className="nb-card w-full max-w-xs p-6 text-center" onClick={e => e.stopPropagation()}>
+              <p className="text-sm font-black mb-1">Are you sure?</p>
+              <p className="text-xs text-ink-muted mb-5 leading-relaxed">{confirmDialog.message}</p>
+              <div className="flex gap-2">
+                <NbButton variant="lilac" onClick={() => setConfirmDialog(null)}>{copy.cancelBtn}</NbButton>
+                <NbButton variant={confirmDialog.variant === 'danger' ? 'ink' : 'butter'} onClick={() => { confirmDialog.onConfirm(); setConfirmDialog(null); }}>Confirm</NbButton>
+              </div>
             </div>
-            <p className="text-sm font-bold text-slate-100 drop-shadow-md mb-1">Are you sure?</p>
-            <p className="text-xs text-slate-400 mb-5 leading-relaxed">{confirmDialog.message}</p>
-            <div className="flex gap-2">
-              <button onClick={() => setConfirmDialog(null)} className="flex-1 py-2.5 text-slate-400 font-bold rounded-xl text-sm hover:bg-slate-900/50 transition-colors border border-slate-600/50">{copy.cancelBtn}</button>
-              <button onClick={() => { confirmDialog.onConfirm(); setConfirmDialog(null); }} className={`flex-1 py-2.5 text-white font-bold rounded-xl text-sm transition-colors ${confirmDialog.variant === 'danger' ? 'bg-rose-500 hover:bg-rose-600' : 'bg-violet-500 hover:bg-violet-600'}`}>Confirm</button>
-            </div>
-          </div>
         </div>
       )}
     </div>

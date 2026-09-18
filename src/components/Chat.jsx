@@ -3,6 +3,7 @@ import {
   MessageSquare, Send, ArrowLeft, Plus, X, Search, Users,
   Check, CheckCheck, Clock, Lock, ChevronRight, Eye
 } from 'lucide-react';
+import { DemoUnlockCard, NbButton } from './ui';
 import { storageGet } from '../lib/storage';
 import {
   createChat, getChatsForUser, getParentViewableChats, sendMessage,
@@ -29,10 +30,8 @@ const formatMsgTime = (ts) => {
 
 const Avatar = ({ name, size = 40 }) => {
   const initials = (name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  const colors = ['bg-violet-500', 'bg-fuchsia-500', 'bg-emerald-500', 'bg-amber-500', 'bg-sky-500', 'bg-rose-500'];
-  const idx = (name || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0) % colors.length;
   return (
-    <div className={`${colors[idx]} rounded-full flex items-center justify-center text-white font-black shrink-0`} style={{ width: size, height: size, fontSize: size * 0.38 }}>
+    <div className="nb-avatar nb-avatar-lilac" style={{ width: size, height: size, fontSize: size * 0.38, borderRadius: 16 }}>
       {initials}
     </div>
   );
@@ -105,14 +104,10 @@ const NewChatModal = ({ onClose, onStart, contacts, currentEmail }) => {
 };
 
 const MessageBubble = ({ msg, isMine, showSender }) => (
-  <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} mb-1`}>
-    <div className={`max-w-[75%] px-3.5 py-2 rounded-2xl ${isMine ? 'bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white rounded-br-md' : 'bg-white border border-slate-100 text-slate-800 rounded-bl-md shadow-sm'}`}>
-      {showSender && !isMine && <p className="text-[10px] font-black mb-0.5 text-violet-500">{msg.senderName}</p>}
-      <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{msg.text}</p>
-      <div className={`flex items-center justify-end gap-1 mt-0.5 ${isMine ? 'text-white/60' : 'text-slate-400'}`}>
-        <span className="text-[9px]">{formatMsgTime(msg.createdAt)}</span>
-        {isMine && <CheckCheck size={12} />}
-      </div>
+  <div className={`flex ${isMine ? 'justify-end' : 'justify-start'} mb-2`}>
+    <div className={`nb-bubble ${isMine ? 'nb-bubble-out' : 'nb-bubble-in'}`}>
+      {showSender && !isMine && <p className="nb-kicker mb-1">{msg.senderName}</p>}
+      <p className="whitespace-pre-wrap break-words">{msg.text}</p>
     </div>
   </div>
 );
@@ -210,18 +205,18 @@ const ChatThread = ({ chat, currentEmail, currentName, onBack, viewOnly = false 
           <span className="text-xs font-bold">View-only mode — you cannot send messages</span>
         </div>
       ) : (
-        <div className="bg-slate-900/80 border-t border-slate-700/50 px-4 py-3 flex items-end gap-2 shrink-0">
+        <div className="bg-cream border-t-[2.5px] border-ink px-3 py-3 flex items-end gap-2 shrink-0">
           <textarea
             ref={inputRef}
             value={text}
             onChange={e => setText(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-            placeholder="Type a message..."
+            placeholder="Message..."
             rows={1}
-            className="flex-1 resize-none bg-slate-800/70 border border-slate-600/50 rounded-2xl px-4 py-2.5 text-sm text-slate-100 outline-none focus:ring-2 focus:ring-violet-300 max-h-32 placeholder:text-slate-400"
-            style={{ minHeight: 40 }}
+            className="flex-1 resize-none bg-white border-[2.5px] border-ink rounded-full px-4 py-2.5 text-sm text-ink outline-none max-h-32 placeholder:text-ink-muted font-bold"
+            style={{ minHeight: 44 }}
           />
-          <button onClick={handleSend} disabled={!text.trim() || sending} className="w-10 h-10 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-full flex items-center justify-center text-white disabled:opacity-40 hover:scale-105 active:scale-95 transition-transform shrink-0 shadow-sm">
+          <button onClick={handleSend} disabled={!text.trim() || sending} className="w-11 h-11 bg-butter border-[2.5px] border-ink rounded-full flex items-center justify-center text-ink disabled:opacity-40 shrink-0" aria-label="Send">
             <Send size={16} />
           </button>
         </div>
@@ -230,7 +225,7 @@ const ChatThread = ({ chat, currentEmail, currentName, onBack, viewOnly = false 
   );
 };
 
-export default function Chat({ userEmail, userName, userRole, isPremium, linkedStudents = [], confirm }) {
+export default function Chat({ userEmail, userName, userRole, isPremium, linkedStudents = [], confirm, onUnlockDemo, unlocking = false }) {
   const [chats, setChats] = useState([]);
   const [parentViewChats, setParentViewChats] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
@@ -351,17 +346,25 @@ export default function Chat({ userEmail, userName, userRole, isPremium, linkedS
 
   if (!isPremium) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center px-6">
-        <div className="w-20 h-20 bg-violet-900/40 rounded-full flex items-center justify-center mb-4">
-          <Lock size={32} className="text-violet-300" />
+      <div className="flex flex-col h-full text-ink px-1">
+        <div className="flex-1 overflow-y-auto space-y-3 pb-4">
+          <DemoUnlockCard onUnlock={onUnlockDemo} unlocking={unlocking} variant="chat" />
+          <div className="nb-bubble nb-bubble-in">
+            <p className="nb-kicker">Ms. Rivera</p>
+            Reminder: fractions worksheet is due today. Ask if you&apos;re stuck!
+          </div>
+          <div className="nb-bubble nb-bubble-out">Thanks — I&apos;ll finish pages 12–13 tonight.</div>
+          <div className="nb-bubble nb-bubble-in">
+            <p className="nb-kicker">Ms. Rivera</p>
+            Great. Bring any questions tomorrow.
+          </div>
         </div>
-        <h2 className="text-xl font-black text-slate-100 mb-2">Chat is a Premium feature</h2>
-        <p className="text-sm text-slate-400 max-w-sm mb-6">Upgrade to Pro to message teachers, students, and parents directly within Homework Harbour.</p>
-        <div className="glass-card rounded-xl p-4 border border-slate-700/50 max-w-sm w-full space-y-2 text-left">
-          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-200">Direct messaging with teachers</span></div>
-          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-200">Group conversations</span></div>
-          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-200">Parent monitoring of student chats</span></div>
-          <div className="flex items-center gap-2"><Check size={14} className="text-emerald-500" /><span className="text-xs font-bold text-slate-200">Real-time message delivery</span></div>
+        <div className="bg-cream pt-2 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 bg-white border-[2.5px] border-ink rounded-full px-4 py-3 text-sm font-bold text-ink-muted">Message...</div>
+            <div className="w-11 h-11 bg-butter border-[2.5px] border-ink rounded-full flex items-center justify-center" aria-hidden="true">↑</div>
+          </div>
+          <NbButton variant="butter" onClick={onUnlockDemo} disabled={unlocking}>{unlocking ? 'Unlocking...' : 'Unlock demo'}</NbButton>
         </div>
       </div>
     );
