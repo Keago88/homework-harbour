@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { Wordmark, DemoUnlockCard, BottomDock, TrialBanner, assignmentStatusChip } from './ui';
+import { Wordmark, DemoUnlockCard, BottomDock, TrialBanner, PlansMembershipBanner, assignmentStatusChip } from './ui';
 import Chat from './Chat';
 
 describe('neo-brutal primitives', () => {
@@ -108,5 +108,32 @@ describe('Pro trial banner', () => {
     const ends = new Date(Date.now() + 86400000).toISOString();
     const { container } = render(<TrialBanner plan="pro" trialEndsAt={ends} />);
     expect(container).toBeEmptyDOMElement();
+  });
+});
+
+describe('Plans membership banner', () => {
+  it('shows Pro trial days left, not generic Pro ACTIVE', () => {
+    const ends = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
+    render(<PlansMembershipBanner plan="free" trialEndsAt={ends} />);
+    expect(screen.getByText(/Pro trial — \d+ days? left/)).toBeInTheDocument();
+    expect(screen.queryByText('Pro Access')).not.toBeInTheDocument();
+    expect(screen.queryByText('Active')).not.toBeInTheDocument();
+    expect(screen.queryByText('Unlimited features active')).not.toBeInTheDocument();
+  });
+
+  it('shows Pro Access ACTIVE for paid or demo Pro', () => {
+    render(<PlansMembershipBanner plan="pro" trialEndsAt={null} />);
+    expect(screen.getByText('Pro Access')).toBeInTheDocument();
+    expect(screen.getByText('Unlimited features active')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
+    expect(screen.queryByText(/Pro trial —/)).not.toBeInTheDocument();
+  });
+
+  it('shows Free + upgrade copy after the trial expires', () => {
+    render(<PlansMembershipBanner plan="free" trialEndsAt="2020-01-01T00:00:00.000Z" />);
+    expect(screen.getByText(/^Free$/)).toBeInTheDocument();
+    expect(screen.getByText(/trial ended/i)).toBeInTheDocument();
+    expect(screen.getByText(/Upgrade to keep Chat/i)).toBeInTheDocument();
+    expect(screen.queryByText('Pro Access')).not.toBeInTheDocument();
   });
 });

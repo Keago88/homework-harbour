@@ -66,6 +66,44 @@ export function trialBannerCopy(trialEndsAt, now = new Date()) {
   return `Pro trial — ${days} day${days === 1 ? '' : 's'} left`;
 }
 
+/**
+ * Plans / Payments membership copy.
+ * Trial-unlocked users are not generic Pro ACTIVE. Demo unlock stays `plan === 'pro'`.
+ */
+export function plansMembershipCopy({ plan, trialEndsAt, now = new Date() } = {}) {
+  const paidOrDemoPro = plan === 'pro';
+  if (!paidOrDemoPro && isTrialActive(trialEndsAt, now)) {
+    return {
+      kind: 'trial',
+      title: trialBannerCopy(trialEndsAt, now),
+      subtitle: 'Full Pro is on — Chat, analytics, and extras.',
+      badge: null,
+    };
+  }
+  if (paidOrDemoPro) {
+    return {
+      kind: 'pro',
+      title: 'Pro Access',
+      subtitle: 'Unlimited features active',
+      badge: 'Active',
+    };
+  }
+  if (parseTrialInstant(trialEndsAt) && !isTrialActive(trialEndsAt, now)) {
+    return {
+      kind: 'expired',
+      title: 'Free',
+      subtitle: 'Your 14-day Pro trial ended. Upgrade to keep Chat and extras.',
+      badge: null,
+    };
+  }
+  return {
+    kind: 'free',
+    title: 'Free Plan',
+    subtitle: 'Basic features limited',
+    badge: null,
+  };
+}
+
 /** Full Pro (Chat, analytics, extras) — not Chat-only. Demo unlock is a separate plan === 'pro' path. */
 export function hasFullProAccess({ plan, trialEndsAt, now = new Date() } = {}) {
   if (plan === 'pro') return true;

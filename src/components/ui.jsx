@@ -1,6 +1,6 @@
 import React from 'react';
 import { Home, Menu, MessageSquare, MoreHorizontal } from 'lucide-react';
-import { trialBannerCopy, isTrialActive } from '../services/subscription';
+import { plansMembershipCopy } from '../services/subscription';
 
 export function Wordmark({ size = 'md', className = '' }) {
   return (
@@ -136,27 +136,26 @@ export function DemoUnlockCard({ onUnlock, unlocking = false, variant = 'chat' }
   );
 }
 
+export function PlansMembershipBanner({ plan, trialEndsAt, now }) {
+  const membership = plansMembershipCopy({ plan, trialEndsAt, now });
+  return (
+    <NbCard className={`p-4 ${membership.kind === 'trial' ? 'bg-sage' : ''}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="nb-kicker">{membership.kind === 'trial' ? 'Pro trial' : 'Current Membership'}</p>
+          <p className="text-lg font-black">{membership.title}</p>
+          <p className="text-sm font-bold mt-2">{membership.subtitle}</p>
+        </div>
+        {membership.badge && <NbChip tone="graded">{membership.badge}</NbChip>}
+      </div>
+    </NbCard>
+  );
+}
+
 export function TrialBanner({ plan, trialEndsAt, now }) {
-  if (plan === 'pro') return null;
-  if (isTrialActive(trialEndsAt, now)) {
-    return (
-      <NbCard className="p-4 bg-sage">
-        <p className="nb-kicker">Pro trial</p>
-        <p className="text-lg font-black">{trialBannerCopy(trialEndsAt, now)}</p>
-        <p className="text-sm font-bold mt-2">Full Pro is on — Chat, analytics, and extras.</p>
-      </NbCard>
-    );
-  }
-  if (trialEndsAt) {
-    return (
-      <NbCard className="p-4">
-        <p className="nb-kicker">Pro trial</p>
-        <p className="text-lg font-black">Free</p>
-        <p className="text-sm font-bold mt-2">Your 14-day Pro trial ended. Upgrade to keep Chat and extras.</p>
-      </NbCard>
-    );
-  }
-  return null;
+  const membership = plansMembershipCopy({ plan, trialEndsAt, now });
+  if (membership.kind === 'pro' || membership.kind === 'free') return null;
+  return <PlansMembershipBanner plan={plan} trialEndsAt={trialEndsAt} now={now} />;
 }
 
 export function dockActiveForTab(tab) {
