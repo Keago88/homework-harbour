@@ -1,5 +1,6 @@
 import React from 'react';
 import { Home, Menu, MessageSquare, MoreHorizontal } from 'lucide-react';
+import { trialBannerCopy, isTrialActive } from '../services/subscription';
 
 export function Wordmark({ size = 'md', className = '' }) {
   return (
@@ -133,6 +134,29 @@ export function DemoUnlockCard({ onUnlock, unlocking = false, variant = 'chat' }
       </NbButton>
     </div>
   );
+}
+
+export function TrialBanner({ plan, trialEndsAt, now }) {
+  if (plan === 'pro') return null;
+  if (isTrialActive(trialEndsAt, now)) {
+    return (
+      <NbCard className="p-4 bg-sage">
+        <p className="nb-kicker">Pro trial</p>
+        <p className="text-lg font-black">{trialBannerCopy(trialEndsAt, now)}</p>
+        <p className="text-sm font-bold mt-2">Full Pro is on — Chat, analytics, and extras.</p>
+      </NbCard>
+    );
+  }
+  if (trialEndsAt) {
+    return (
+      <NbCard className="p-4">
+        <p className="nb-kicker">Pro trial</p>
+        <p className="text-lg font-black">Free</p>
+        <p className="text-sm font-bold mt-2">Your 14-day Pro trial ended. Upgrade to keep Chat and extras.</p>
+      </NbCard>
+    );
+  }
+  return null;
 }
 
 export function dockActiveForTab(tab) {

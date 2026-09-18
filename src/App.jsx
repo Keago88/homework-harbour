@@ -63,7 +63,7 @@ import {
   CreditCard,
   Wallet
 } from 'lucide-react';
-import { getSubscriptionStatus, initiateProCheckout, verifyPayment, cancelSubscription, isSubscriptionApiConfigured } from './services/subscription';
+import { getSubscriptionStatus, initiateProCheckout, verifyPayment, cancelSubscription, isSubscriptionApiConfigured, hasFullProAccess } from './services/subscription';
 import * as platformData from './lib/platformData';
 import { storageGet, storageSet } from './lib/storage';
 import { resolveSessionUser, canMutateAssignments, assignmentPersistKey, isViewingStudent, mergeAssignmentLists, studentsFromSchools } from './lib/account';
@@ -78,7 +78,7 @@ import MobileSplash from './components/MobileSplash';
 import Chat from './components/Chat';
 import {
   Wordmark, RoleBadge, NbButton, NbChip, NbCard, SubjectMark, TopRail, PageBand,
-  BottomDock, DemoUnlockCard, assignmentStatusChip, dockActiveForTab, bandTintForTab
+  BottomDock, DemoUnlockCard, TrialBanner, assignmentStatusChip, dockActiveForTab, bandTintForTab
 } from './components/ui';
 
 const noScrollbarStyles = `
@@ -1225,7 +1225,8 @@ export default function App() {
   const [selectedPlan, setSelectedPlan] = useState('pro');
   const FULL_ACCESS_RELEASE = false; // Toggle this to false to re-enable strict paywalls
   const [subscriptionPlan, setSubscriptionPlan] = useState('free');
-  const hasPremiumAccess = subscriptionPlan === 'pro' || FULL_ACCESS_RELEASE;
+  const [trialEndsAt, setTrialEndsAt] = useState(null);
+  const hasPremiumAccess = hasFullProAccess({ plan: subscriptionPlan, trialEndsAt }) || FULL_ACCESS_RELEASE;
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
 
@@ -1509,8 +1510,22 @@ export default function App() {
 
   useEffect(() => {
     if (!appUser) return;
-    getSubscriptionStatus(subscriptionUserId).then(({ plan }) => setSubscriptionPlan(plan));
-  }, [appUser?.name, subscriptionUserId]);
+    let cancelled = false;
+    (async () => {
+      const { plan } = await getSubscriptionStatus(subscriptionUserId);
+      let ends = null;
+      if (firebaseUserId) {
+        try {
+          const data = await platformData.getUserData(firebaseUserId);
+          ends = data?.trialEndsAt || null;
+        } catch {}
+      }
+      if (cancelled) return;
+      setSubscriptionPlan(plan);
+      if (ends) setTrialEndsAt(ends);
+    })();
+    return () => { cancelled = true; };
+  }, [appUser?.name, subscriptionUserId, firebaseUserId]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -1694,6 +1709,8 @@ export default function App() {
           name: nextProfile.name,
           role: newAppUser.role,
           profile: { ...nextProfile, role: newAppUser.role },
+        }).then((acct) => {
+          if (acct?.trialEndsAt) setTrialEndsAt(acct.trialEndsAt);
         }).catch(() => {});
       }
       platformData.hydratePlatformCaches().then(() => {
@@ -1747,6 +1764,8 @@ export default function App() {
         try { await signOut(auth); } catch {}
       }
       setAppUser(null);
+      setTrialEndsAt(null);
+      setSubscriptionPlan('free');
       setAssignments([]);
       setAssignmentsReady(false);
       setLinkedStudents([]);
@@ -3991,6 +4010,7 @@ export default function App() {
 
         {activeTab === TABS.PAYMENTS && (
           <div className="space-y-4 animate-in fade-in max-w-xl text-ink">
+            <TrialBanner plan={subscriptionPlan} trialEndsAt={trialEndsAt} />
             {!hasPremiumAccess && (
               <DemoUnlockCard variant="payments" onUnlock={() => handleConfirmPlan('pro')} unlocking={checkoutLoading} />
             )}

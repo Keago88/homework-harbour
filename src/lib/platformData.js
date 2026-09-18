@@ -5,6 +5,7 @@
 import { db, auth } from './firebase';
 import { storageGet, storageSet } from './storage';
 import { collection, doc, getDoc, setDoc, getDocs, query, where } from 'firebase/firestore';
+import { nextAccountTrialFields } from '../services/subscription';
 
 const KEYS = {
   SCHOOLS: 'hwc_schools',
@@ -252,11 +253,13 @@ export const upsertAccount = async (uid, { email, name, role, profile } = {}) =>
       name: name || profile?.name || existing.profile?.name || '',
       role: role || profile?.role || existing.profile?.role || existing.role,
     };
+    const trialFields = nextAccountTrialFields(existing);
     await setDoc(docRef, {
       ...existing,
       email: emailNorm || existing.email || '',
       role: nextProfile.role,
       profile: nextProfile,
+      ...trialFields,
     });
     if (emailNorm) {
       await setDoc(doc(db, EMAIL_INDEX_COLLECTION, toDocId(emailNorm)), {
@@ -266,6 +269,11 @@ export const upsertAccount = async (uid, { email, name, role, profile } = {}) =>
         name: nextProfile.name,
       });
     }
+    return {
+      isNew: !snap.exists(),
+      trialStartedAt: trialFields.trialStartedAt || existing.trialStartedAt || null,
+      trialEndsAt: trialFields.trialEndsAt || existing.trialEndsAt || null,
+    };
   } catch (e) {
     console.warn('upsertAccount failed:', e);
   }

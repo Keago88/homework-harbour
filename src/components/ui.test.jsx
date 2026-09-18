@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { Wordmark, DemoUnlockCard, BottomDock, assignmentStatusChip } from './ui';
+import { Wordmark, DemoUnlockCard, BottomDock, TrialBanner, assignmentStatusChip } from './ui';
 import Chat from './Chat';
 
 describe('neo-brutal primitives', () => {
@@ -87,5 +87,26 @@ describe('Chat demo unlock chrome', () => {
     const contacts = screen.getByPlaceholderText(/Search contacts/i);
     expect(contacts.className).toMatch(/border-ink/);
     expect(contacts.className).not.toMatch(/border-slate-200/);
+  });
+});
+
+describe('Pro trial banner', () => {
+  it('shows days left while the trial is active', () => {
+    const ends = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
+    render(<TrialBanner plan="free" trialEndsAt={ends} />);
+    expect(screen.getByText(/Pro trial — \d+ days? left/)).toBeInTheDocument();
+    expect(screen.getByText(/Full Pro is on/i)).toBeInTheDocument();
+  });
+
+  it('shows Free after the trial expires', () => {
+    render(<TrialBanner plan="free" trialEndsAt="2020-01-01T00:00:00.000Z" />);
+    expect(screen.getByText(/^Free$/)).toBeInTheDocument();
+    expect(screen.getByText(/trial ended/i)).toBeInTheDocument();
+  });
+
+  it('hides when plan is pro', () => {
+    const ends = new Date(Date.now() + 86400000).toISOString();
+    const { container } = render(<TrialBanner plan="pro" trialEndsAt={ends} />);
+    expect(container).toBeEmptyDOMElement();
   });
 });
