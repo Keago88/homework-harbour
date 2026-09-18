@@ -2612,7 +2612,7 @@ export default function App() {
             )}
             {activeTab === TABS.SCHOOL && <SchoolDashboard schools={adminSchools} search={dashboardSearch} key={schoolsRefresh} onRefresh={() => setSchoolsRefresh(Date.now())} confirm={confirm} />}
             {activeTab === TABS.CHAT && (
-              <div className="animate-in fade-in h-[calc(100dvh-128px)] md:h-[calc(100dvh-72px)]">
+              <div className="animate-in fade-in h-[calc(100dvh-210px)] md:h-[calc(100dvh-88px)]">
                 <Chat userEmail={profileData.email || appUser?.email} userName={profileData.name || appUser.name} userRole={appUser.role} isPremium={hasPremiumAccess} linkedStudents={linkedStudents} confirm={confirm} onUnlockDemo={() => handleConfirmPlan('pro')} unlocking={checkoutLoading} />
               </div>
             )}
@@ -3971,7 +3971,7 @@ export default function App() {
         )}
 
         {activeTab === TABS.CHAT && (
-          <div className="animate-in fade-in h-[calc(100dvh-128px)] md:h-[calc(100dvh-72px)]">
+          <div className="animate-in fade-in h-[calc(100dvh-210px)] md:h-[calc(100dvh-88px)]">
             <Chat
               userEmail={profileData.email || appUser?.email}
               userName={profileData.name || appUser.name}

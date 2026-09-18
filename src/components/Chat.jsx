@@ -346,7 +346,7 @@ export default function Chat({ userEmail, userName, userRole, isPremium, linkedS
 
   if (!isPremium) {
     return (
-      <div className="flex flex-col h-full text-ink px-1">
+      <div className="flex flex-col h-full text-ink px-1 pb-20 md:pb-2">
         <div className="flex-1 overflow-y-auto space-y-3 pb-4">
           <DemoUnlockCard onUnlock={onUnlockDemo} unlocking={unlocking} variant="chat" />
           <div className="nb-bubble nb-bubble-in">
@@ -359,7 +359,7 @@ export default function Chat({ userEmail, userName, userRole, isPremium, linkedS
             Great. Bring any questions tomorrow.
           </div>
         </div>
-        <div className="bg-cream pt-2 space-y-3">
+        <div className="bg-cream pt-2 pb-3 space-y-3">
           <div className="flex items-center gap-2">
             <div className="flex-1 bg-white border-[2.5px] border-ink rounded-full px-4 py-3 text-sm font-bold text-ink-muted">Message...</div>
             <div className="w-11 h-11 bg-butter border-[2.5px] border-ink rounded-full flex items-center justify-center" aria-hidden="true">↑</div>
