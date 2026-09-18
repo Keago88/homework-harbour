@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap');
 
+/* SoT: stills-v3 + Leonardo neo-brutal brief win over DIRECTION.md "B Clean Light"
+   (thin #E5E7EB borders, blue primary). Tokens are thick ink + pastel chips. */
 :root {
   --nb-ink: #111111;
   --nb-cream: #f4f0e6;
@@ -373,7 +375,12 @@ body {
 .border-slate-600\/50,
 .border-slate-700,
 .border-\[\#1e293b\],
-.border-slate-800 { border-color: var(--nb-ink) !important; }
+.border-slate-800,
+.border-slate-50,
+.border-slate-100,
+.border-slate-200,
+.border-gray-200,
+.border-\[\#E5E7EB\] { border-color: var(--nb-ink) !important; }
 
 .bg-violet-900\/50,
 .bg-violet-900\/30,
@@ -387,13 +394,16 @@ body {
 .bg-gradient-to-br.from-violet-600.to-fuchsia-600,
 .bg-gradient-to-r.from-violet-500.to-fuchsia-500,
 .bg-gradient-to-br.from-violet-500.to-fuchsia-500,
-.bg-gradient-to-r.from-emerald-500.to-teal-500 {
+.bg-gradient-to-r.from-emerald-500.to-teal-500,
+.bg-gradient-to-r.from-cyan-400.to-blue-500 {
   background-image: none !important;
   background-color: var(--nb-butter) !important;
   color: var(--nb-ink) !important;
   border: var(--nb-border);
   box-shadow: none !important;
 }
+
+.bg-slate-50 { background-color: var(--nb-white) !important; }
 
 .bg-violet-500,
 .bg-violet-600 { background-color: var(--nb-butter) !important; color: var(--nb-ink) !important; }
