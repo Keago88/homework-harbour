@@ -63,7 +63,7 @@ import {
   CreditCard,
   Wallet
 } from 'lucide-react';
-import { getSubscriptionStatus, initiateProCheckout, verifyPayment, cancelSubscription, isSubscriptionApiConfigured, hasFullProAccess } from './services/subscription';
+import { getSubscriptionStatus, initiateProCheckout, verifyPayment, cancelSubscription, isSubscriptionApiConfigured, hasFullProAccess, parseTrialInstant, startTrialWindow, plansMembershipCopy } from './services/subscription';
 import * as platformData from './lib/platformData';
 import { storageGet, storageSet } from './lib/storage';
 import { resolveSessionUser, canMutateAssignments, assignmentPersistKey, isViewingStudent, mergeAssignmentLists, studentsFromSchools } from './lib/account';
@@ -78,7 +78,7 @@ import MobileSplash from './components/MobileSplash';
 import Chat from './components/Chat';
 import {
   Wordmark, RoleBadge, NbButton, NbChip, NbCard, SubjectMark, TopRail, PageBand,
-  BottomDock, DemoUnlockCard, TrialBanner, assignmentStatusChip, dockActiveForTab, bandTintForTab
+  BottomDock, DemoUnlockCard, PlansMembershipBanner, assignmentStatusChip, dockActiveForTab, bandTintForTab
 } from './components/ui';
 
 const noScrollbarStyles = `
@@ -1225,9 +1225,10 @@ export default function App() {
   const FULL_ACCESS_RELEASE = false; // Toggle this to false to re-enable strict paywalls
   const [subscriptionPlan, setSubscriptionPlan] = useState('free');
   const [trialEndsAt, setTrialEndsAt] = useState(null);
-  const hasPremiumAccess = hasFullProAccess({ plan: subscriptionPlan, trialEndsAt }) || FULL_ACCESS_RELEASE;
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
+  const hasPremiumAccess = hasFullProAccess({ plan: subscriptionPlan, trialEndsAt }) || FULL_ACCESS_RELEASE;
+  const membership = plansMembershipCopy({ plan: subscriptionPlan, trialEndsAt });
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filterSubject, setFilterSubject] = useState(() => { try { return storageGet('hw_subject') || 'All'; } catch { return 'All'; } });
@@ -1516,7 +1517,7 @@ export default function App() {
       if (firebaseUserId) {
         try {
           const data = await platformData.getUserData(firebaseUserId);
-          ends = data?.trialEndsAt || null;
+          ends = parseTrialInstant(data?.trialEndsAt);
         } catch {}
       }
       if (cancelled) return;
@@ -1709,8 +1710,11 @@ export default function App() {
           role: newAppUser.role,
           profile: { ...nextProfile, role: newAppUser.role },
         }).then((acct) => {
-          if (acct?.trialEndsAt) setTrialEndsAt(acct.trialEndsAt);
+          const ends = parseTrialInstant(acct?.trialEndsAt);
+          if (ends) setTrialEndsAt(ends);
         }).catch(() => {});
+      } else {
+        setTrialEndsAt(startTrialWindow().trialEndsAt);
       }
       platformData.hydratePlatformCaches().then(() => {
         setAlerts(getUnreadAlertsForUser(userKey, [], newAppUser.role));
@@ -4009,18 +4013,18 @@ export default function App() {
 
         {activeTab === TABS.PAYMENTS && (
           <div className="space-y-4 animate-in fade-in max-w-xl text-ink">
-            <TrialBanner plan={subscriptionPlan} trialEndsAt={trialEndsAt} />
-            {!hasPremiumAccess && (
+            {!hasPremiumAccess && membership.kind !== 'expired' && (
               <DemoUnlockCard variant="payments" onUnlock={() => handleConfirmPlan('pro')} unlocking={checkoutLoading} />
             )}
             <p className="nb-kicker">Plans</p>
+            <PlansMembershipBanner plan={subscriptionPlan} trialEndsAt={trialEndsAt} />
             <NbCard className="p-4 bg-butter">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h3 className="text-xl font-black">Starter</h3>
                   <p className="text-2xl font-black mt-1">Free</p>
                 </div>
-                <NbChip tone="muted">{subscriptionPlan === 'pro' ? 'Included' : 'Current'}</NbChip>
+                <NbChip tone="muted">{membership.kind === 'pro' || membership.kind === 'trial' ? 'Included' : 'Current'}</NbChip>
               </div>
               <p className="text-sm font-bold mt-3">Homework list, grades, and basic reminders.</p>
             </NbCard>
@@ -4036,7 +4040,7 @@ export default function App() {
             </NbCard>
             {!hasPremiumAccess && (
               <NbButton variant="butter" onClick={() => handleConfirmPlan('pro')} disabled={checkoutLoading}>
-                {checkoutLoading ? 'Unlocking...' : 'Unlock demo'}
+                {checkoutLoading ? 'Unlocking...' : membership.kind === 'expired' ? (isSubscriptionApiConfigured() ? 'Upgrade to Pro' : 'Unlock demo') : 'Unlock demo'}
               </NbButton>
             )}
             {subscriptionPlan === 'pro' && (
@@ -4646,18 +4650,18 @@ export default function App() {
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 glass-card border-slate-700/50/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
-                        {subscriptionPlan === 'pro' ? <Sparkles size={32} /> : <Wallet size={32} />}
+                        {membership.kind === 'free' || membership.kind === 'expired' ? <Wallet size={32} /> : <Sparkles size={32} />}
                       </div>
                       <div>
-                        <h3 className="text-2xl font-black">{subscriptionPlan === 'pro' ? 'Pro Access' : 'Free Plan'}</h3>
-                        <p className="text-xs opacity-90">{subscriptionPlan === 'pro' ? 'Unlimited features active' : 'Basic features limited'}</p>
+                        <h3 className="text-2xl font-black">{membership.title}</h3>
+                        <p className="text-xs opacity-90">{membership.subtitle}</p>
                       </div>
                     </div>
-                    {subscriptionPlan === 'pro' && <span className="px-3 py-1 glass-card border-slate-700/50/20 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md border border-white/30">Active</span>}
+                    {membership.badge && <span className="px-3 py-1 glass-card border-slate-700/50/20 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md border border-white/30">{membership.badge}</span>}
                   </div>
                 </div>
 
-                {subscriptionPlan === 'pro' ? (
+                {membership.kind === 'pro' ? (
                   <div className="bg-slate-900/50 p-6 rounded-3xl border border-slate-700/50 border-l-4 border-l-slate-400">
                     <h4 className="font-bold text-slate-100 drop-shadow-md mb-1">Manage Subscription</h4>
                     <p className="text-xs text-slate-400 mb-4">You can cancel or change your plan at the end of the billing period.</p>
@@ -4665,7 +4669,7 @@ export default function App() {
                       {cancelLoading ? 'Processing...' : 'Cancel Subscription'}
                     </button>
                   </div>
-                ) : (
+                ) : membership.kind === 'trial' ? null : (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between px-2">
                         <h4 className="font-bold text-slate-100 drop-shadow-md">Upgrade your experience</h4>
